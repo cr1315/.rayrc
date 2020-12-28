@@ -1,0 +1,38 @@
+# smile_prompt github
+function smile_prompt
+{
+  if [ "$?" -eq "0" ]; then
+    SC="\[\033[32m\]:)"
+  else
+    SC="\[\033[31m\]:("
+  fi
+  PS1="\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]\n$SC\[\033[00m\] "
+}
+PROMPT_COMMAND=smile_prompt
+
+
+
+# setup function
+function setup {
+	if [[ -d "$RAYRC/$1" && -f "$RAYRC/$1/main.sh" ]]; then
+		source "$RAYRC/$1/main.sh"
+	elif [[ -f "$RAYRC/$1.sh" ]]; then
+		source "$RAYRC/$1.sh"
+	fi
+}
+
+
+# setup bash
+setup bash
+
+# setup fzf
+setup fzf
+
+# setup kubectl
+setup kubectl
+
+# setup aws
+setup aws
+
+# setup terraform
+setup terraform
