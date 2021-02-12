@@ -1,6 +1,9 @@
-# aws_completer
+### aws_completer
 complete -C `which aws_completer` aws
 
+
+
+### for aws authentication
 aws.mfa() {
     unset AWS_PROFILE
     unset AWS_ACCESS_KEY_ID

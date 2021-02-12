@@ -1,16 +1,3 @@
-# smile_prompt github
-function smile_prompt
-{
-  if [ "$?" -eq "0" ]; then
-    SC="\[\033[32m\]:)"
-  else
-    SC="\[\033[31m\]:("
-  fi
-  PS1="\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]\n$SC\[\033[00m\] "
-}
-PROMPT_COMMAND=smile_prompt
-
-
 
 # setup function
 function setup {
@@ -20,6 +7,19 @@ function setup {
 		source "$RAYRC/$1.sh"
 	fi
 }
+
+
+### auto setup
+targets=$(ls -1)
+
+
+
+
+
+
+
+
+
 
 
 # setup bash

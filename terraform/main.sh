@@ -1,2 +1,3 @@
 
 
+alias tf="terraform"

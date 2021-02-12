@@ -1,3 +1,14 @@
+# smile_prompt github
+function smile_prompt
+{
+  if [ "$?" -eq "0" ]; then
+    SC="\[\033[32m\]:)"
+  else
+    SC="\[\033[31m\]:("
+  fi
+  PS1="\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]\n$SC\[\033[00m\] "
+}
+PROMPT_COMMAND=smile_prompt
 
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
 export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
@@ -17,5 +28,5 @@ alias ds="dirs -v"
 alias view="vim -R"
 alias vi="vim"
 
-alias k="kubectl"
-alias tf="terraform"
+
+

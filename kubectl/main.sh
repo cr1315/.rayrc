@@ -3,3 +3,5 @@
 source /usr/share/bash-completion/bash_completion
 
 complete -F __start_kubectl k
+
+alias k="kubectl"
