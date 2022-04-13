@@ -34,4 +34,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " Initialize plugin system
 call plug#end()
 
-colo dracula
+try
+    colorscheme dracula
+catch
+endtry
+
