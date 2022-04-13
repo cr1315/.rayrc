@@ -1,0 +1,9 @@
+[submodule "linux/52_fzf/.fzf"]
+	path = linux/52_fzf/.fzf
+	url = https://github.com/junegunn/fzf.git
+[submodule "macos/21_fzf/fzf"]
+	path = macos/21_fzf/fzf
+	url = https://github.com/junegunn/fzf.git
+[submodule "linux/11_git/gitstatus"]
+	path = linux/11_git/gitstatus
+	url = https://github.com/romkatv/gitstatus.git

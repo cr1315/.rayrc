@@ -1,0 +1,26 @@
+name: first github action
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  env_check:
+    strategy:
+      fail-fast: false
+      matrix:
+        # os: [macos-11, macos-10.15]
+        os: [macos-11]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout .rayrc
+        uses: actions/checkout@v2
+      - name: show some env variables
+        run: |
+          # brew install curl git zsh
+          brew install zsh
+          # sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+          echo "##### pwd #####"
+          pwd
+          echo "##### ls -ahl #####"
+          ls -ahl
+      - name: run my script
+        run: |
+          zsh ./install.sh
