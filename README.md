@@ -42,8 +42,7 @@ It should be easy to setup, as easy as executing a single command -- `source .ra
 ## installation
 
 ```
-git clone git@github.com:cr1315/.rayrc.git
-. .rayrc/install.sh
+git clone https://github.com/cr1315/.rayrc.git && source .rayrc/install.sh
 ```
 
 # how
