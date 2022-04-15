@@ -1,7 +1,7 @@
 # it would be best to be runnable on windows, linux and macos
 # well, a bit difficult maybe..
 #   first, no function? since function in bash/zsh is different from powershell
-#   then, there is no $OS_TYPE in windows, 
+#   then, there is no $OS_TYPE in windows,
 #     but fortunetely, powershell variables start from `$`
 #     but unfortunetely, the test statement is different between windows and linux
 #     it would be difficult to write a script runnable on windows, linux and macos
@@ -29,30 +29,12 @@ __rayrc_install() {
     __rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     echo "__rayrc_install_dir: ${__rayrc_install_dir}"
 
-    # echo "\$HOME: $HOME"
-    # ls -ahl $HOME
-
-    # echo "##### .bash_profile #####"
-    # cat $HOME/.bash_profile
-    # echo "##### .bashrc #####"
-    # cat $HOME/.bashrc
-
-    # echo "##### .bash_history #####"
-    # cat $HOME/.bash_history
-
-    # echo "##### .gitconfig #####"
-    # cat $HOME/.gitconfig
-
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		# determine if EC2 instance
-		# sudo dmidecode --string system-uuid
-		# cat /sys/hypervisor/uuid
-		# TODO: case
 		source "${__rayrc_install_dir}/linux/install.sh"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
 		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
-		echo ".rayrc: not supportted OS by now.."
+		echo ".rayrc: not supported OS by now.."
 	fi
 }
 

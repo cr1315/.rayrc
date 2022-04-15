@@ -1,17 +1,21 @@
-name: first github action
+name: on-click installation check
 on: [push, pull_request, workflow_dispatch]
 jobs:
   env_check:
     strategy:
       fail-fast: false
       matrix:
-        # os: [macos-11, macos-10.15]
-        os: [macos-11]
+        #
+        # maybe windows some time later
+        os: [macos-11, ubuntu-20.04]
     runs-on: ${{ matrix.os }}
+
     steps:
-      - name: checkout .rayrc
+      - name: checkout
         uses: actions/checkout@v2
-      - name: show some env variables
+
+      - name: install zsh, not really need
+        if: matrix.os == 'macos-11'
         run: |
           # brew install curl git zsh
           brew install zsh
@@ -21,6 +25,7 @@ jobs:
           pwd
           echo "##### ls -ahl #####"
           ls -ahl
-      - name: run my script
+
+      - name: source ./install
         run: |
-          zsh ./install.sh
+          source ./install
