@@ -28,4 +28,4 @@ jobs:
 
       - name: source ./install
         run: |
-          source ./install
+          source ./.rayrc/install
