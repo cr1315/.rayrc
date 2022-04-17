@@ -13,7 +13,7 @@
 __rayrc_linux_install() {
 	# SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 	local __rayrc_linux_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	# echo "__rayrc_linux_install_dir: ${__rayrc_linux_install_dir}"
+	echo "__rayrc_linux_install_dir: ${__rayrc_linux_install_dir}"
 
 	#
 	# would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
@@ -27,7 +27,7 @@ __rayrc_linux_install() {
 	### auto setup
 	for dir in `ls -1 "${__rayrc_linux_install_dir}"`; do
 
-		# echo "\${__rayrc_linux_install_dir}/\${dir}: ${__rayrc_linux_install_dir}/${dir}"
+		echo "\${__rayrc_linux_install_dir}/\${dir}: ${__rayrc_linux_install_dir}/${dir}"
 		if [[ -d "${__rayrc_linux_install_dir}/${dir}" && -f "${__rayrc_linux_install_dir}/${dir}/install.sh" ]]; then
 			source "${__rayrc_linux_install_dir}/${dir}/install.sh"
 		fi
@@ -40,7 +40,7 @@ __rayrc_linux_install() {
 	if [[ -f "$HOME/.bashrc" ]]; then
 		if grep -q '.rayrc' "$HOME/.bashrc"; then
 			# we assume sed installed..
-			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/bashrc"
+			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.bashrc"
 
 # use here document to add two lines
 cat <<EOF >> $HOME/.bashrc

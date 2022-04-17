@@ -26,6 +26,11 @@ jobs:
           echo "##### ls -ahl #####"
           ls -ahl
 
+      - name: ./install for macos
+        if: matrix.os == 'macos-11'
+        run: |
+          zsh ./install
+
       - name: show some variables for linux
         if: matrix.os == 'ubuntu-20.04'
         run: |
@@ -37,6 +42,7 @@ jobs:
           whoami
           echo "\$HOME: $HOME"
 
-      - name: source ./install
+      - name: source ./install for linux
+        if: matrix.os == 'ubuntu-20.04'
         run: |
           source ./install

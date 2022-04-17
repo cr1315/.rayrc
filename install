@@ -30,6 +30,7 @@ __rayrc_install() {
     echo "__rayrc_install_dir: ${__rayrc_install_dir}"
 	echo "\$0: $0"
 	echo "\${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
+	echo "determine shell: $(ps -p "$$")"
 
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 		source "${__rayrc_install_dir}/linux/install.sh"
