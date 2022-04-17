@@ -33,8 +33,10 @@ __rayrc_install() {
 	echo "determine shell: $(ps -p "$$")"
 
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		local current_os="linux"
 		source "${__rayrc_install_dir}/linux/install.sh"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		local current_os="macos"
 		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
 		echo ".rayrc: not supported OS by now.."

@@ -8,8 +8,9 @@ __rayrc_git_install() {
 	# echo "__rayrc_git_install_dir: ${__rayrc_git_install_dir}"
 
 	# git aliases
-	git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1
-	if [[ $? -ne 0 ]]; then
+	if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
+		true
+	else
 		git config --global alias.st status
 		git config --global alias.co checkout
 		git config --global alias.cm commit
