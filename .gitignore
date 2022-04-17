@@ -2,10 +2,13 @@ linux/51_vim/vimfiles/viminfo
 linux/51_vim/vimfiles/.netrwhist
 linux/51_vim/vimfiles/plugged
 linux/51_vim/vimfiles/autoload
+linux/49_ranger/packages
+
 macos/15_vim/vimfiles/viminfo
 macos/15_vim/vimfiles/.netrwhist
 macos/15_vim/vimfiles/plugged
 macos/15_vim/vimfiles/autoload
-linux/49_ranger/packages
+macos/21_fzf/fzf
+
 *.pyc
 __pycache__/
