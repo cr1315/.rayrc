@@ -12,14 +12,14 @@
 
 
 __rayrc_install() {
-    local __rayrc_install_dir
-    __rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "__rayrc_install_dir: ${__rayrc_install_dir}"
+    local __rayrc_dir_base
+    __rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    # echo "__rayrc_dir_base: ${__rayrc_dir_base}"
 
     sed -Ei '/source.*\.rayrc\/main.sh/d' "$HOME/.bashrc"
 
     cat >>"$HOME/.bashrc" <<EOF
-[[ -f "${__rayrc_install_dir}/main.sh" ]] && source "${__rayrc_install_dir}/main.sh"
+[[ -f "${__rayrc_dir_base}/main.sh" ]] && source "${__rayrc_dir_base}/main.sh"
 EOF
 }
 

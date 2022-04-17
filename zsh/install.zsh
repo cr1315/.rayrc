@@ -2,7 +2,7 @@
 
 # 
 # install brew first
-#   __rayrc_macos_install_or_update() {}
+#   __rayrc_delegate_install_zsh_or_update() {}
 #       use the install shell script
 #           still need curl?
 #           built-in wget/curl?
@@ -27,24 +27,37 @@
 #
 #
 
-__rayrc_macos_install() {
-    local __rayrc_macos_install_dir=$1
-    echo "\$__rayrc_macos_install_dir: $__rayrc_macos_install_dir"
+__rayrc_delegate_install_zsh() {
+    local __rayrc_raypm
+    local __rayrc_dir_shell
+    
+    __rayrc_dir_shell=$1
+    echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
 
-    # prepend absolute(./00_bin) to $PATH
-    if [[ ! "$PATH" == *"${__rayrc_macos_install_dir}"/00_bin* ]]; then
-        export PATH="${__rayrc_macos_install_dir}/00_bin${PATH:+:${PATH}}"
-    fi
 
-    ### auto setup
-    for dir in `ls -1 "${__rayrc_macos_install_dir}"`; do
-        # echo "\$__rayrc_macos_install_dir/\$dir: $__rayrc_macos_install_dir/$dir"
-        if [[ -d "$__rayrc_macos_install_dir/$dir" && -f "$__rayrc_macos_install_dir/$dir/install.zsh" && ! -f "$__rayrc_macos_install_dir/$dir/disabled" ]]; then
-            echo "\$__rayrc_macos_install_dir/\$dir: $__rayrc_macos_install_dir/$dir"
-            source "$__rayrc_macos_install_dir/$dir/install.zsh"
+    # determine the os type and set __rayrc_stat_os
+	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		__rayrc_stat_os="linux"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		__rayrc_stat_os="macos"
+	else
+		echo ".rayrc: not supported OS by now.."
+		return 8
+	fi
+
+
+    ### setup each package
+    for package in `ls -1 "${__rayrc_dir_shell}"`; do
+        # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+        if [[ -d "${__rayrc_dir_shell}/${package}" && 
+              -f "${__rayrc_dir_shell}/${package}/install.zsh" &&
+              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]]; 
+        then
+            echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+            source "${__rayrc_dir_shell}/${package}/install.zsh"
         fi
     done
 }
 
-__rayrc_macos_install ${0:A:h}
-unset -f __rayrc_macos_install
+__rayrc_delegate_install_zsh ${0:A:h}
+unset -f __rayrc_delegate_install_zsh

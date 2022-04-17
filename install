@@ -1,73 +1,31 @@
-# it would be best to be runnable on windows, linux and macos
-# well, a bit difficult maybe..
-#   first, no function? since function in bash/zsh is different from powershell
-#   then, there is no $OS_TYPE in windows,
-#     but fortunetely, powershell variables start from `$`
-#     but unfortunetely, the test statement is different between windows and linux
-#     it would be difficult to write a script runnable on windows, linux and macos
-#     maybe I should at least separate windows from others two
-#     or, how about using a template engine -> dynamically generate the script to be executed
-#       or, separate the install.sh and install.ps1 -> well, I think it's a good idea
-#       at least, as far as I know, tomcat do it like this
-
-
-# for linux, we assume bash
-# for macos, we assume zsh
-# so, this script should be runnable on both <= it shouldn't be that difficult I think
-
-# we don't have to use some specific shell to run this script I think,
-# it just adds some lines into .zshrc or .bashrc
-
-
-# TODO:
-#   1. determine the ostype
-#   2. add some the start lines into .bashrc or .zshrc
+# As we want to use this script for multiple shells,
+# we don't / can't include shebang here.
+# 
+# - determine which shell is being used
+# - call the corresponding install script
 
 
 __rayrc_install() {
-	local __rayrc_current_os
-	local __rayrc_current_shell
-	local __rayrc_install_dir
-	
-	echo "determine shell: $(ps -o args= -p "$$")"
+	local __rayrc_stat_os
+	local __rayrc_stat_shell
+
+	local __rayrc_dir_base
+	local __rayrc_dir_libs
 
 	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		__rayrc_current_shell="bash"
-		__rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+		__rayrc_stat_shell="bash"
+		__rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+
+		source "${__rayrc_dir_base}/bash/install.sh"
 
 	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		__rayrc_current_shell="zsh"
-		__rayrc_install_dir=$1
-	else
-		echo ".rayrc: not supported SHELL by now.."
-		return 8
-	fi
+		__rayrc_stat_shell="zsh"
+		__rayrc_dir_base=$1
+		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
 
-	# actually this fails when I `source .rayrc/install` from zsh from macos.
-	echo ""
-	echo ""
-    echo "__rayrc_install_dir: ${__rayrc_install_dir}"
-	echo "\$0: $0"
-	echo "\${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
-	echo "dirname BASH_SOURCE[0]: $(dirname "${BASH_SOURCE[0]}")"
+		source "${__rayrc_dir_base}/zsh/install.zsh"
 
-	echo __rayrc_current_shell: $__rayrc_current_shell
-
-	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		__rayrc_current_os="linux"
-		source "${__rayrc_install_dir}/linux/install.sh"
-	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		__rayrc_current_os="macos"
-		source "${__rayrc_install_dir}/macos/install.zsh"
-	else
-		echo ".rayrc: not supported OS by now.."
-		return 8
-	fi
-
-	if [[ "$__rayrc_current_shell" == "bash" ]]; then
-		source "${__rayrc_install_dir}/linux/install.sh"
-	elif [[ "$__rayrc_current_shell" == "zsh" ]]; then
-		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
 		echo ".rayrc: not supported SHELL by now.."
 		return 8

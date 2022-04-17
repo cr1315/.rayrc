@@ -25,8 +25,8 @@ __rayrc_git_install() {
 
 	git config --global --list
 
-    echo "__rayrc_install_dir: ${__rayrc_install_dir}"
-	(cd ${__rayrc_install_dir} && git submodule update --init --recursive --depth 1)
+    echo "__rayrc_dir_base: ${__rayrc_dir_base}"
+	(cd ${__rayrc_dir_base} && git submodule update --init --recursive --depth 1)
 
 }
 
