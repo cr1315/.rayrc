@@ -37,6 +37,6 @@ jobs:
           whoami
           echo "\$HOME: $HOME"
 
-      - name: source ./.rayrc/install
+      - name: source ./install
         run: |
-          source ./.rayrc/install
+          source ./install
