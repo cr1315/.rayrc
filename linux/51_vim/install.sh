@@ -19,8 +19,6 @@ __rayrc_vim_install() {
     ### ln vimfiles to ~/.vim
     # mkdir ./rayrc_backup; [[ -f ~/.vimrc ]] && cp -fp ~/.vimrc ./rayrc_backup
     # determine & ln -snF
-    ls -ahl $HOME
-    ls -ahl $HOME/.vim
     ln -snf "$__rayrc_vim_install_dir/vimfiles" ~/.vim
 
 
