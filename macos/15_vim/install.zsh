@@ -14,7 +14,7 @@ __rayrc_vim_install() {
     ### ln vimfiles to ~/.vim
     # mkdir ./rayrc_backup; [[ -f ~/.vimrc ]] && cp -fp ~/.vimrc ./rayrc_backup
     # determine & ln -snF
-    ln -snF "$__rayrc_vim_install_dir/vimfiles" ~/.vim
+    ln -snf "$__rayrc_vim_install_dir/vimfiles" ~/.vim
 
 
     # vim -u "$__rayrc_vim_install_dir/vimfiles/plugins.vim" +PlugInstall +qa &> /dev/null
