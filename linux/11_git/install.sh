@@ -2,6 +2,9 @@
 
 command -v git >/dev/null 2>&1 || { return; }
 
+echo "can i see local variable in pm"
+echo "__rayrc_pm_install_dir: $__rayrc_pm_install_dir"
+
 
 __rayrc_git_install() {
 	local __rayrc_git_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

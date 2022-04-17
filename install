@@ -30,13 +30,25 @@ __rayrc_install() {
     echo "__rayrc_install_dir: ${__rayrc_install_dir}"
 	echo "\$0: $0"
 	echo "\${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
+	echo "dirname BASH_SOURCE[0]: $(dirname "${BASH_SOURCE[0]}")"
 	echo "determine shell: $(ps -o args= -p "$$")"
 
+	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
+		local __rayrc_current_shell="bash"
+	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
+		local __rayrc_current_shell="zsh"
+	else
+		echo ".rayrc: not supported OS by now.."
+		return 8
+	fi
+
+	echo __rayrc_current_shell: $__rayrc_current_shell
+
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		local current_os="linux"
+		local __rayrc_current_os="linux"
 		source "${__rayrc_install_dir}/linux/install.sh"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		local current_os="macos"
+		local __rayrc_current_os="macos"
 		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
 		echo ".rayrc: not supported OS by now.."
