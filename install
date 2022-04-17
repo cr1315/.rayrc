@@ -28,6 +28,8 @@ __rayrc_install() {
     local __rayrc_install_dir
     __rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     echo "__rayrc_install_dir: ${__rayrc_install_dir}"
+	echo "\$0: $0"
+	echo "\${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 		source "${__rayrc_install_dir}/linux/install.sh"

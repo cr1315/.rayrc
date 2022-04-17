@@ -26,6 +26,17 @@ jobs:
           echo "##### ls -ahl #####"
           ls -ahl
 
-      - name: source ./install
+      - name: show some variables for linux
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          echo "##### pwd #####"
+          pwd
+          echo "##### ls -ahl #####"
+          ls -ahl
+          echo "##### whoami #####"
+          whoami
+          echo "\$HOME: $HOME"
+
+      - name: source ./.rayrc/install
         run: |
           source ./.rayrc/install
