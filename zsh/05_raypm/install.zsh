@@ -12,9 +12,9 @@ __rayrc_install_raypm() {
     echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
 
     echo "package: $package"
-    echo "package[4..]: ${package:4}"
+    echo "package[4..]: ${package:3}"
 
-    __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${package:4}"
+    __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${package:3}"
     echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
 
 
