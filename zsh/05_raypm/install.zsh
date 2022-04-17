@@ -11,10 +11,12 @@ __rayrc_install_raypm() {
     __rayrc_dir_ctl_raypm=$1
     echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
 
-    __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${1:t}"
+    echo "package: $package"
+    echo "package[4..]: ${package:4}"
+
+    __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${package:4}"
     echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
 
-    echo "package: $package"
 
 	if [[ "$__rayrc_stat_os" == "linux" ]]; then		
         # determine distribution name from 
