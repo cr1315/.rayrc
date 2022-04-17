@@ -2,6 +2,7 @@
 
 # make .rayrc an oh-my-zsh plugin??
 # that would be so cool, right?
+#     ==> NO, I'm the father / controller!!
 
 __rayrc_zsh_setup() {
 	local __rayrc_zsh_setup_dir=$1

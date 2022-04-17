@@ -1,43 +1,33 @@
 #!/usr/bin/env zsh
 
-# shortcut
-
-
 __rayrc_install_vim() {
-    local __rayrc_install_vim_dir=$1
-    echo "\$__rayrc_install_vim_dir: $__rayrc_install_vim_dir"
+    local __rayrc_dir_ctl_vim
+    local __rayrc_dir_data_vim
 
 
-    local __rayrc_dir_ctl_raypm
-    local __rayrc_dir_data_raypm
+    __rayrc_dir_ctl_vim=$1
+    # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
-
-    __rayrc_dir_ctl_raypm=$1
-    echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
-
-    echo "package: $package"
-    echo "package[3..]: ${package:3}"
-
-    __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${package:3}"
-    echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
+    __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
 
 
     ### download plug.vim
-    curl -fLo "$__rayrc_dir_data_raypm/vimfiles/autoload/plug.vim" --create-dirs \
+    curl -fLo "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim" --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     ### ln vimfiles to ~/.vim
     # mkdir ./rayrc_backup; [[ -f ~/.vimrc ]] && cp -fp ~/.vimrc ./rayrc_backup
     # determine & ln -snF
-    ln -snf "$__rayrc_dir_data_raypm/vimfiles" ~/.vim
+    ln -snf "${__rayrc_dir_data_vim}/vimfiles" ~/.vim
 
 
-    # vim -u "$__rayrc_dir_data_raypm/vimfiles/plugins.vim" +PlugInstall +qa &> /dev/null
-    vim -u "$__rayrc_dir_data_raypm/vimfiles/plugins.vim" +PlugInstall +qa
+    # vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa &> /dev/null
+    vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa
     echo "###### after PlugInstall #####"
     pwd
-    ls -ahl "$__rayrc_dir_data_raypm/vimfiles"
-    ls -ahl "$__rayrc_dir_data_raypm/vimfiles/plugged"
+    ls -ahl "${__rayrc_dir_data_vim}/vimfiles"
+    ls -ahl "${__rayrc_dir_data_vim}/vimfiles/plugged"
 
 }
 

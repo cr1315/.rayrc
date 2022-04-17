@@ -1,21 +1,15 @@
 #!/usr/bin/env zsh
 
-# shortcut
-
-
 __rayrc_install_raypm() {
     local __rayrc_dir_ctl_raypm
     local __rayrc_dir_data_raypm
 
 
     __rayrc_dir_ctl_raypm=$1
-    echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
-
-    echo "package: $package"
-    echo "package[4..]: ${package:3}"
+    # echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
 
     __rayrc_dir_data_raypm="${__rayrc_dir_libs}/${package:3}"
-    echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
+    # echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
 
 
 	if [[ "$__rayrc_stat_os" == "linux" ]]; then		
@@ -35,6 +29,11 @@ __rayrc_install_raypm() {
 		echo ".rayrc: not supported OS by now.."
 		return 8
 	fi
+
+    # we need git A.S.A.P.
+    if ! command -v git >& /dev/null; then
+        ${__rayrc_raypm} install -y git
+    fi
 }
 
 __rayrc_install_raypm ${0:A:h}

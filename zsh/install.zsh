@@ -27,6 +27,10 @@
 #
 #
 
+__rayrc_somehow_global_functions() {
+    true
+}
+
 __rayrc_delegate_install_zsh() {
     local __rayrc_raypm
     local __rayrc_dir_shell
