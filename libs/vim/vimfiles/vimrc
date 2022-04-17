@@ -2,7 +2,7 @@
 runtime basic.vim
 runtime plugins.vim
 
-runtime plugin_fzf.vim
+runtime plugconf/plugin_fzf.vim
 
 " https://stackoverflow.com/questions/54606581/ignore-all-errors-in-vimrc-at-vim-startup
-runtime plugin_dracula.vim
+runtime plugconf/plugin_dracula.vim

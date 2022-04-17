@@ -18,7 +18,9 @@ jobs:
         if: matrix.os == 'macos-11'
         run: |
           # brew install curl git zsh
-          brew install zsh
+          if ! command -v zsh >& /dev/null; then
+            brew install zsh
+          fi
           # sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
           echo "##### pwd #####"

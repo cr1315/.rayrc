@@ -20,7 +20,7 @@ __rayrc_install_fzf() {
     echo "##### ls fzf #####"
     ls -ahl "${__rayrc_dir_data_fzf}/fzf"
 
-    if ! command -v fzf &> /dev/null; then
+    if ! command -v fzf >& /dev/null; then
         echo "##### fzf not installed #####"
         git clone --depth 1 https://github.com/junegunn/fzf.git "${__rayrc_dir_data_fzf}/fzf"
         
