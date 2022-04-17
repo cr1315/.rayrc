@@ -1,19 +1,15 @@
 #!/usr/bin/env zsh
 
-__rayrc_vim_setup() {
-
-	# in zsh, ${0:A:p} -> full dir path?
-	# mydir=${0:a:h}
-	# SCRIPT_PATH="${0:A:h}"
+__rayrc_main_vim() {
+    local __rayrc_dir_ctl_vim
+    local __rayrc_dir_data_vim
 
 
-	local current_dir=${0:A:h}
-	echo "current_dir: ${current_dir}"
+    __rayrc_dir_ctl_vim=$1
+    # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
-
-
-
-
+    __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
 
 
 
@@ -37,5 +33,5 @@ __rayrc_vim_setup() {
 }
 
 
-__rayrc_vim_setup
-unset -f __rayrc_vim_setup
+__rayrc_main_vim {0:A:h}
+unset -f __rayrc_main_vim

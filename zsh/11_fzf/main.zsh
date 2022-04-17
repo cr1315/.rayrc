@@ -1,16 +1,24 @@
 #!/usr/bin/env zsh
 
-__rayrc_fzf_setup() {
-	local __rayrc_fzf_setup_dir=$1
-    # echo "\$__rayrc_fzf_setup_dir: $__rayrc_fzf_setup_dir"
+__rayrc_main_fzf() {
+    local __rayrc_dir_ctl_fzf
+    local __rayrc_dir_data_fzf
+
+
+    __rayrc_dir_ctl_fzf=$1
+    # echo "\${__rayrc_dir_ctl_fzf}: ${__rayrc_dir_ctl_fzf}"
+
+    __rayrc_dir_data_fzf="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_fzf}: ${__rayrc_dir_data_fzf}"
+
 
     # setup fzf
-    if [[ ! "$PATH" == *"$__rayrc_fzf_setup_dir/fzf/bin"* ]]; then
-      export PATH="${PATH:+${PATH}:}$__rayrc_fzf_setup_dir/fzf/bin"
+    if [[ ! "$PATH" == *"${__rayrc_dir_data_fzf}/fzf/bin"* ]]; then
+      export PATH="${PATH:+${PATH}:}${__rayrc_dir_data_fzf}/fzf/bin"
     fi
     # Auto-completion & Key bindings
-    [[ $- == *i* ]] && source "$__rayrc_fzf_setup_dir/fzf/shell/completion.zsh" 2> /dev/null
-    source "$__rayrc_fzf_setup_dir/fzf/shell/key-bindings.zsh"
+    [[ $- == *i* ]] && source "${__rayrc_dir_data_fzf}/fzf/shell/completion.zsh" 2> /dev/null
+    source "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.zsh"
 
 	  # set env variables for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
@@ -25,5 +33,5 @@ __rayrc_fzf_setup() {
     # export FZF_CTRL_R_OPTS=''
 }
 
-__rayrc_fzf_setup ${0:A:h}
-unset -f __rayrc_fzf_setup
+__rayrc_main_fzf ${0:A:h}
+unset -f __rayrc_main_fzf

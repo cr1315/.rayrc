@@ -13,7 +13,9 @@ __rayrc_install_fzf() {
 
     __rayrc_dir_data_fzf="${__rayrc_dir_libs}/${package:3}"
     # echo "\${__rayrc_dir_data_fzf}: ${__rayrc_dir_data_fzf}"
-
+    if [[ ! -d ${__rayrc_dir_data_fzf} ]]; then
+        mkdir -p ${__rayrc_dir_data_fzf}
+    fi
 
     echo ""
     echo ""
@@ -21,6 +23,7 @@ __rayrc_install_fzf() {
     ls -ahl "${__rayrc_dir_data_fzf}/fzf"
 
     if ! command -v fzf >& /dev/null; then
+
         echo "##### fzf not installed #####"
         git clone --depth 1 https://github.com/junegunn/fzf.git "${__rayrc_dir_data_fzf}/fzf"
         

@@ -61,6 +61,24 @@ __rayrc_delegate_install_zsh() {
             source "${__rayrc_dir_shell}/${package}/install.zsh"
         fi
     done
+
+
+	### after all installation completed, setup the .zshrc
+	### can we assume grep installed?
+	if [[ -f "$HOME/.zshrc" ]]; then
+		if grep -q '.rayrc' "$HOME/.zshrc"; then
+			# we assume sed installed..
+			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.zshrc"
+
+# use here document to add two lines
+cat <<EOF >> $HOME/.zshrc
+
+[[ -f "${__rayrc_dir_shell}/main.zsh" ]] && source "${__rayrc_dir_shell}/main.zsh"
+EOF
+
+		fi
+	fi
+
 }
 
 __rayrc_delegate_install_zsh ${0:A:h}

@@ -4,11 +4,24 @@
 # that would be so cool, right?
 #     ==> NO, I'm the father / controller!!
 
-__rayrc_zsh_setup() {
-	local __rayrc_zsh_setup_dir=$1
-    # echo "\$__rayrc_zsh_setup_dir: $__rayrc_zsh_setup_dir"
+__rayrc_main_zsh() {
+    local __rayrc_dir_ctl_zsh
+    local __rayrc_dir_data_zsh
+
+
+    __rayrc_dir_ctl_zsh=$1
+    # echo "\${__rayrc_dir_ctl_zsh}: ${__rayrc_dir_ctl_zsh}"
+
+    __rayrc_dir_data_zsh="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_zsh}: ${__rayrc_dir_data_zsh}"
+
 
 	# set PATH
+
+	# in zsh, ${0:A:p} -> full dir path?
+	# mydir=${0:a:h}
+	# SCRIPT_PATH="${0:A:h}"
+
     
     # set for History, size, cache file..
 	#set history size
@@ -25,7 +38,7 @@ __rayrc_zsh_setup() {
 	# set env variables for brew? fzf? rg? fd? bat? ranger?
 
     # set aliases
-    source "$__rayrc_zsh_setup_dir/alias.zsh"
+    source "$__rayrc_dir_ctl_zsh/alias.zsh"
 
 
 	# set env for zsh-completion
@@ -33,5 +46,5 @@ __rayrc_zsh_setup() {
 
 }
 
-__rayrc_zsh_setup ${0:A:h}
-unset -f __rayrc_zsh_setup
+__rayrc_main_zsh ${0:A:h}
+unset -f __rayrc_main_zsh

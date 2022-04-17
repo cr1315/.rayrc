@@ -3,9 +3,20 @@
 # shortcut
 
 
-__rayrc_git_install() {
-    local __rayrc_git_install_dir=$1
-    echo "\$__rayrc_git_install_dir: $__rayrc_git_install_dir"
+__rayrc_install_git() {
+    local __rayrc_dir_ctl_git
+    local __rayrc_dir_data_git
+
+
+    __rayrc_dir_ctl_git=$1
+    # echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
+
+    __rayrc_dir_data_git="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
+    if [[ ! -d ${__rayrc_dir_data_git} ]]; then
+        mkdir -p ${__rayrc_dir_data_git}
+    fi
+
 
 	# git aliases
 	git config --global --list | grep 'alias.co=checkout' >/dev/null 2>&1
@@ -24,5 +35,5 @@ __rayrc_git_install() {
 
 }
 
-__rayrc_git_install ${0:A:h}
-unset -f __rayrc_git_install
+__rayrc_install_git ${0:A:h}
+unset -f __rayrc_install_git
