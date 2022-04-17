@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# should come before git and vim
+
 command -v fzf >/dev/null 2>&1 || { return; }
 
 __rayrc_fzf_setup() {

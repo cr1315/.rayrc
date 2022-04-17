@@ -25,36 +25,62 @@
 
 
 __rayrc_install() {
-    local __rayrc_install_dir
-    __rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+	local __rayrc_current_os
+	local __rayrc_current_shell
+	local __rayrc_install_dir
+	
+	echo "determine shell: $(ps -o args= -p "$$")"
+
+	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
+		__rayrc_current_shell="bash"
+		__rayrc_install_dir
+		__rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
+		__rayrc_current_shell="zsh"
+		__rayrc_install_dir=$1
+	else
+		echo ".rayrc: not supported SHELL by now.."
+		return 8
+	fi
+
+	# actually this fails when I `source .rayrc/install` from zsh from macos.
+	echo ""
+	echo ""
     echo "__rayrc_install_dir: ${__rayrc_install_dir}"
 	echo "\$0: $0"
 	echo "\${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 	echo "dirname BASH_SOURCE[0]: $(dirname "${BASH_SOURCE[0]}")"
-	echo "determine shell: $(ps -o args= -p "$$")"
 
-	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		local __rayrc_current_shell="bash"
-	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		local __rayrc_current_shell="zsh"
+	echo __rayrc_current_shell: $__rayrc_current_shell
+
+	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		__rayrc_current_os="linux"
+		source "${__rayrc_install_dir}/linux/install.sh"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		__rayrc_current_os="macos"
+		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
 		echo ".rayrc: not supported OS by now.."
 		return 8
 	fi
 
-	echo __rayrc_current_shell: $__rayrc_current_shell
-
-	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		local __rayrc_current_os="linux"
+	if [[ "$__rayrc_current_shell" == "bash" ]]; then
 		source "${__rayrc_install_dir}/linux/install.sh"
-	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		local __rayrc_current_os="macos"
+	elif [[ "$__rayrc_current_shell" == "zsh" ]]; then
 		source "${__rayrc_install_dir}/macos/install.zsh"
 	else
-		echo ".rayrc: not supported OS by now.."
+		echo ".rayrc: not supported SHELL by now.."
+		return 8
 	fi
+
 }
 
+# call with path parameter when zsh
+if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
+	__rayrc_install ${0:A:h}
+else
+	__rayrc_install
+fi
 
-__rayrc_install
 unset -f __rayrc_install
