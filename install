@@ -33,7 +33,6 @@ __rayrc_install() {
 
 	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
 		__rayrc_current_shell="bash"
-		__rayrc_install_dir
 		__rayrc_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
 	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
