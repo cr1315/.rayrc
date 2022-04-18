@@ -17,15 +17,10 @@ __rayrc_install_rg() {
         `uname -m` 'linux'
 
     tar xf "${__rayrc_dir_data_rg}/rg.tar.gz" -C "${__rayrc_dir_data_rg}" --transform 's:^[^/]*:rg:'
-    ls -ahlR "${__rayrc_dir_data_rg}"
-    pwd
-    ls -ahl ./
-    mv -f "${__rayrc_dir_data_rg}/rg/rg" "${__rayrc_dir_data_bin}"
 
-    echo ""
-    echo "after extract rg"
-    ls -ahlR "${__rayrc_dir_data_rg}/rg"
-    ls -ahl "${__rayrc_dir_data_bin}"
+    cp -f "${__rayrc_dir_data_rg}/rg/rg" "${__rayrc_dir_data_bin}"
+
+    rm -rf "${__rayrc_dir_data_rg}/rg*"
 }
 
 __rayrc_install_rg

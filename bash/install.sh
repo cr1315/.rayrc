@@ -12,6 +12,12 @@ __rayrc_url_downloader() {
 	true
 }
 
+
+######################################################################
+#
+#
+#
+######################################################################
 __rayrc_github_downloader() {
 	local bin_name
 	local target_path
@@ -49,14 +55,17 @@ __rayrc_github_downloader() {
 	fi
 
 	downloaded_link="$(echo "$downloadable_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
-	echo "before download"
-	echo "https://github.com${downloaded_link}"
+	# echo "https://github.com${downloaded_link}"
 	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "$target_path"
-	echo "after download"
 	return 0
 }
 
 
+######################################################################
+#
+#
+#
+######################################################################
 __rayrc_delegate_install_bash() {
     local __rayrc_raypm
     local __rayrc_dir_shell
