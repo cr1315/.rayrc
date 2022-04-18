@@ -9,11 +9,29 @@
 
 # determine if there is git installed
 
+__rayrc_url_downloader() {
+	true
+}
 
-__rayrc_linux_install() {
-	# SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-	local __rayrc_linux_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	echo "__rayrc_linux_install_dir: ${__rayrc_linux_install_dir}"
+
+__rayrc_delegate_install_bash() {
+    local __rayrc_raypm
+    local __rayrc_dir_shell
+
+    __rayrc_dir_shell="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
+
+
+    # determine the os type and set __rayrc_stat_os
+	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+		__rayrc_stat_os="linux"
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+		__rayrc_stat_os="macos"
+	else
+		echo ".rayrc: not supported OS by now.."
+		return 8
+	fi
+
 
 	#
 	# would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
@@ -25,11 +43,11 @@ __rayrc_linux_install() {
 
 
 	### auto setup
-	for dir in `ls -1 "${__rayrc_linux_install_dir}"`; do
+	for package in `ls -1 "${__rayrc_dir_shell}"`; do
 
-		echo "\${__rayrc_linux_install_dir}/\${dir}: ${__rayrc_linux_install_dir}/${dir}"
-		if [[ -d "${__rayrc_linux_install_dir}/${dir}" && -f "${__rayrc_linux_install_dir}/${dir}/install.sh" ]]; then
-			source "${__rayrc_linux_install_dir}/${dir}/install.sh"
+		echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+		if [[ -d "${__rayrc_dir_shell}/${package}" && -f "${__rayrc_dir_shell}/${package}/install.sh" ]]; then
+			source "${__rayrc_dir_shell}/${package}/install.sh"
 		fi
 
 	done
@@ -45,7 +63,7 @@ __rayrc_linux_install() {
 # use here document to add two lines
 cat <<EOF >> $HOME/.bashrc
 
-[[ -f "${__rayrc_linux_install_dir}/main.sh" ]] && source "${__rayrc_linux_install_dir}/main.sh"
+[[ -f "${__rayrc_dir_shell}/main.sh" ]] && source "${__rayrc_dir_shell}/main.sh"
 EOF
 
 		fi
@@ -54,5 +72,5 @@ EOF
 }
 
 
-__rayrc_linux_install
-unset -f __rayrc_linux_install
+__rayrc_delegate_install_bash
+unset -f __rayrc_delegate_install_bash

@@ -2,13 +2,18 @@
 
 command -v git >/dev/null 2>&1 || { return; }
 
-echo "can i see local variable in pm"
-echo "__rayrc_pm_install_dir: $__rayrc_pm_install_dir"
+
+__rayrc_install_git() {
+    local __rayrc_dir_ctl_git
+    local __rayrc_dir_data_git
 
 
-__rayrc_git_install() {
-	local __rayrc_git_install_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	# echo "__rayrc_git_install_dir: ${__rayrc_git_install_dir}"
+    __rayrc_dir_ctl_git="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    # echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
+
+    __rayrc_dir_data_git="${__rayrc_dir_libs}/${package:3}"
+    # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
+
 
 	# git aliases
 	if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
@@ -23,14 +28,14 @@ __rayrc_git_install() {
 		git config --global alias.lg '!git lg1'
 	fi
 
-	git config --global --list
-
-    echo "__rayrc_dir_base: ${__rayrc_dir_base}"
+    echo ""
+	echo "  __rayrc_dir_base: ${__rayrc_dir_base}"
+	echo "  start updating submodules.."
 	(cd ${__rayrc_dir_base} && git submodule update --init --recursive --depth 1)
 
 }
 
-__rayrc_git_install
-unset -f __rayrc_git_install
+__rayrc_install_git
+unset -f __rayrc_install_git
 
 

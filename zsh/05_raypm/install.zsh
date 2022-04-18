@@ -12,8 +12,8 @@ __rayrc_install_raypm() {
     # echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
 
 
-	if [[ "$__rayrc_stat_os" == "linux" ]]; then		
-        # determine distribution name from 
+	if [[ "$__rayrc_stat_os" == "linux" ]]; then
+        # determine distribution name from
         #   - `uname -a`
         #   - `cat /etc/os-relase`
         # set the corresponding package-manager to __rayrc_raypm
@@ -21,7 +21,7 @@ __rayrc_install_raypm() {
 	elif [[ "$__rayrc_stat_os" == "macos" ]]; then
         # install brew for macos is not installed
         if ! command -v brew >& /dev/null; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            `which bash` -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
 
         __rayrc_raypm="brew"

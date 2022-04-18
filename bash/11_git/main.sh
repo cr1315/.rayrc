@@ -3,15 +3,15 @@
 command -v git >/dev/null 2>&1 || { return; }
 
 
-__rayrc_git_setup() {
-	local __rayrc_git_setup_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	# echo "__rayrc_git_setup_dir: ${__rayrc_git_setup_dir}"
+__rayrc_main_git() {
+	local __rayrc_main_git_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+	# echo "__rayrc_main_git_setup_dir: ${__rayrc_git_dir}"
 
-	# echo "$__rayrc_git_setup_dir/git-prompt.sh"
+	# echo "$__rayrc_main_git_dir/git-prompt.sh"
 	# GIT_PS1_SHOWCOLORHINTS=true
-	# source "$__rayrc_git_setup_dir/git-prompt.sh"
+	# source "$__rayrc_main_git_dir/git-prompt.sh"
 	# PROMPT_COMMAND='__git_ps1 "\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]" "\n\\\$"'
-	source ${__rayrc_git_setup_dir}/gitstatus.prompt.sh
+	source ${__rayrc_main_git_dir}/gitstatus.prompt.sh
 
 	# only for places without network..
 	[[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
@@ -30,6 +30,6 @@ __rayrc_git_setup() {
 
 }
 
-__rayrc_git_setup
-unset -f __rayrc_git_setup
+__rayrc_main_git
+unset -f __rayrc_main_git
 
