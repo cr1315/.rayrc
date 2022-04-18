@@ -15,7 +15,9 @@ __rayrc_install_rg() {
 
     __rayrc_github_downloader "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
         `uname -m` 'linux'
+
     tar xf "${__rayrc_dir_data_rg}/rg.tar.gz" --transform 's:^[^/]*:rg:'
+    ls -ahlR "${__rayrc_dir_data_rg}"
     mv -f "${__rayrc_dir_data_rg}/rg/rg" "${__rayrc_dir_data_bin}"
 
     echo ""
