@@ -15,6 +15,9 @@ __rayrc_install_git() {
     # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
 
 
+	git clone --depth 1 "https://github.com/romkatv/gitstatus.git" \
+		"${__rayrc_dir_data_git}/git/gitstatus"
+
 	# git aliases
 	if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
 		true
@@ -28,11 +31,9 @@ __rayrc_install_git() {
 		git config --global alias.lg '!git lg1'
 	fi
 
-    echo ""
-	echo "  __rayrc_dir_base: ${__rayrc_dir_base}"
-	echo "  start updating submodules.."
-	(cd ${__rayrc_dir_base} && git submodule update --init --recursive --depth 1)
-
+    # echo ""
+	# echo "  start updating submodules.."
+	# (cd ${__rayrc_dir_base} && git submodule update --init --recursive --depth 1)
 }
 
 __rayrc_install_git

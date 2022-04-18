@@ -32,9 +32,12 @@ __rayrc_install_raypm() {
 		return 8
 	fi
 
-    # we need git A.S.A.P.
+    # we need git, curl, etc A.S.A.P.
     if ! command -v git >& /dev/null; then
         ${__rayrc_raypm} install -y git
+    fi
+    if ! command -v curl >& /dev/null; then
+        ${__rayrc_raypm} install -y curl
     fi
 }
 

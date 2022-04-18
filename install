@@ -8,6 +8,7 @@
 
 __rayrc_install() {
 	local __rayrc_stat_os
+	local __rayrc_stat_os_dist
 	local __rayrc_stat_shell
 
 	local __rayrc_dir_base
@@ -19,22 +20,19 @@ __rayrc_install() {
 		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
 
 		source "${__rayrc_dir_base}/bash/install.sh"
-
 	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
 		__rayrc_stat_shell="zsh"
 		__rayrc_dir_base=$1
 		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
 
 		source "${__rayrc_dir_base}/zsh/install.zsh"
-
 	else
 		echo ".rayrc: not supported SHELL by now.."
 		return 8
 	fi
-
 }
 
-# call with path parameter when zsh
+# call with current_path when zsh
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
 	__rayrc_install ${0:A:h}
 else
