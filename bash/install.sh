@@ -22,7 +22,7 @@ __rayrc_github_downloader() {
 	local downloadable_links
 	local downloaded_link
 	# https://stackoverflow.com/questions/16703647/why-does-curl-return-error-23-failed-writing-body
-	downloadable_links="$(curl -sL "https://github.com/$1/releases/latest")"
+	downloadable_links="$(curl -sfL "https://github.com/$1/releases/latest")"
 	downloadable_links="$(echo "$downloadable_links" | grep 'href="' | grep 'download/')"
 	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$3" ]]; then
 		downloadable_links="$(echo "$downloadable_links" | grep -E "$3")"
@@ -47,7 +47,7 @@ __rayrc_github_downloader() {
 	fi
 
 	downloaded_link="$(echo "$downloadable_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
-	curl -fsSL "https://github.com${downloaded_link}" -o "$target_path"
+	curl -fsL "https://github.com${downloaded_link}" -o "$target_path"
 }
 
 
