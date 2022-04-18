@@ -1,6 +1,7 @@
-# As we want to use this script for multiple shells,
-# we don't / can't include shebang here.
-# 
+# As we use this script both for bash and zsh,
+# we "do not / could not" include shebang here.
+#
+# ## procedures
 # - determine which shell is being used
 # - call the corresponding install script
 

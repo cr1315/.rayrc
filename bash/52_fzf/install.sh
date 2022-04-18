@@ -30,8 +30,16 @@ __rayrc_install_fzf() {
         echo "##### after fzf installed #####"
         ls -ahl ~/
 
-        echo "##### cat ~/.fzf.zsh #####"
-        cat ~/.fzf.zsh
+        echo "##### cat ~/.bashrc #####"
+        cat ~/.bashrc
+
+        echo ""
+        echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" #####"
+        cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash"
+        echo ""
+        echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash" #####"
+        cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash"
+
     else
         echo "##### $(command -v fzf) installed #####"
     fi
