@@ -27,6 +27,8 @@ __rayrc_install_fzf() {
         # we don't need to auto-generated configurations
         "${__rayrc_dir_data_fzf}/fzf/install" --bin
 
+        cp -f "${__rayrc_dir_data_fzf}/fzf/bin/*" "${__rayrc_dir_data_bin}"
+
         # echo ""
         # echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" #####"
         # cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash"

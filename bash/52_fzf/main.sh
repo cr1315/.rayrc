@@ -2,8 +2,6 @@
 
 # should come before git and vim
 
-command -v fzf >/dev/null 2>&1 || { return; }
-
 __rayrc_main_fzf() {
     local __rayrc_dir_ctl_fzf
     local __rayrc_dir_data_fzf
@@ -17,9 +15,14 @@ __rayrc_main_fzf() {
 
 
     # setup fzf
-    if [[ ! "$PATH" == *"${__rayrc_dir_data_fzf}/fzf/bin"* ]]; then
-      export PATH="${PATH:+${PATH}:}${__rayrc_dir_data_fzf}/fzf/bin"
+    if ! command -v fzf >& /dev/null; then
+      if [[ ! "$PATH" == *"${__rayrc_dir_data_fzf}/fzf/bin"* ]]; then
+        export PATH="${PATH:+${PATH}:}${__rayrc_dir_data_fzf}/fzf/bin"
+      fi
     fi
+
+    command -v fzf >/dev/null 2>&1 || { return 8; }
+
     # Auto-completion & Key bindings
     [[ $- == *i* ]] && source "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" 2> /dev/null
     source "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash"

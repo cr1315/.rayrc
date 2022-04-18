@@ -20,6 +20,7 @@ __rayrc_install_jq() {
     fi
 
     mv -f "${__rayrc_dir_data_jq}/jq" "${__rayrc_dir_data_bin}"
+    chmod -R 755 "${__rayrc_dir_data_bin}"
 
 }
 

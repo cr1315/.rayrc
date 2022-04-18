@@ -20,8 +20,8 @@ __rayrc_install_yq() {
         __rayrc_github_downloader "mikefarah/yq" "${__rayrc_dir_data_yq}/yq" 'darwin_arm64"'
     fi
 
-
     mv -f "${__rayrc_dir_data_yq}/yq" "${__rayrc_dir_data_bin}"
+    chmod -R 755 "${__rayrc_dir_data_bin}"
 }
 
 __rayrc_install_yq
