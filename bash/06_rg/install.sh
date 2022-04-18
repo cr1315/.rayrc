@@ -20,7 +20,7 @@ __rayrc_install_rg() {
 
     cp -f "${__rayrc_dir_data_rg}/rg/rg" "${__rayrc_dir_data_bin}"
 
-    rm -rf "${__rayrc_dir_data_rg}/rg*"
+    rm -rf "${__rayrc_dir_data_rg}/*"
 }
 
 __rayrc_install_rg

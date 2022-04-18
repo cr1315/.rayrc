@@ -5,5 +5,10 @@ libs/vim/vimfiles/plugged
 libs/vim/vimfiles/viminfo
 libs/vim/vimfiles/.netwhist
 
+libs/bat
+libs/bin
+libs/fd
+libs/rg
+
 *.pyc
 __pycache__/
