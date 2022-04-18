@@ -114,6 +114,7 @@ __rayrc_delegate_install_bash() {
 		if grep -q '.rayrc' "$HOME/.bashrc"; then
 			# we assume sed installed..
 			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.bashrc"
+		fi
 
 # use here document to add two lines
 cat <<EOF >> "$HOME/.bashrc"
@@ -121,9 +122,8 @@ cat <<EOF >> "$HOME/.bashrc"
 [[ -f "${__rayrc_dir_shell}/main.sh" ]] && source "${__rayrc_dir_shell}/main.sh"
 EOF
 
-			cat "$HOME/.bashrc"
+	cat "$HOME/.bashrc"
 
-		fi
 	fi
 
 }

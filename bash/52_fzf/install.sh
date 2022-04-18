@@ -21,24 +21,18 @@ __rayrc_install_fzf() {
 
     if ! command -v fzf >& /dev/null; then
 
-        echo "##### fzf not installed #####"
+        # echo "##### fzf not installed #####"
         git clone --depth 1 https://github.com/junegunn/fzf.git "${__rayrc_dir_data_fzf}/fzf"
 
         # we don't need to auto-generated configurations
         "${__rayrc_dir_data_fzf}/fzf/install" --bin
 
-        echo "##### after fzf installed #####"
-        ls -ahl ~/
-
-        echo "##### cat ~/.bashrc #####"
-        cat ~/.bashrc
-
-        echo ""
-        echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" #####"
-        cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash"
-        echo ""
-        echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash" #####"
-        cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash"
+        # echo ""
+        # echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" #####"
+        # cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash"
+        # echo ""
+        # echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash" #####"
+        # cat "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash"
 
     else
         echo "##### $(command -v fzf) installed #####"
