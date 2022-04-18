@@ -18,6 +18,7 @@ __rayrc_install_raypm() {
         #   - `uname -a`
         #   - `cat /etc/os-relase`
         # set the corresponding package-manager to __rayrc_raypm
+        true
 
 	elif [[ "$__rayrc_stat_os" == "macos" ]]; then
         # install brew for macos is not installed
