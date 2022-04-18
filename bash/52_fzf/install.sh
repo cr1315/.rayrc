@@ -17,7 +17,7 @@ __rayrc_install_fzf() {
     echo ""
     echo ""
     echo "##### ls fzf #####"
-    ls -ahl "${__rayrc_dir_data_fzf}/fzf"
+    [[ -d "${__rayrc_dir_data_fzf}/fzf" ]] && ls -ahl "${__rayrc_dir_data_fzf}/fzf"
 
     if ! command -v fzf >& /dev/null; then
 
