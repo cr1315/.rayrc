@@ -21,7 +21,9 @@ __rayrc_github_downloader() {
 
 	local downloadable_links
 	local downloaded_link
-	downloadable_links="$(curl -sL "https://github.com/$1/releases/latest" | grep 'href="' | grep 'download/')"
+	# https://stackoverflow.com/questions/16703647/why-does-curl-return-error-23-failed-writing-body
+	downloadable_links="$(curl -sL "https://github.com/$1/releases/latest")"
+	downloadable_links="$(echo "$downloadable_links" | grep 'href="' | grep 'download/')"
 	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$3" ]]; then
 		downloadable_links="$(echo "$downloadable_links" | grep -E "$3")"
 	fi
