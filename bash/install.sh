@@ -51,7 +51,7 @@ __rayrc_github_downloader() {
 	downloaded_link="$(echo "$downloadable_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
 	echo "before download"
 	echo "https://github.com${downloaded_link}"
-	curl -fsL "https://github.com${downloaded_link}" -o "$target_path"
+	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "$target_path"
 	echo "after download"
 	return 0
 }

@@ -11,7 +11,7 @@ __rayrc_install_rg() {
 
     __rayrc_dir_data_rg="${__rayrc_dir_libs}/${package:3}"
     # echo "\${__rayrc_dir_data_rg}: ${__rayrc_dir_data_rg}"
-
+    [[ ! -d "${__rayrc_dir_data_rg}" ]] && mkdir -p "${__rayrc_dir_data_rg}"
 
     __rayrc_github_downloader "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
         `uname -m` 'linux'
