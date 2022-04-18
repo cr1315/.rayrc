@@ -18,6 +18,8 @@ __rayrc_install_rg() {
 
     tar xf "${__rayrc_dir_data_rg}/rg.tar.gz" --transform 's:^[^/]*:rg:'
     ls -ahlR "${__rayrc_dir_data_rg}"
+    pwd
+    ls -ahl ./
     mv -f "${__rayrc_dir_data_rg}/rg/rg" "${__rayrc_dir_data_bin}"
 
     echo ""
