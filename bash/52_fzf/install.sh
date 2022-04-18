@@ -29,7 +29,7 @@ __rayrc_install_fzf() {
 
         echo "${__rayrc_dir_data_fzf}/fzf/bin/*"
         echo "${__rayrc_dir_data_bin}"
-        cp -f "${__rayrc_dir_data_fzf}/fzf/bin/*" "${__rayrc_dir_data_bin}"
+        cp -f "${__rayrc_dir_data_fzf}"/fzf/bin/* "${__rayrc_dir_data_bin}"
 
         # echo ""
         # echo "##### cat "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" #####"
