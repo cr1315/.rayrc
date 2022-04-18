@@ -69,6 +69,7 @@ __rayrc_delegate_install_zsh() {
 		if grep -q '.rayrc' "$HOME/.zshrc"; then
 			# we assume sed installed..
 			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.zshrc"
+        fi
 
 # use here document to add two lines
 cat <<EOF >> $HOME/.zshrc
@@ -76,7 +77,7 @@ cat <<EOF >> $HOME/.zshrc
 [[ -f "${__rayrc_dir_shell}/main.zsh" ]] && source "${__rayrc_dir_shell}/main.zsh"
 EOF
 
-		fi
+		cat $HOME/.zshrc
 	fi
 
 }
