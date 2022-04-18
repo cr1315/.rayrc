@@ -12,10 +12,48 @@ __rayrc_url_downloader() {
 	true
 }
 
+__rayrc_github_downloader() {
+	local bin_name
+	local target_path
+
+	bin_name="$1"
+	target_path="$2"
+
+	local downloadable_links
+	local downloaded_link
+	downloadable_links="$(curl -sL "https://github.com/$1/releases/latest" | grep 'href="' | grep 'download/')"
+	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$3" ]]; then
+		downloadable_links="$(echo "$downloadable_links" | grep -E "$3")"
+	fi
+	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$4" ]]; then
+		downloadable_links="$(echo "$downloadable_links" | grep -E "$4")"
+	fi
+	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$5" ]]; then
+		downloadable_links="$(echo "$downloadable_links" | grep -E "$5")"
+	fi
+	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$6" ]]; then
+		downloadable_links="$(echo "$downloadable_links" | grep -E "$6")"
+	fi
+	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$7" ]]; then
+		downloadable_links="$(echo "$downloadable_links" | grep -E "$7")"
+	fi
+
+	if [[ `echo "$downloadable_links" | wc -l` -ne 1 ]]; then
+		echo "unable to extract the exact download link for $bin_name:"
+		echo "$downloadable_links"
+		return 8
+	fi
+
+	downloaded_link="$(echo "$downloadable_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
+	curl -fsSL "https://github.com${downloaded_link}" -o "$target_path"
+}
+
 
 __rayrc_delegate_install_bash() {
     local __rayrc_raypm
     local __rayrc_dir_shell
+
+	local __rayrc_dir_bin
 
     __rayrc_dir_shell="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"

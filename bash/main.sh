@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_main() {
-	# SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+	# SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" >& /dev/null && pwd )"
 	local __rayrc_main_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 	# echo "__rayrc_main_dir: ${__rayrc_main_dir}"
 	if [[ ! "$PATH" == *"${__rayrc_main_dir}"/00_bin* ]]; then

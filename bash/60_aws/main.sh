@@ -11,9 +11,9 @@ aws.env() {
     local accountId
     accountId=
 
-    if command -v curl &> /dev/null; then
+    if command -v curl >& /dev/null; then
         accountId=$(curl -s "http://169.254.169.254/latest/dynamic/instance-identity/document" | jq -r '.accountId')
-    elif command -v wget &> /dev/null; then
+    elif command -v wget >& /dev/null; then
         accountId=$(wget -qO- "http://169.254.169.254/latest/dynamic/instance-identity/document" | jq -r '.accountId')
     else
         echo "couldnot detect the env.."
@@ -71,7 +71,7 @@ aws.stg() {
     local rc
 
     # test privilege
-    aws iam list-roles &>/dev/null
+    aws iam list-roles >&/dev/null
     rc="$?"
     if [[ $rc != 0 ]]; then
         if [[ $# -gt 0 && $1 =~ [0-9]{6} ]]; then
@@ -123,7 +123,7 @@ aws.iac_dev() {
     local rc
 
     # test mfa
-    aws secretsmanager list-secrets &>/dev/null
+    aws secretsmanager list-secrets >&/dev/null
     if [[ $? != 0 ]]; then
         local authCode
         if [[ $# -gt 0 && $1 =~ [0-9]{6} ]]; then
@@ -154,7 +154,7 @@ aws.iac_stg() {
     local rc
 
     # test mfa
-    aws secretsmanager list-secrets &>/dev/null
+    aws secretsmanager list-secrets >&/dev/null
     if [[ $? != 0 ]]; then
         aws.stg
         rc=$?

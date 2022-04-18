@@ -22,7 +22,7 @@ __rayrc_install_vim() {
     ln -snf "${__rayrc_dir_data_vim}/vimfiles" ~/.vim
 
 
-    # vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa &> /dev/null
+    # vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >& /dev/null
     vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa
     echo "###### after PlugInstall #####"
     pwd

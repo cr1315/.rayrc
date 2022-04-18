@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
+if [[ `whoami` == *"root" ]]; then
+  export USER="$(basename $HOME)"
+else
+  true
+fi
 
-export USER=$(basename $HOME)
 
 
 # smile_prompt github

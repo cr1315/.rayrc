@@ -5,12 +5,12 @@ forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 
 # https://github.com/wfxr/emoji-cli
-hash emojify &>/dev/null && forgit_emojify='|emojify'
+hash emojify >&/dev/null && forgit_emojify='|emojify'
 
 forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
-forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
+forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat >&/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
 
@@ -38,7 +38,7 @@ forgit::diff() {
     forgit::inside_work_tree || return 1
     local cmd files opts commit repo
     [[ $# -ne 0 ]] && {
-        if git rev-parse "$1" -- &>/dev/null ; then
+        if git rev-parse "$1" -- >&/dev/null ; then
             commit="$1" && files=("${@:2}")
         else
             files=("$@")
@@ -73,7 +73,7 @@ forgit::add() {
         sed -e 's/^\\\"//' -e 's/\\\"\$//'"
     preview="
         file=\$(echo {} | $extract)
-        if (git status -s -- \$file | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
+        if (git status -s -- \$file | grep '^??') >&/dev/null; then  # diff with /dev/null for untracked files
             git diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
         else
             git diff --color=always -- \$file | $forgit_diff_pager
