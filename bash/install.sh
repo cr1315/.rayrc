@@ -125,7 +125,9 @@ __rayrc_delegate_install_bash() {
 EOF
 
 		#"cat" "$HOME/.bashrc"
-
+		echo ""
+		echo ".rayrc: all done!"
+		echo ".rayrc: please logout & login to enjoy your new shell environment!"
 	fi
 
 }

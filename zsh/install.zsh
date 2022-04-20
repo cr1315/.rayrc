@@ -56,6 +56,9 @@ __rayrc_delegate_install_zsh() {
 EOF
 
 		# "cat" $HOME/.zshrc
+		echo ""
+		echo ".rayrc: all done!"
+		echo ".rayrc: please logout & login to enjoy your new shell environment!"
 	fi
 
 }
