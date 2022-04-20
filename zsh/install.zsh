@@ -55,7 +55,7 @@ __rayrc_delegate_install_zsh() {
 [[ -f "${__rayrc_dir_shell}/main.zsh" ]] && source "${__rayrc_dir_shell}/main.zsh"
 EOF
 
-		"cat" $HOME/.zshrc
+		# "cat" $HOME/.zshrc
 	fi
 
 }

@@ -30,17 +30,17 @@ __rayrc_install_vim() {
     ### download plug.vim
     # __rayrc_url_downloader https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
     #    "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim"
-    curl -fLo "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim" --create-dirs \
+    curl -fsLo "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim" --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     ### ln our vimfiles to ~/.vim
     ln -snf "${__rayrc_dir_data_vim}/vimfiles" ~/.vim
 
     vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >& /dev/null
-    echo "###### after PlugInstall #####"
-    pwd
-    ls -ahl "${__rayrc_dir_data_vim}/vimfiles"
-    ls -ahl "${__rayrc_dir_data_vim}/vimfiles/plugged"
+    # echo "###### after PlugInstall #####"
+    # pwd
+    # ls -ahl "${__rayrc_dir_data_vim}/vimfiles"
+    # ls -ahl "${__rayrc_dir_data_vim}/vimfiles/plugged"
 
 }
 

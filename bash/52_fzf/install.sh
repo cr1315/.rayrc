@@ -22,7 +22,7 @@ __rayrc_install_fzf() {
             "${__rayrc_dir_data_fzf}/fzf" >& /dev/null
 
         # we don't need to auto-generated configurations
-        "${__rayrc_dir_data_fzf}/fzf/install" --bin
+        "${__rayrc_dir_data_fzf}/fzf/install" --bin >& /dev/null
 
         cp -f "${__rayrc_dir_data_fzf}"/fzf/bin/* "${__rayrc_dir_data_bin}"
 

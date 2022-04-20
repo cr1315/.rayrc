@@ -124,7 +124,7 @@ __rayrc_delegate_install_bash() {
 [[ -f "${__rayrc_dir_shell}/main.sh" ]] && source "${__rayrc_dir_shell}/main.sh"
 EOF
 
-	"cat" "$HOME/.bashrc"
+		#"cat" "$HOME/.bashrc"
 
 	fi
 
