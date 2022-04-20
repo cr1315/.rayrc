@@ -49,9 +49,10 @@ I created this for myself, but I expect this to work for anyone who wants a some
     - [Nerd Fonts:](https://www.nerdfonts.com/) beautiful monospace fonts with highly crafted icons..  
     - some colorschemas, like [Solarized](https://ethanschoonover.com/solarized/)..
 
-It should be easy to setup, as easy as executing a single command -- `source .rayrc/install.sh`, and it would be excellent if I could delete all my custom setup with a single command, still making it better, creating something like `source .rayrc/uninstall.sh`.
 
 # how
+
+It should be easy to setup, as easy as executing a single command:
 
 ## installation for Unix
 
