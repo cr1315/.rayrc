@@ -7,7 +7,7 @@ __rayrc_delegate_main() {
 
 	local __rayrc_dir_base
 	local __rayrc_dir_libs
-	local __rayrc_dir_bin
+	local __rayrc_dir_data_bin
 
     __rayrc_dir_shell="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"

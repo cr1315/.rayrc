@@ -30,9 +30,6 @@ __rayrc_install_git() {
 		git config --global alias.lg '!git lg1'
 	fi
 
-    echo "##### git config --list --global #####"
-    git config --list --global
-
 }
 
 __rayrc_install_git ${0:A:h}

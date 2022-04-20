@@ -7,8 +7,8 @@ __rayrc_delegate_main() {
 
 	local __rayrc_dir_base
 	local __rayrc_dir_libs
-	local __rayrc_dir_bin
-    
+	local __rayrc_dir_data_bin
+
     __rayrc_dir_shell=$1
     echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
 
@@ -32,9 +32,9 @@ __rayrc_delegate_main() {
     ### setup each package
     for package in `ls -1 "${__rayrc_dir_shell}"`; do
         # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
-        if [[ -d "${__rayrc_dir_shell}/${package}" && 
+        if [[ -d "${__rayrc_dir_shell}/${package}" &&
               -f "${__rayrc_dir_shell}/${package}/main.zsh" &&
-              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]]; 
+              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]];
         then
             echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
             source "${__rayrc_dir_shell}/${package}/main.zsh"

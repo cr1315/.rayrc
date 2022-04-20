@@ -1,31 +1,5 @@
 #!/usr/bin/env zsh
 
-#
-# install brew first
-#   __rayrc_delegate_install_zsh_or_update() {}
-#       use the install shell script
-#           still need curl?
-#           built-in wget/curl?
-#
-# install oh-my-zsh
-#   powerlevel10k theme
-#       install and configure
-#
-### base command
-# install git, curl, wget, etc..
-#
-### useful utilities
-# install fzf, ag/rg, fd, bat, etc..
-#
-### file manager
-# install ranger/lf, vim plugin, etc..
-#   of course, install and configure
-#
-# well, that's it, right? Not that difficult, right?!
-#
-#
-#
-#
 
 __rayrc_somehow_global_functions() {
     true
@@ -35,8 +9,10 @@ __rayrc_delegate_install_zsh() {
     local __rayrc_raypm
     local __rayrc_dir_shell
 
+	local __rayrc_dir_data_bin
+
     __rayrc_dir_shell=$1
-    echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
+    # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
 
 
     # determine the os type and set __rayrc_stat_os
@@ -57,7 +33,9 @@ __rayrc_delegate_install_zsh() {
               -f "${__rayrc_dir_shell}/${package}/install.zsh" &&
               ! -f "${__rayrc_dir_shell}/${package}/disabled" ]];
         then
-            echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+            # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+            echo ""
+            echo ".rayrc: setting up for ${package:3}.."
             source "${__rayrc_dir_shell}/${package}/install.zsh"
         fi
     done

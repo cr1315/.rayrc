@@ -4,11 +4,11 @@
 __rayrc_main_bin() {
     local __rayrc_dir_ctl_bin
     #
-    # was defined in ROOT/bash/main.sh as it is a GLOBAL variable.
+    # was defined in ROOT/bash/install.sh as it is a GLOBAL variable.
     # local __rayrc_dir_data_bin
 
 
-    __rayrc_dir_ctl_bin="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    __rayrc_dir_ctl_bin="$1"
     # echo "\${__rayrc_dir_ctl_bin}: ${__rayrc_dir_ctl_bin}"
 
     __rayrc_dir_data_bin="${__rayrc_dir_libs}/${package:3}"
@@ -20,7 +20,6 @@ __rayrc_main_bin() {
     fi
 }
 
-__rayrc_main_bin
+__rayrc_main_bin ${0:A:h}
 unset -f __rayrc_main_bin
-
 

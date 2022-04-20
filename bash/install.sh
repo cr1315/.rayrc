@@ -70,7 +70,7 @@ __rayrc_delegate_install_bash() {
     local __rayrc_raypm
     local __rayrc_dir_shell
 
-	local __rayrc_dir_bin
+	local __rayrc_dir_data_bin
 
     __rayrc_dir_shell="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"

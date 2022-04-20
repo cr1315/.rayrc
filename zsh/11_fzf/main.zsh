@@ -22,7 +22,7 @@ __rayrc_main_fzf() {
 
 	  # set env variables for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
-    export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border' 
+    export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border'
 
     export FZF_CTRL_T_COMMAND='fd --type f --color always --hidden --follow --exclude .git'
     export FZF_CTRL_T_OPTS="--ansi --layout=reverse --height 70% --border --margin 0,0 --preview-window 'right:60%' --preview 'bat --color=always --style=numbers,grid --line-range :200 {}'"

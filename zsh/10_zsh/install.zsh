@@ -27,16 +27,12 @@ __rayrc_install_zsh() {
         #
         # TODO: setup .zshrc
 
-        # check results
-        echo "##### .zshrc #####"
-        cat $HOME/.zshrc
-
-        source $HOME/.zshrc
+        # source $HOME/.zshrc
         # what about `exec zsh`
         # exec zsh
 
-        echo "##### zsh-variables #####"
-        set | grep ^ZSH
+        # echo "##### zsh-variables #####"
+        # set | grep ^ZSH
     fi
 
 }
