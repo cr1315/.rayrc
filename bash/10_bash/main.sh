@@ -7,7 +7,6 @@ else
 fi
 
 
-
 # smile_prompt github
 function smile_prompt
 {

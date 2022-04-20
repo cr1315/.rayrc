@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# 
+#
 # install brew first
 #   __rayrc_delegate_install_zsh_or_update() {}
 #       use the install shell script
@@ -34,7 +34,7 @@ __rayrc_somehow_global_functions() {
 __rayrc_delegate_install_zsh() {
     local __rayrc_raypm
     local __rayrc_dir_shell
-    
+
     __rayrc_dir_shell=$1
     echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
 
@@ -53,9 +53,9 @@ __rayrc_delegate_install_zsh() {
     ### setup each package
     for package in `ls -1 "${__rayrc_dir_shell}"`; do
         # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
-        if [[ -d "${__rayrc_dir_shell}/${package}" && 
+        if [[ -d "${__rayrc_dir_shell}/${package}" &&
               -f "${__rayrc_dir_shell}/${package}/install.zsh" &&
-              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]]; 
+              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]];
         then
             echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
             source "${__rayrc_dir_shell}/${package}/install.zsh"
@@ -72,12 +72,12 @@ __rayrc_delegate_install_zsh() {
         fi
 
 # use here document to add two lines
-cat <<EOF >> $HOME/.zshrc
+"cat" <<EOF >> $HOME/.zshrc
 
 [[ -f "${__rayrc_dir_shell}/main.zsh" ]] && source "${__rayrc_dir_shell}/main.zsh"
 EOF
 
-		cat $HOME/.zshrc
+		"cat" $HOME/.zshrc
 	fi
 
 }

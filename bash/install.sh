@@ -102,6 +102,8 @@ __rayrc_delegate_install_bash() {
 
 		# echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
 		if [[ -d "${__rayrc_dir_shell}/${package}" && -f "${__rayrc_dir_shell}/${package}/install.sh" ]]; then
+			echo ""
+			echo "  .rayrc: setting up for ${package:3}.."
 			source "${__rayrc_dir_shell}/${package}/install.sh"
 		fi
 
@@ -117,12 +119,12 @@ __rayrc_delegate_install_bash() {
 		fi
 
 # use here document to add two lines
-cat <<EOF >> "$HOME/.bashrc"
+"cat" <<EOF >> "$HOME/.bashrc"
 
 [[ -f "${__rayrc_dir_shell}/main.sh" ]] && source "${__rayrc_dir_shell}/main.sh"
 EOF
 
-	cat "$HOME/.bashrc"
+	"cat" "$HOME/.bashrc"
 
 	fi
 

@@ -1,28 +1,47 @@
-# for linux, we assume bash
-# for macos, we assume zsh
-# so, this script should be runnable on both <= it shouldn't be that difficult I think
-
-# we don't have to use some specific shell to run this script I think,
-# it just adds some lines into .zshrc or .bashrc
-
-
-# TODO: 
-#   1. determine the ostype
-#   2. add some the start lines into .bashrc or .zshrc
+# As we use this script both for bash and zsh,
+# we "do not / could not" include shebang here.
+#
+# ## procedures
+# - determine which shell is being used
+# - call the corresponding uninstall script if necessary
+# - delete .rayrc-created directories
 
 
-__rayrc_install() {
-    local __rayrc_dir_base
-    __rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "__rayrc_dir_base: ${__rayrc_dir_base}"
+__rayrc_uninstall() {
+	local __rayrc_stat_os
+	local __rayrc_stat_os_dist
 
-    sed -Ei '/source.*\.rayrc\/main.sh/d' "$HOME/.bashrc"
+	local __rayrc_stat_shell
+	local __rayrc_dir_base
+	local __rayrc_dir_libs
 
-    cat >>"$HOME/.bashrc" <<EOF
-[[ -f "${__rayrc_dir_base}/main.sh" ]] && source "${__rayrc_dir_base}/main.sh"
-EOF
+	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
+		__rayrc_stat_shell="bash"
+		__rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+
+        if [[ -f "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.sh" ]]; then
+		    source "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.sh"
+        fi
+	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
+		__rayrc_stat_shell="zsh"
+		__rayrc_dir_base="$1"
+		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+
+        if [[ -f "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.zsh" ]]; then
+		    source "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.zsh"
+        fi
+	else
+		echo ".rayrc: not supported SHELL by now.."
+		return 8
+	fi
 }
 
+# call with current_path when zsh
+if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
+	__rayrc_uninstall ${0:A:h}
+else
+	__rayrc_uninstall
+fi
 
-__rayrc_install
-unset -f __rayrc_install
+unset -f __rayrc_uninstall

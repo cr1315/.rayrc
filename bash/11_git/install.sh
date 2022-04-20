@@ -15,8 +15,8 @@ __rayrc_install_git() {
     # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
 
 
-	git clone --depth 1 "https://github.com/romkatv/gitstatus.git" \
-		"${__rayrc_dir_data_git}/gitstatus"
+	git clone --quiet --depth 1 "https://github.com/romkatv/gitstatus.git" \
+		"${__rayrc_dir_data_git}/gitstatus" >& /dev/null
 
 	# git aliases
 	if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
