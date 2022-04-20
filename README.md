@@ -3,7 +3,7 @@
 Recently I found that I'm working on newly created linux workstations so often that time by time I'm annoyed with these repeating work:  
 
 - set up my shell aliaes, prompts, color schemas and custom functions, etc..
-- install and configure my favorite bat, jq, fzf, rg, fd, etc..
+- install and configure my favorite [`bat`](https://github.com/sharkdp/bat), [`jq`](https://github.com/stedolan/jq), [`fzf`](https://github.com/junegunn/fzf), [`rg`](https://github.com/BurntSushi/ripgrep), [`fd`](https://github.com/sharkdp/fd), etc..
 - install and configure vim plugins..
 
 IT'S TIME to automate all of this with **one command**!
@@ -16,7 +16,7 @@ Yes, all the modifications.
 - Why? (You may ask)
 - Well, you know, kind of, company policies, security blahblah..
 
-Anyway, I'll try my best to include all my modifications with inside the "$HOME/.rayrc" folder.  
+Anyway, I'll try my best to include all my modifications with inside the `$HOME/.rayrc` folder.  
 
 And finally, after installtion, it gives me a consistent shell environment as usual, whenever I log in, whichever workstation I log in to.
 
@@ -37,7 +37,7 @@ Something like:
 
 # who
 
-## for my, and for all
+## for me, and for all
 I created this for myself, but I expect this to work for anyone who wants a somehow beautiful and useful shell environment.
 
 ## some prerequisites
@@ -67,7 +67,7 @@ git clone https://github.com/cr1315/.rayrc.git && . .rayrc/install.ps1
 
 ## architecture
 
-It may sounds ridiculous to use the word "architecutre".. 
+It may sounds ridiculous to use the word "architecutre"..  
 Whatever, I think you can understand THE MOMENT you see this folder structure:  
 
 - base folder
