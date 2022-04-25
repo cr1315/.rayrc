@@ -20,7 +20,7 @@ __rayrc_install_fd() {
 
     cp -f "${__rayrc_dir_data_fd}/fd/fd" "${__rayrc_dir_data_bin}"
 
-    rm -rf "${__rayrc_dir_data_fd}/*"
+    rm -rf "${__rayrc_dir_data_fd}/"*
 }
 
 __rayrc_install_fd
