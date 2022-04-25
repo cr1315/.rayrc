@@ -18,53 +18,51 @@ __rayrc_install_lf() {
         if uname -m | grep -q "86" >& /dev/null; then
             if uname -m | grep -q "64" >& /dev/null; then
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
                     "linux" "amd64"
             else
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
                     "linux" "386"
             fi
         elif uname -m | grep -E -q "arm|aarch" >& /dev/null; then
             if uname -m | grep -q "64" >& /dev/null; then
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
                     "linux" "arm64"
             else
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
                     "linux" "arm"
             fi
         else
-            echo ".rayrc: unsupported cpu architecture for downloading rg.."
+            echo ".rayrc: unsupported cpu architecture for downloading lf.."
             return 8
         fi
     elif [[ "${__rayrc_stat_os}" =~ "macos" ]]; then
         if uname -m | grep -q "86" >& /dev/null; then
             __rayrc_github_downloader \
-                "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+                "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
                 "darwin" "amd64"
         # elif uname -m | grep -E -q "arm|aarch" >& /dev/null; then
         #     __rayrc_github_downloader \
-        #         "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
+        #         "BurntSushi/ripgrep" "${__rayrc_dir_data_lf}/lf.tar.gz" \
         #         "darwin" "arm"
         else
-            echo ".rayrc: unsupported cpu architecture for downloading rg.."
+            echo ".rayrc: unsupported cpu architecture for downloading lf.."
             return 8
         fi
     else
-        echo ".rayrc: unsupported os for downloading rg.."
+        echo ".rayrc: unsupported os for downloading lf.."
         return 8
     fi
 
-    __rayrc_github_downloader "sharkdp/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
-        `uname -m` `echo -n $OSTYPE`
 
-    tar xf "${__rayrc_dir_data_lf}/lf.tar.gz" -C "${__rayrc_dir_data_lf}" --transform 's:^[^/]*:lf:'
+    tar xf "${__rayrc_dir_data_lf}/lf.tar.gz" -C "${__rayrc_dir_data_lf}"
 
-    cp -f "${__rayrc_dir_data_lf}/lf/lf" "${__rayrc_dir_data_bin}"
+    cp -f "${__rayrc_dir_data_lf}/lf" "${__rayrc_dir_data_bin}"
 
-    rm -rf "${__rayrc_dir_data_lf}/lf/"*
+    rm -rf "${__rayrc_dir_data_lf}/lf"*
 }
 
 __rayrc_install_lf
