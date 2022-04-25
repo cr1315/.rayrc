@@ -18,11 +18,11 @@ __rayrc_install_rg() {
     echo `uname -m`
     echo `uname -a`
     if [[ "${__rayrc_stat_os}" =~ "linux" ]]; then
-        if `uname -m` | grep -q "86" >& /dev/null; then
+        if uname -m | grep -q "86" >& /dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
                 "linux" "86"
-        elif `uname -m` | grep -E -q "arm|aarch" >& /dev/null; then
+        elif uname -m | grep -E -q "arm|aarch" >& /dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
                 "linux" "arm"
@@ -31,11 +31,11 @@ __rayrc_install_rg() {
             return 8
         fi
     elif [[ "${__rayrc_stat_os}" =~ "macos" ]]; then
-        if `uname -m` | grep -q "86" >& /dev/null; then
+        if uname -m | grep -q "86" >& /dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
                 "darwin" "x86"
-        elif `uname -m` | grep -q "arm" >& /dev/null; then
+        elif uname -m | grep -q "arm" >& /dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_dir_data_rg}/rg.tar.gz" \
                 "linux" "arm"
