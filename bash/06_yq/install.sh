@@ -22,6 +22,7 @@ __rayrc_install_yq() {
 
     mv -f "${__rayrc_dir_data_yq}/yq" "${__rayrc_dir_data_bin}"
     chmod -R 755 "${__rayrc_dir_data_bin}"
+    rm -rf "${__rayrc_dir_data_yq}/yq"*
 }
 
 __rayrc_install_yq
