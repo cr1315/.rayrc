@@ -24,39 +24,33 @@ __rayrc_github_downloader() {
 
 	bin_name="$1"
 	target_path="$2"
+    shift; shift;
 
 	local downloadable_links
 	local downloaded_link
 
+
 	# https://stackoverflow.com/questions/16703647/why-does-curl-return-error-23-failed-writing-body
-	downloadable_links="$(curl -sfL "https://github.com/$1/releases/latest")"
+	downloadable_links="$(curl -sfL "https://github.com/${bin_name}/releases/latest")"
 	downloadable_links="$(echo "$downloadable_links" | grep 'href="' | grep 'download/')"
 
-	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$3" ]]; then
-		downloadable_links="$(echo "$downloadable_links" | grep -E "$3")"
-	fi
-	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$4" ]]; then
-		downloadable_links="$(echo "$downloadable_links" | grep -E "$4")"
-	fi
-	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$5" ]]; then
-		downloadable_links="$(echo "$downloadable_links" | grep -E "$5")"
-	fi
-	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$6" ]]; then
-		downloadable_links="$(echo "$downloadable_links" | grep -E "$6")"
-	fi
-	if [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$7" ]]; then
-		downloadable_links="$(echo "$downloadable_links" | grep -E "$7")"
-	fi
+    # while [[ `echo "$downloadable_links" | wc -l` -gt 1 && -n "$1" ]]; do
+    while [[ `echo "$downloadable_links" | wc -l` -gt 1 && ! "$1" =~ ^[[:space:]]*$ ]]; do
+        downloadable_links="$(echo "$downloadable_links" | grep -E "$1")"
+        shift;
+    done
+
 
 	if [[ `echo "$downloadable_links" | wc -l` -ne 1 ]]; then
-		echo "unable to extract the exact download link for $bin_name:"
+		echo "unable to extract the exact download link for ${bin_name}:"
 		echo "$downloadable_links"
 		return 8
 	fi
 
+
 	downloaded_link="$(echo "$downloadable_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
 	# echo "https://github.com${downloaded_link}"
-	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "$target_path"
+	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "${target_path}"
 	return 0
 }
 
@@ -98,11 +92,11 @@ __rayrc_delegate_install_bash() {
 
 
 	### auto setup
+	echo ""
 	for package in `ls -1 "${__rayrc_dir_shell}"`; do
 
 		# echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
 		if [[ -d "${__rayrc_dir_shell}/${package}" && -f "${__rayrc_dir_shell}/${package}/install.sh" ]]; then
-			echo ""
 			echo "  .rayrc: setting up for ${package:3}.."
 			source "${__rayrc_dir_shell}/${package}/install.sh"
 		fi
