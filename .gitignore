@@ -12,3 +12,5 @@ libs/rg
 
 *.pyc
 __pycache__/
+
+docs/.DS_Store

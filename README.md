@@ -27,6 +27,7 @@ Something like:
     - for Linux  
     ![beautiful and useful prompt](./docs/images/linux-prompt-with-git-status.png)
     - for Mac  
+    ![beautiful and useful prompt](./docs/images/macos-prompt-with-git-status.png)
 
 - auto-completion for frequently using commands
     - aws, k(kubectl), d(docker), dp(docker-compose).. 
