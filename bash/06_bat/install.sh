@@ -20,7 +20,7 @@ __rayrc_install_bat() {
 
     cp -f "${__rayrc_dir_data_bat}/bat/bat" "${__rayrc_dir_data_bin}"
 
-    rm -rf "${__rayrc_dir_data_bat}/*"
+    rm -rf "${__rayrc_dir_data_bat}/bat"*
 }
 
 __rayrc_install_bat

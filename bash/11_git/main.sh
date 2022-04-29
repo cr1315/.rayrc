@@ -22,7 +22,7 @@ __rayrc_main_git() {
 	source "${__rayrc_dir_data_git}/gitstatus.prompt.sh"
 
 	# only for places without network..
-	[[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
+	# [[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
 
 }
 
