@@ -14,7 +14,7 @@ __rayrc_install_vim() {
 
     ### download plug.vim
     curl -fLo "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim" --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
     ### ln vimfiles to ~/.vim
     # mkdir ./rayrc_backup; [[ -f ~/.vimrc ]] && cp -fp ~/.vimrc ./rayrc_backup

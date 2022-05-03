@@ -1,6 +1,6 @@
 libs/fzf/fzf
 libs/git/gitstatus
-libs/vim/vimfiles/autoload/*
+libs/vim/vimfiles/autoload
 libs/vim/vimfiles/plugged
 libs/vim/vimfiles/viminfo
 libs/vim/vimfiles/.netwhist
