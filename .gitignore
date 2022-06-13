@@ -3,7 +3,7 @@ libs/git/gitstatus
 libs/vim/vimfiles/autoload
 libs/vim/vimfiles/plugged
 libs/vim/vimfiles/viminfo
-libs/vim/vimfiles/.netwhist
+libs/vim/vimfiles/.netrwhist
 
 libs/bat
 libs/bin
