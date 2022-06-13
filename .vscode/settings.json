@@ -1,9 +1,10 @@
 {
-    /**
-     * language specific
-     */
-    "[markdown]": {
-        "editor.formatOnSave": true,
-        "files.trimTrailingWhitespace": false
-    }
+  /**
+   * language specific
+   */
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.renderWhitespace": "trailing",
+    "files.trimTrailingWhitespace": false
+  }
 }

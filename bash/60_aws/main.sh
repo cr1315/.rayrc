@@ -173,4 +173,6 @@ aws.iac_stg() {
     export AWS_SECRET_ACCESS_KEY=$(echo "$stgCredential" | jq -r '.AwsSecretAccessKey')
 }
 
-
+aws.publicip() {
+    curl http://checkip.amazonaws.com
+}
