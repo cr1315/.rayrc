@@ -5,7 +5,6 @@
 # - determine which shell is being used
 # - call the corresponding install script
 
-
 __rayrc_install() {
 	local __rayrc_stat_os
 	local __rayrc_stat_os_dist

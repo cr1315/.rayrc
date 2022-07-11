@@ -4,13 +4,11 @@ __rayrc_install_vim() {
     local __rayrc_dir_ctl_vim
     local __rayrc_dir_data_vim
 
-
     __rayrc_dir_ctl_vim=$1
     # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
     __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
     # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
-
 
     ### download plug.vim
     curl -fLo "${__rayrc_dir_data_vim}/vimfiles/autoload/plug.vim" --create-dirs \
@@ -21,8 +19,7 @@ __rayrc_install_vim() {
     # determine & ln -snF
     ln -snf "${__rayrc_dir_data_vim}/vimfiles" ~/.vim
 
-
-    vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >& /dev/null
+    vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >&/dev/null
     # echo "###### after PlugInstall #####"
     # pwd
     # ls -ahl "${__rayrc_dir_data_vim}/vimfiles"

@@ -122,6 +122,16 @@ EOF
 		echo ""
 		echo ".rayrc: all done!"
 		echo ".rayrc: please logout & login to enjoy your new shell environment!"
+	elif [[ -f "$HOME/.profile" ]]; then
+		
+# use here document to add two lines
+"cat" <<EOF >> "$HOME/.profile"
+
+[[ -f "${__rayrc_dir_shell}/main.sh" ]] && source "${__rayrc_dir_shell}/main.sh"
+EOF
+
+	else
+		true
 	fi
 
 }

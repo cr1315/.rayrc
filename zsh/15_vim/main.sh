@@ -4,34 +4,23 @@ __rayrc_main_vim() {
     local __rayrc_dir_ctl_vim
     local __rayrc_dir_data_vim
 
-
     __rayrc_dir_ctl_vim=$1
     # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
     __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
     # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
 
+    # set PATH
 
+    # set env variables for brew? fzf? rg? fd? bat? ranger?
 
-	# set PATH
+    # set env for zsh-completion
 
-	# set env variables for brew? fzf? rg? fd? bat? ranger?
-
-	# set env for zsh-completion
-
-
-	# make .rayrc an oh-my-zsh plugin??
-	# that would be so cool, right?
-	# TODO: don't know why, but after run cmpinit, no effect
-
-
-
-
-
-
+    # make .rayrc an oh-my-zsh plugin??
+    # that would be so cool, right?
+    # TODO: don't know why, but after run cmpinit, no effect
 
 }
-
 
 __rayrc_main_vim {0:A:h}
 unset -f __rayrc_main_vim
