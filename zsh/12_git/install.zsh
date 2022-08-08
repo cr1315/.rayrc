@@ -2,17 +2,17 @@
 
 # shortcut
 
-__rayrc_install_git() {
-	local __rayrc_dir_ctl_git
-	local __rayrc_dir_data_git
+__rayrc_install() {
+	local __rayrc_ctl_dir
+	local __rayrc_data_dir
 
-	__rayrc_dir_ctl_git=$1
-	# echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
+	__rayrc_ctl_dir=$1
+	# echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
-	__rayrc_dir_data_git="${__rayrc_libs_dir}/${package:3}"
-	# echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
-	if [[ ! -d ${__rayrc_dir_data_git} ]]; then
-		mkdir -p ${__rayrc_dir_data_git}
+	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
+	# echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
+	if [[ ! -d ${__rayrc_data_dir} ]]; then
+		mkdir -p ${__rayrc_data_dir}
 	fi
 
 	# git aliases
@@ -29,5 +29,5 @@ __rayrc_install_git() {
 
 }
 
-__rayrc_install_git ${0:A:h}
-unset -f __rayrc_install_git
+__rayrc_install ${0:A:h}
+unset -f __rayrc_install

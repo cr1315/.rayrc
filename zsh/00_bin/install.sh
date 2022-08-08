@@ -9,7 +9,7 @@ __rayrc_install() {
     __rayrc_ctl_dir="$1"
     # echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
-    __rayrc_bin_dir="${__rayrc_libs_dir}/${package:3}"
+    __rayrc_bin_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
     # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
 
     [[ ! -d "${__rayrc_bin_dir}" ]] && mkdir -p "${__rayrc_bin_dir}"

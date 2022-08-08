@@ -2,7 +2,7 @@
 
 __rayrc_setup() {
     local __rayrc_setup_dir=$1
-    # echo "\$__rayrc_main_setup_dir: $__rayrc_dir"
+    # echo "\$__rayrc_main: $__rayrc_dir"
 
     # prepend absolute(./00_bin) to $PATH
     if [[ ! "$PATH" == *"${__rayrc_setup_dir}"/00_bin* ]]; then
@@ -10,9 +10,9 @@ __rayrc_setup() {
     fi
 
     ### auto setup
-    for dir in `ls -1 "${__rayrc_setup_dir}"`; do
-        # echo "\$__rayrc_main_setup_dir/\$dir: $__rayrc_dir/$dir"
-        if [[ -d "$__rayrc_main_setup_dir/$dir" && -f "$__rayrc_setup_dir/$dir/main.zsh" && ! -f "$__rayrc_dir/$dir/disabled" ]]; then
+    for dir in $(ls -1 "${__rayrc_setup_dir}"); do
+        # echo "\$__rayrc_main/\$dir: $__rayrc_dir/$dir"
+        if [[ -d "$__rayrc_main/$dir" && -f "$__rayrc_setup_dir/$dir/main.zsh" && ! -f "$__rayrc_dir/$dir/disabled" ]]; then
             source "$__rayrc_setup_dir/$dir/main.zsh"
         fi
     done

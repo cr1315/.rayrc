@@ -2,28 +2,21 @@
 
 # should come before git and vim
 
-__rayrc_main_fzf() {
-  local __rayrc_dir_ctl_fzf
-  local __rayrc_dir_data_fzf
-
-  __rayrc_dir_ctl_fzf="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-  # echo "\${__rayrc_dir_ctl_fzf}: ${__rayrc_dir_ctl_fzf}"
-
-  __rayrc_dir_data_fzf="${__rayrc_libs_dir}/${package:3}"
-  # echo "\${__rayrc_dir_data_fzf}: ${__rayrc_dir_data_fzf}"
+__rayrc_main() {
+  __rayrc_common_setup_module
 
   # setup fzf
   if ! command -v fzf >&/dev/null; then
-    if [[ ! "$PATH" == *"${__rayrc_dir_data_fzf}/fzf/bin"* ]]; then
-      export PATH="${PATH:+${PATH}:}${__rayrc_dir_data_fzf}/fzf/bin"
+    if [[ ! "$PATH" == *"${__rayrc_data_dir}/fzf/bin"* ]]; then
+      export PATH="${PATH:+${PATH}:}${__rayrc_data_dir}/fzf/bin"
     fi
   fi
 
   command -v fzf >/dev/null 2>&1 || { return 8; }
 
   # Auto-completion & Key bindings
-  [[ $- == *i* ]] && source "${__rayrc_dir_data_fzf}/fzf/shell/completion.bash" 2>/dev/null
-  source "${__rayrc_dir_data_fzf}/fzf/shell/key-bindings.bash"
+  [[ $- == *i* ]] && source "${__rayrc_data_dir}/fzf/shell/completion.bash" 2>/dev/null
+  source "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
   export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
@@ -45,5 +38,5 @@ __rayrc_main_fzf() {
 
 }
 
-__rayrc_main_fzf
-unset -f __rayrc_main_fzf
+__rayrc_main
+unset -f __rayrc_main

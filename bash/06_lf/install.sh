@@ -1,35 +1,27 @@
 #!/usr/bin/env bash
 
-__rayrc_install_lf() {
-    local __rayrc_dir_ctl_lf
-    local __rayrc_dir_data_lf
-
-    __rayrc_dir_ctl_lf="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "\${__rayrc_dir_ctl_lf}: ${__rayrc_dir_ctl_lf}"
-
-    __rayrc_dir_data_lf="${__rayrc_libs_dir}/${package:3}"
-    # echo "\${__rayrc_dir_data_lf}: ${__rayrc_dir_data_lf}"
-    [[ ! -d "${__rayrc_dir_data_lf}" ]] && mkdir -p "${__rayrc_dir_data_lf}"
+__rayrc_install() {
+    __rayrc_common_setup_module
 
     if [[ "${__rayrc_facts_os_type}" =~ "linux" ]]; then
         if uname -m | grep -q "86" >&/dev/null; then
             if uname -m | grep -q "64" >&/dev/null; then
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                     "linux" "amd64"
             else
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                     "linux" "386"
             fi
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             if uname -m | grep -q "64" >&/dev/null; then
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                     "linux" "arm64"
             else
                 __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                     "linux" "arm"
             fi
         else
@@ -39,11 +31,11 @@ __rayrc_install_lf() {
     elif [[ "${__rayrc_facts_os_type}" =~ "macos" ]]; then
         if uname -m | grep -q "86" >&/dev/null; then
             __rayrc_github_downloader \
-                "gokcehan/lf" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+                "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                 "darwin" "amd64"
         # elif uname -m | grep -E -q "arm|aarch" >& /dev/null; then
         #     __rayrc_github_downloader \
-        #         "BurntSushi/ripgrep" "${__rayrc_dir_data_lf}/lf.tar.gz" \
+        #         "BurntSushi/ripgrep" "${__rayrc_data_dir}/lf.tar.gz" \
         #         "darwin" "arm"
         else
             echo ".rayrc: unsupported cpu architecture for downloading lf.."
@@ -54,12 +46,12 @@ __rayrc_install_lf() {
         return 8
     fi
 
-    tar xf "${__rayrc_dir_data_lf}/lf.tar.gz" -C "${__rayrc_dir_data_lf}"
+    tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
 
-    cp -f "${__rayrc_dir_data_lf}/lf" "${__rayrc_bin_dir}"
+    cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
 
-    rm -rf "${__rayrc_dir_data_lf}/lf"*
+    rm -rf "${__rayrc_data_dir}/lf"*
 }
 
-__rayrc_install_lf
-unset -f __rayrc_install_lf
+__rayrc_install
+unset -f __rayrc_install

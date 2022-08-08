@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_install() {
-    local __rayrc_dir_ctl_raypm
-    local __rayrc_dir_data_raypm
-
-    __rayrc_dir_ctl_raypm="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "\${__rayrc_dir_ctl_raypm}: ${__rayrc_dir_ctl_raypm}"
-
-    __rayrc_dir_data_raypm="${__rayrc_libs_dir}/${package:3}"
-    # echo "\${__rayrc_dir_data_raypm}: ${__rayrc_dir_data_raypm}"
+    __rayrc_common_setup_module
 
     if [[ "$__rayrc_facts_os_type" == "linux" ]]; then
         # determine distribution name from

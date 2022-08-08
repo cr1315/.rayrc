@@ -36,11 +36,12 @@ __rayrc_delegate_main() {
 	#       set __rayrc_facts_os_distribution
 
 	### auto setup
-	for package in $(ls -1 "${__rayrc_delegate_dir}"); do
+	local __rayrc_package
+	for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
-		# echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
-		if [[ -d "${__rayrc_delegate_dir}/${package}" && -f "${__rayrc_delegate_dir}/${package}/main.sh" ]]; then
-			source "${__rayrc_delegate_dir}/${package}/main.sh"
+		# echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
+		if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" && -f "${__rayrc_delegate_dir}/${__rayrc_package}/main.sh" ]]; then
+			source "${__rayrc_delegate_dir}/${__rayrc_package}/main.sh"
 		fi
 
 	done

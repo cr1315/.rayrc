@@ -2,18 +2,11 @@
 
 command -v git >/dev/null 2>&1 || { return; }
 
-__rayrc_install_git() {
-	local __rayrc_dir_ctl_git
-	local __rayrc_dir_data_git
-
-	__rayrc_dir_ctl_git="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	# echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
-
-	__rayrc_dir_data_git="${__rayrc_libs_dir}/${package:3}"
-	# echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
+__rayrc_install() {
+	__rayrc_common_setup_module
 
 	git clone --quiet --depth 1 "https://github.com/romkatv/gitstatus.git" \
-		"${__rayrc_dir_data_git}/gitstatus" >&/dev/null
+		"${__rayrc_data_dir}/gitstatus" >&/dev/null
 
 	# git aliases
 	if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
@@ -33,5 +26,5 @@ __rayrc_install_git() {
 	# (cd ${__rayrc_root_dir} && git submodule update --init --recursive --depth 1)
 }
 
-__rayrc_install_git
-unset -f __rayrc_install_git
+__rayrc_install
+unset -f __rayrc_install

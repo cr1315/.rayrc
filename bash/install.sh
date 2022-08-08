@@ -51,6 +51,22 @@ __rayrc_github_downloader() {
 #
 #
 ######################################################################
+__rayrc_common_setup_module() {
+	# echo "__rayrc_common_setup_module: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
+
+	__rayrc_ctl_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/${__rayrc_package}"
+	# echo "__rayrc_common_setup_module: \${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
+
+	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
+	# echo "__rayrc_common_setup_module: \${__rayrc_data_dir}: ${__rayrc_data_dir}"
+	[[ ! -d "${__rayrc_data_dir}" ]] && mkdir -p "${__rayrc_data_dir}"
+}
+
+######################################################################
+#
+#
+#
+######################################################################
 __rayrc_delegate_install() {
 	## declare global variables here
 	##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
@@ -88,12 +104,15 @@ __rayrc_delegate_install() {
 
 	### auto setup
 	echo ""
-	for package in $(ls -1 "${__rayrc_delegate_dir}"); do
+	local __rayrc_ctl_dir
+	local __rayrc_data_dir
+	local __rayrc_package
+	for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
-		# echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
-		if [[ -d "${__rayrc_delegate_dir}/${package}" && -f "${__rayrc_delegate_dir}/${package}/install.sh" ]]; then
-			echo "  .rayrc: setting up for ${package:3}.."
-			source "${__rayrc_delegate_dir}/${package}/install.sh"
+		# echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
+		if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" && -f "${__rayrc_delegate_dir}/${__rayrc_package}/install.sh" ]]; then
+			echo "  .rayrc: setting up for ${__rayrc_package:3}.."
+			source "${__rayrc_delegate_dir}/${__rayrc_package}/install.sh"
 		fi
 
 	done
@@ -138,3 +157,4 @@ EOF
 
 __rayrc_delegate_install
 unset -f __rayrc_delegate_install
+unset -f __rayrc_common_setup_module

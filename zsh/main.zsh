@@ -27,13 +27,14 @@ __rayrc_delegate_main() {
     fi
 
     ### setup each package
-    for package in $(ls -1 "${__rayrc_delegate_dir}"); do
-        # echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
-        if [[ -d "${__rayrc_delegate_dir}/${package}" &&
-            -f "${__rayrc_delegate_dir}/${package}/main.zsh" &&
-            ! -f "${__rayrc_delegate_dir}/${package}/disabled" ]]; then
-            echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
-            source "${__rayrc_delegate_dir}/${package}/main.zsh"
+    local __rayrc_package
+    for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
+        # echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
+        if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" &&
+            -f "${__rayrc_delegate_dir}/${__rayrc_package}/main.zsh" &&
+            ! -f "${__rayrc_delegate_dir}/${__rayrc_package}/disabled" ]]; then
+            echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
+            source "${__rayrc_delegate_dir}/${__rayrc_package}/main.zsh"
         fi
     done
 
