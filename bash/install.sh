@@ -59,7 +59,9 @@ __rayrc_common_setup_module() {
 
 	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
 	# echo "__rayrc_common_setup_module: \${__rayrc_data_dir}: ${__rayrc_data_dir}"
-	[[ ! -d "${__rayrc_data_dir}" ]] && mkdir -p "${__rayrc_data_dir}"
+	if [[ ! -d "${__rayrc_data_dir}" ]]; then
+		mkdir -p "${__rayrc_data_dir}"
+	fi
 }
 
 ######################################################################

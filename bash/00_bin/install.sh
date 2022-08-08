@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 __rayrc_install() {
     __rayrc_common_setup_module
 
@@ -10,7 +12,9 @@ __rayrc_install() {
     __rayrc_bin_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
     # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
 
-    [[ ! -d "${__rayrc_bin_dir}" ]] && mkdir -p "${__rayrc_bin_dir}"
+    if [[ ! -d "${__rayrc_bin_dir}" ]]; then
+        mkdir -p "${__rayrc_bin_dir}"
+    fi
 }
 
 __rayrc_install
