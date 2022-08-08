@@ -4,17 +4,15 @@ __rayrc_install_zsh() {
     local __rayrc_dir_ctl_zsh
     local __rayrc_dir_data_zsh
 
-
     __rayrc_dir_ctl_zsh=$1
     # echo "\${__rayrc_dir_ctl_zsh}: ${__rayrc_dir_ctl_zsh}"
 
-    __rayrc_dir_data_zsh="${__rayrc_dir_libs}/${package:3}"
+    __rayrc_dir_data_zsh="${__rayrc_libs_dir}/${package:3}"
     # echo "\${__rayrc_dir_data_zsh}: ${__rayrc_dir_data_zsh}"
 
     if [[ ! -d ${__rayrc_dir_data_zsh} ]]; then
         mkdir -p ${__rayrc_dir_data_zsh}
     fi
-
 
     ### install oh-my-zsh if not
     if [[ ! -v ZSH ]]; then

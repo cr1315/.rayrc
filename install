@@ -1,41 +1,52 @@
-# As we use this script both for bash and zsh,
-# we "do not / could not" include shebang here.
-#
-# ## procedures
-# - determine which shell is being used
-# - call the corresponding install script
+## As we use this script both for bash and zsh,
+## we "do not / could not" include shebang here.
+## basically, if this script works under /bin/sh, it will work, probably,
+##
+## ## procedures
+##
+## - determine which shell is being used
+## - call the corresponding install script
+##
 
-__rayrc_install() {
-	local __rayrc_stat_os
-	local __rayrc_stat_os_dist
+__rayrc_facade() {
+	## declare global variables here
+	##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
+	local __rayrc_facts_os_type
+	local __rayrc_facts_os_distribution
 
-	local __rayrc_stat_shell
-	local __rayrc_dir_base
-	local __rayrc_dir_libs
+	local __rayrc_facts_shell
+	local __rayrc_root_dir
+	local __rayrc_libs_dir
 
 	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		__rayrc_stat_shell="bash"
-		__rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+		__rayrc_facts_shell="bash"
+		__rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
-		source "${__rayrc_dir_base}/${__rayrc_stat_shell}/install.sh"
+		source "${__rayrc_root_dir}/${__rayrc_facts_shell}/install.sh"
 	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		__rayrc_stat_shell="zsh"
-		__rayrc_dir_base=$1
-		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+		__rayrc_facts_shell="zsh"
+		__rayrc_root_dir=$1
+		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
-		source "${__rayrc_dir_base}/${__rayrc_stat_shell}/install.zsh"
+		source "${__rayrc_root_dir}/${__rayrc_facts_shell}/install.zsh"
 	else
-		echo ".rayrc: not supported SHELL by now.."
+		echo ""
+		echo ".rayrc: not supported SHELL for now.."
+		echo "  feel free to create an issue, or even add your own implementation to this project ~"
+		echo ""
 		return 8
 	fi
 }
 
-# call with current_path when zsh
+## zsh uses a different way to determine pwd of the script
+##   TODO: or try something like this:
+##   __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-	__rayrc_install ${0:A:h}
+	__rayrc_facade ${0:A:h}
 else
-	__rayrc_install
+	__rayrc_facade
 fi
 
-unset -f __rayrc_install
+## As if we have never come here ~
+unset -f __rayrc_facade

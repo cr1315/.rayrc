@@ -2,28 +2,25 @@
 
 command -v vim >/dev/null 2>&1 || { return; }
 
-
 __rayrc_install_vim() {
     local __rayrc_dir_ctl_vim
     local __rayrc_dir_data_vim
 
-
     __rayrc_dir_ctl_vim="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
     # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
-    __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
+    __rayrc_dir_data_vim="${__rayrc_libs_dir}/${package:3}"
     # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
 
     if [[ ! -d "${__rayrc_dir_data_vim}/__rayrc_backup" ]]; then
         mkdir -p "${__rayrc_dir_data_vim}/__rayrc_backup"
     fi
 
-
     # backup the user's .vimrc or even .vim folder
     if [[ -f "$HOME/.vimrc" ]]; then
         mv "$HOME/.vimrc" "${__rayrc_dir_data_vim}/__rayrc_backup/.vimrc"
     fi
-    if [[ -d "$HOME/.vim" && ! -h "$HOME/.vim" ]]; then
+    if [[ -d "$HOME/.vim" && ! -L "$HOME/.vim" ]]; then
         mv "$HOME/.vim" "${__rayrc_dir_data_vim}/__rayrc_backup/.vim"
     fi
 
@@ -36,7 +33,7 @@ __rayrc_install_vim() {
     ### ln our vimfiles to ~/.vim
     ln -snf "${__rayrc_dir_data_vim}/vimfiles" ~/.vim
 
-    vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >& /dev/null
+    vim -u "${__rayrc_dir_data_vim}/vimfiles/plugins.vim" +PlugInstall +qa >&/dev/null
     # echo "###### after PlugInstall #####"
     # pwd
     # ls -ahl "${__rayrc_dir_data_vim}/vimfiles"
@@ -46,5 +43,3 @@ __rayrc_install_vim() {
 
 __rayrc_install_vim
 unset -f __rayrc_install_vim
-
-

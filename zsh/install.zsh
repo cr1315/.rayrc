@@ -1,65 +1,60 @@
 #!/usr/bin/env zsh
 
-
 __rayrc_somehow_global_functions() {
     true
 }
 
 __rayrc_delegate_install_zsh() {
-    local __rayrc_raypm
-    local __rayrc_dir_shell
+    local __rayrc_package_manager
+    local __rayrc_delegate_dir
 
-	local __rayrc_dir_data_bin
+    local __rayrc_bin_dir
 
-    __rayrc_dir_shell=$1
-    # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
+    __rayrc_delegate_dir=$1
+    # echo "\${__rayrc_delegate_dir}: ${__rayrc_delegate_dir}"
 
-
-    # determine the os type and set __rayrc_stat_os
-	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		__rayrc_stat_os="linux"
-	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		__rayrc_stat_os="macos"
-	else
-		echo ".rayrc: not supported OS by now.."
-		return 8
-	fi
-
+    # determine the os type and set __rayrc_facts_os_type
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        __rayrc_facts_os_type="linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        __rayrc_facts_os_type="macos"
+    else
+        echo ".rayrc: not supported OS by now.."
+        return 8
+    fi
 
     ### setup each package
-    for package in `ls -1 "${__rayrc_dir_shell}"`; do
-        # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
-        if [[ -d "${__rayrc_dir_shell}/${package}" &&
-              -f "${__rayrc_dir_shell}/${package}/install.zsh" &&
-              ! -f "${__rayrc_dir_shell}/${package}/disabled" ]];
-        then
-            # echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
+    for package in $(ls -1 "${__rayrc_delegate_dir}"); do
+        # echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
+        if [[ -d "${__rayrc_delegate_dir}/${package}" &&
+            -f "${__rayrc_delegate_dir}/${package}/install.zsh" &&
+            ! -f "${__rayrc_delegate_dir}/${package}/disabled" ]]; then
+            # echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
             echo ""
             echo ".rayrc: setting up for ${package:3}.."
-            source "${__rayrc_dir_shell}/${package}/install.zsh"
+            source "${__rayrc_delegate_dir}/${package}/install.zsh"
         fi
     done
 
-
-	### after all installation completed, setup the .zshrc
-	### can we assume grep installed?
-	if [[ -f "$HOME/.zshrc" ]]; then
-		if grep -q '.rayrc' "$HOME/.zshrc"; then
-			# we assume sed installed..
-			sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.zshrc"
+    ### after all installation completed, setup the .zshrc
+    ### can we assume grep installed?
+    if [[ -f "$HOME/.zshrc" ]]; then
+        if grep -q '.rayrc' "$HOME/.zshrc"; then
+            # we assume sed installed..
+            sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.zshrc"
         fi
 
-# use here document to add two lines
-"cat" <<EOF >> $HOME/.zshrc
+        # use here document to add two lines
+        "cat" <<EOF >>$HOME/.zshrc
 
-[[ -f "${__rayrc_dir_shell}/main.zsh" ]] && source "${__rayrc_dir_shell}/main.zsh"
+[[ -f "${__rayrc_delegate_dir}/main.zsh" ]] && source "${__rayrc_delegate_dir}/main.zsh"
 EOF
 
-		# "cat" $HOME/.zshrc
-		echo ""
-		echo ".rayrc: all done!"
-		echo ".rayrc: please logout & login to enjoy your new shell environment!"
-	fi
+        # "cat" $HOME/.zshrc
+        echo ""
+        echo ".rayrc: all done!"
+        echo ".rayrc: please logout & login to enjoy your new shell environment!"
+    fi
 
 }
 

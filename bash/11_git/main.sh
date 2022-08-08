@@ -2,18 +2,15 @@
 
 command -v git >/dev/null 2>&1 || { return; }
 
-
 __rayrc_main_git() {
-    local __rayrc_dir_ctl_git
-    local __rayrc_dir_data_git
+	local __rayrc_dir_ctl_git
+	local __rayrc_dir_data_git
 
+	__rayrc_dir_ctl_git="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+	# echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
 
-    __rayrc_dir_ctl_git="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
-
-    __rayrc_dir_data_git="${__rayrc_dir_libs}/${package:3}"
-    # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
-
+	__rayrc_dir_data_git="${__rayrc_libs_dir}/${package:3}"
+	# echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
 
 	# echo "$__rayrc_main_git_dir/git-prompt.sh"
 	# GIT_PS1_SHOWCOLORHINTS=true
@@ -28,4 +25,3 @@ __rayrc_main_git() {
 
 __rayrc_main_git
 unset -f __rayrc_main_git
-

@@ -7,7 +7,7 @@ __rayrc_install_vim() {
     __rayrc_dir_ctl_vim=$1
     # echo "\${__rayrc_dir_ctl_vim}: ${__rayrc_dir_ctl_vim}"
 
-    __rayrc_dir_data_vim="${__rayrc_dir_libs}/${package:3}"
+    __rayrc_dir_data_vim="${__rayrc_libs_dir}/${package:3}"
     # echo "\${__rayrc_dir_data_vim}: ${__rayrc_dir_data_vim}"
 
     ### download plug.vim

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-__rayrc_install_bin() {
-    local __rayrc_dir_ctl_bin
+__rayrc_install() {
+    local __rayrc_ctl_dir
     #
     # defined in ROOT/bash/install.sh as it is global.
-    # local __rayrc_dir_data_bin
+    # local __rayrc_bin_dir
 
-    __rayrc_dir_ctl_bin="$1"
-    # echo "\${__rayrc_dir_ctl_bin}: ${__rayrc_dir_ctl_bin}"
+    __rayrc_ctl_dir="$1"
+    # echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
-    __rayrc_dir_data_bin="${__rayrc_dir_libs}/${package:3}"
-    # echo "\${__rayrc_dir_data_bin}: ${__rayrc_dir_data_bin}"
+    __rayrc_bin_dir="${__rayrc_libs_dir}/${package:3}"
+    # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
 
-    [[ ! -d "${__rayrc_dir_data_bin}" ]] && mkdir -p "${__rayrc_dir_data_bin}"
+    [[ ! -d "${__rayrc_bin_dir}" ]] && mkdir -p "${__rayrc_bin_dir}"
 }
 
-__rayrc_install_bin ${0:A:h}
-unset -f __rayrc_install_bin
+__rayrc_install ${0:A:h}
+unset -f __rayrc_install

@@ -8,28 +8,28 @@
 
 
 __rayrc_uninstall() {
-	local __rayrc_stat_os
-	local __rayrc_stat_os_dist
+	local __rayrc_facts_os_type
+	local __rayrc_facts_os_distribution
 
-	local __rayrc_stat_shell
-	local __rayrc_dir_base
-	local __rayrc_dir_libs
+	local __rayrc_facts_shell
+	local __rayrc_root_dir
+	local __rayrc_libs_dir
 
 	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		__rayrc_stat_shell="bash"
-		__rayrc_dir_base="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+		__rayrc_facts_shell="bash"
+		__rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
-        if [[ -f "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.sh" ]]; then
-		    source "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.sh"
+        if [[ -f "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.sh" ]]; then
+		    source "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.sh"
         fi
 	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		__rayrc_stat_shell="zsh"
-		__rayrc_dir_base="$1"
-		__rayrc_dir_libs="${__rayrc_dir_base}/libs"
+		__rayrc_facts_shell="zsh"
+		__rayrc_root_dir="$1"
+		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
-        if [[ -f "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.zsh" ]]; then
-		    source "${__rayrc_dir_base}/${__rayrc_stat_shell}/uninstall.zsh"
+        if [[ -f "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.zsh" ]]; then
+		    source "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.zsh"
         fi
 	else
 		echo ".rayrc: not supported SHELL by now.."

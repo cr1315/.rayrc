@@ -1,32 +1,30 @@
 #!/usr/bin/env bash
 
-
 __rayrc_delegate_main() {
-    local __rayrc_raypm
-    local __rayrc_dir_shell
+	local __rayrc_package_manager
+	local __rayrc_delegate_dir
 
-	local __rayrc_dir_base
-	local __rayrc_dir_libs
-	local __rayrc_dir_data_bin
+	local __rayrc_root_dir
+	local __rayrc_libs_dir
+	local __rayrc_bin_dir
 
-    __rayrc_dir_shell="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "\${__rayrc_dir_shell}: ${__rayrc_dir_shell}"
+	__rayrc_delegate_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+	# echo "\${__rayrc_delegate_dir}: ${__rayrc_delegate_dir}"
 
 	# actually, this was a bug...
 	# I couldn't calculate this much..
-	__rayrc_dir_base="$(cd -- "${__rayrc_dir_shell}/.." && pwd -P)"
-	__rayrc_dir_libs="$(cd -- "${__rayrc_dir_shell}/../libs" && pwd -P)"
+	__rayrc_root_dir="$(cd -- "${__rayrc_delegate_dir}/.." && pwd -P)"
+	__rayrc_libs_dir="$(cd -- "${__rayrc_delegate_dir}/../libs" && pwd -P)"
 
-    # determine the os type and set __rayrc_stat_os
+	# determine the os type and set __rayrc_facts_os_type
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-		__rayrc_stat_os="linux"
+		__rayrc_facts_os_type="linux"
 	elif [[ "$OSTYPE" == "darwin"* ]]; then
-		__rayrc_stat_os="macos"
+		__rayrc_facts_os_type="macos"
 	else
 		echo ".rayrc: not supported OS by now.."
 		return 8
 	fi
-
 
 	#
 	# would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
@@ -35,20 +33,18 @@ __rayrc_delegate_main() {
 	#   `sudo dmidecode --string system-uuid'
 	#   `cat /sys/hypervisor/uuid'
 	# TODO: case switch
-	#       set __rayrc_stat_os_dist
-
+	#       set __rayrc_facts_os_distribution
 
 	### auto setup
-	for package in `ls -1 "${__rayrc_dir_shell}"`; do
+	for package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
-		# echo "\${__rayrc_dir_shell}/\${package}: ${__rayrc_dir_shell}/${package}"
-		if [[ -d "${__rayrc_dir_shell}/${package}" && -f "${__rayrc_dir_shell}/${package}/main.sh" ]]; then
-			source "${__rayrc_dir_shell}/${package}/main.sh"
+		# echo "\${__rayrc_delegate_dir}/\${package}: ${__rayrc_delegate_dir}/${package}"
+		if [[ -d "${__rayrc_delegate_dir}/${package}" && -f "${__rayrc_delegate_dir}/${package}/main.sh" ]]; then
+			source "${__rayrc_delegate_dir}/${package}/main.sh"
 		fi
 
 	done
 }
-
 
 __rayrc_delegate_main
 unset -f __rayrc_delegate_main

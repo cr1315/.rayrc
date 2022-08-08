@@ -4,13 +4,11 @@ __rayrc_main_git() {
     local __rayrc_dir_ctl_git
     local __rayrc_dir_data_git
 
-
     __rayrc_dir_ctl_git=$1
     # echo "\${__rayrc_dir_ctl_git}: ${__rayrc_dir_ctl_git}"
 
-    __rayrc_dir_data_git="${__rayrc_dir_libs}/${package:3}"
+    __rayrc_dir_data_git="${__rayrc_libs_dir}/${package:3}"
     # echo "\${__rayrc_dir_data_git}: ${__rayrc_dir_data_git}"
-
 
     source "$__rayrc_dir_ctl_git/forgit.plugin.zsh"
 
