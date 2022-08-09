@@ -10,9 +10,14 @@ __rayrc_install() {
     fi
 
     # backup the user's .vimrc or even .vim folder
-    if [[ -f "$HOME/.vimrc" ]]; then
-        mv "$HOME/.vimrc" "${__rayrc_data_dir}/__rayrc_backup/.vimrc"
+    if [[ -f "${HOME}/.vimrc" && ! -L "${HOME}/.vimrc" ]]; then
+        mv "${HOME}/.vimrc" "${__rayrc_data_dir}/__rayrc_backup/.vimrc"
+    elif [[ -f "${HOME}/.vimrc" ]]; then
+        rm -f "${HOME}/.vimrc"
+    else
+        true
     fi
+
     if [[ -d "$HOME/.vim" && ! -L "$HOME/.vim" ]]; then
         mv "$HOME/.vim" "${__rayrc_data_dir}/__rayrc_backup/.vim"
     fi

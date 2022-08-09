@@ -1,56 +1,30 @@
 #!/usr/bin/env bash
 
+command -v tmux >/dev/null 2>&1 || { return; }
+
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    if [[ "${__rayrc_facts_os_type}" =~ "linux" ]]; then
-        if uname -m | grep -q "86" >&/dev/null; then
-            if uname -m | grep -q "64" >&/dev/null; then
-                __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                    "linux" "amd64"
-            else
-                __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                    "linux" "386"
-            fi
-        elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            if uname -m | grep -q "64" >&/dev/null; then
-                __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                    "linux" "arm64"
-            else
-                __rayrc_github_downloader \
-                    "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                    "linux" "arm"
-            fi
-        else
-            echo ".rayrc: unsupported cpu architecture for downloading lf.."
-            return 8
-        fi
-    elif [[ "${__rayrc_facts_os_type}" =~ "macos" ]]; then
-        if uname -m | grep -q "86" >&/dev/null; then
-            __rayrc_github_downloader \
-                "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                "darwin" "amd64"
-        # elif uname -m | grep -E -q "arm|aarch" >& /dev/null; then
-        #     __rayrc_github_downloader \
-        #         "BurntSushi/ripgrep" "${__rayrc_data_dir}/lf.tar.gz" \
-        #         "darwin" "arm"
-        else
-            echo ".rayrc: unsupported cpu architecture for downloading lf.."
-            return 8
-        fi
+    # backup the user's .tmux.conf or even .tmux folder
+    if [[ -f "${HOME}/.tmux.conf" && ! -L "${HOME}/.tmux.conf" ]]; then
+        mv "${HOME}/.tmux.conf" "${__rayrc_data_dir}/__rayrc_backup/.tmux.conf"
+    elif [[ -f "${HOME}/.tmux.conf" ]]; then
+        rm -f "${HOME}/.tmux.conf"
     else
-        echo ".rayrc: unsupported os for downloading lf.."
-        return 8
+        true
     fi
 
-    tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
+    if [[ -d "$HOME/.tmux" && ! -L "$HOME/.tmux" ]]; then
+        mv "$HOME/.tmux" "${__rayrc_data_dir}/__rayrc_backup/.tmux"
+    fi
 
-    cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
+    #     "cat" <<EOF >>"$HOME/.tmux.conf"
+    # source -q "${__rayrc_data_dir}/.tmux.conf"
+    # source -q "${__rayrc_data_dir}/.tmux.conf.local"
+    # EOF
 
-    rm -rf "${__rayrc_data_dir}/lf"*
+    cp -f "${__rayrc_data_dir}/.tmux.conf"* "$HOME"
+
 }
 
 __rayrc_install
