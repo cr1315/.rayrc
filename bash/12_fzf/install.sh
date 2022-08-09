@@ -22,7 +22,9 @@ __rayrc_install() {
         # cat "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
     else
+        echo ""
         echo "##### $(command -v fzf) installed #####"
+        echo ""
     fi
 }
 

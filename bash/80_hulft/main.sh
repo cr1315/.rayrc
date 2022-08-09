@@ -2,7 +2,6 @@
 
 command -v utladmin >/dev/null 2>&1 || { return; }
 
-
 hulft() {
     export TERM=xterm
     command utladmin

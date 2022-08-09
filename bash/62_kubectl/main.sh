@@ -2,13 +2,11 @@
 
 command -v kubectl >/dev/null 2>&1 || { return; }
 
-
 # setup auto_completion
 source /usr/share/bash-completion/bash_completion
 
 alias k="kubectl"
 complete -F __start_kubectl k
-
 
 k.conf() {
     local clusters
