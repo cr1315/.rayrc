@@ -46,7 +46,6 @@ __rayrc_delegate_main() {
     #
 
     ### auto setup
-    echo ""
     local __rayrc_package
     for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
