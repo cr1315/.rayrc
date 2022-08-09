@@ -21,7 +21,6 @@ ENV_CLOUDFRONT_NAMES=(
 declare -A ALB_PATTERNS
 ALB_PATTERNS=()
 
-
 main() {
     local cfDomainNames
     # echo \"$env\"
@@ -33,7 +32,7 @@ main() {
         # echo \"$cfName\"
 
         cloudfront=$(jq --arg cfName "$cfName?$" '.DistributionList.Items[] | select(.DomainName | test($cfName))' CLOUDFRONT_DISTRIBUTIONS.json)
-        originDomainName=$(jq -r '.Origins.Items[] | select(.Id| test("apigw-custom-domain")) | .DomainName' <<< "${cloudfront}")
+        originDomainName=$(jq -r '.Origins.Items[] | select(.Id| test("apigw-custom-domain")) | .DomainName' <<<"${cloudfront}")
         # echo $originDomainName
 
         apigwDomainName=$(jq -r --arg originDomainName "^$originDomainName" '.ResourceRecordSets[] | select(.Name | test($originDomainName)) | .AliasTarget.DNSName' RESOURCE_RECORD_SETS.json)
@@ -61,7 +60,6 @@ main() {
             albHostName=$(jq -r --arg albDomainName "^$albDomainName" '.ResourceRecordSets[] | select(.Name | test($albDomainName)) | .AliasTarget.DNSName' RESOURCE_RECORD_SETS.json)
             # echo \"$albHostName\"
 
-
             albArn=$(jq -r --arg albHostName "^${albHostName#dualstack.}?$" '.LoadBalancers[] | select(.DNSName | test($albHostName)) | .LoadBalancerArn' LOAD_BALANCERS.json)
             # echo \"$albArn\"
 
@@ -87,16 +85,12 @@ main() {
     done
 }
 
-
 #######################################################################
 # PARAMETER CHECK
 #######################################################################
 checkParameter() {
     true
 }
-
-
-
 
 #######################################################################
 # AWS COMMON FUNCTION
@@ -110,7 +104,6 @@ getAlbDomainNames() {
     cfName=$(aws route53 list-resource-record-sets --hosted-zone-id Z02099911YFURCCGUFMSV |
         jq -r --arg cfDomainName "^apigw\c*\.onst" '.ResourceRecordSets[] | select(.Name | test($cfDomainName)) | .AliasTarget.DNSName' RESOURCE_RECORD_SETS.json)
 
-
     true
 }
 
@@ -119,8 +112,6 @@ getRRWithPattern() {
         .ResourceRecordSets[] | select(.Name | test($cfDomainName)) | .AliasTarget.DNSName
     '
 }
-
-
 
 #######################################################################
 # LOG
@@ -132,7 +123,6 @@ info() {
 debug() {
     true
 }
-
 
 #######################################################################
 # TEST
@@ -149,7 +139,6 @@ prepareEnvTest() {
 getCloudfrontArnFromDomainNameTest() {
     true
 }
-
 
 #######################################################################
 # GO

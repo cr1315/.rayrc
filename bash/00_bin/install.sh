@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-
 __rayrc_install() {
     __rayrc_module_common_setup
 

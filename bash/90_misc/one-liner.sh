@@ -1,8 +1,5 @@
-
-
 ## cognito userpool custom-domains
 (for id in $(aws cognito-idp list-user-pools --max-results 60 | jq -r '.UserPools[].Id'); do aws cognito-idp describe-user-pool --user-pool-id "$id" | jq -r '"\(.UserPool.Name) \(.UserPool.Domain) \(.UserPool.CustomDomain)"'; done) | awk '{printf "%-40s\t%-44s\t%s\n",$1,$2,$3}' | sort
-
 
 ## autoscaling group schedule
 ### list autoscaling group scheduled status
@@ -22,12 +19,3 @@ jq '.[].Statement.AndStatement.Statements[0].ByteMatchStatement.SearchString |= 
 
 ### create
 aws wafv2 create-web-acl --name "cdx-a-g-k-webacl-cloudfront02" --scope CLOUDFRONT --region us-east-1 --default-action "Block={}" --visibility-config "SampledRequestsEnabled=true,CloudWatchMetricsEnabled=true,MetricName=cdx-a-g-k-webacl-cloudfront02" --rules file://cloudfront02.json
-
-
-
-
-
-
-
-
-
