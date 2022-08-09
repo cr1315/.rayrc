@@ -9,6 +9,7 @@ __rayrc_main() {
 	# GIT_PS1_SHOWCOLORHINTS=true
 	# source "$__rayrc_ctl_dir/git-prompt.sh"
 	# PROMPT_COMMAND='__git_ps1 "\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]" "\n\\\$"'
+	export GITSTATUS_CACHE_DIR="${__rayrc_bin_dir}"
 	source "${__rayrc_data_dir}/gitstatus.prompt.sh"
 
 	# only for places without network..
