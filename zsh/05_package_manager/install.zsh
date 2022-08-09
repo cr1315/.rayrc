@@ -1,14 +1,7 @@
 #!/usr/bin/env zsh
 
 __rayrc_install() {
-    local __rayrc_ctl_dir
-    local __rayrc_data_dir
-
-    __rayrc_ctl_dir=$1
-    # echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
-
-    __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-    # echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
+    __rayrc_module_common_setup
 
     if [[ "$__rayrc_facts_os_type" == "linux" ]]; then
         # determine distribution name from

@@ -2,17 +2,10 @@
 
 # make .rayrc an oh-my-zsh plugin??
 # that would be so cool, right?
-#     ==> NO, I'm the father / controller!!
+#     ==> NO, I'm the father / I'm the controller!!
 
 __rayrc_main() {
-	local __rayrc_ctl_dir
-	local __rayrc_data_dir
-
-	__rayrc_ctl_dir=$1
-	# echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
-
-	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-	# echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
+	__rayrc_module_common_setup
 
 	# set PATH
 
@@ -35,7 +28,7 @@ __rayrc_main() {
 	# set env variables for brew? fzf? rg? fd? bat? ranger?
 
 	# set aliases
-	source "$__rayrc_ctl_dir/alias.zsh"
+	source "${__rayrc_ctl_dir}/alias.zsh"
 
 	# set env for zsh-completion
 	# TODO: don't know why that there is no effect after run cmpinit

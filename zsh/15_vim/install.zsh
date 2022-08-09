@@ -1,21 +1,28 @@
 #!/usr/bin/env zsh
 
 __rayrc_install() {
-    local __rayrc_ctl_dir
-    local __rayrc_data_dir
+    __rayrc_module_common_setup
 
-    __rayrc_ctl_dir=$1
-    # echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
+    if [[ ! -d "${__rayrc_data_dir}/__rayrc_backup" ]]; then
+        mkdir -p "${__rayrc_data_dir}/__rayrc_backup"
+    fi
 
-    __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-    # echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
+    # backup the user's .vimrc or even .vim folder
+    if [[ -f "${HOME}/.vimrc" && ! -L "${HOME}/.vimrc" ]]; then
+        mv "${HOME}/.vimrc" "${__rayrc_data_dir}/__rayrc_backup/.vimrc"
+    elif [[ -f "${HOME}/.vimrc" ]]; then
+        rm -f "${HOME}/.vimrc"
+    else
+        true
+    fi
+    if [[ -d "${HOME}/.vim" && ! -L "${HOME}/.vim" ]]; then
+        mv "${HOME}/.vim" "${__rayrc_data_dir}/__rayrc_backup/.vim"
+    fi
 
     ### download plug.vim
     curl -fLo "${__rayrc_data_dir}/vimfiles/autoload/plug.vim" --create-dirs \
         "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
-    ### ln vimfiles to ~/.vim
-    # mkdir ./rayrc_backup; [[ -f ~/.vimrc ]] && cp -fp ~/.vimrc ./rayrc_backup
     # determine & ln -snF
     ln -snf "${__rayrc_data_dir}/vimfiles" ~/.vim
 

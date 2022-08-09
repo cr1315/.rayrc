@@ -3,17 +3,7 @@
 # shortcut
 
 __rayrc_install() {
-	local __rayrc_ctl_dir
-	local __rayrc_data_dir
-
-	__rayrc_ctl_dir=$1
-	# echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
-
-	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-	# echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
-	if [[ ! -d ${__rayrc_data_dir} ]]; then
-		mkdir -p ${__rayrc_data_dir}
-	fi
+	__rayrc_module_common_setup
 
 	# git aliases
 	git config --global --list | grep 'alias.co=checkout' >/dev/null 2>&1
@@ -26,7 +16,6 @@ __rayrc_install() {
 		git config --global alias.lg2 "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
 		git config --global alias.lg '!git lg1'
 	fi
-
 }
 
 __rayrc_install ${0:A:h}

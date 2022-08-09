@@ -51,7 +51,10 @@ __rayrc_delegate_main() {
 	for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
 		# echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
-		if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" && -f "${__rayrc_delegate_dir}/${__rayrc_package}/main.sh" ]]; then
+		if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" &&
+			-f "${__rayrc_delegate_dir}/${__rayrc_package}/main.sh" &&
+			! -f "${__rayrc_delegate_dir}/${__rayrc_package}/disabled" ]]; then
+
 			source "${__rayrc_delegate_dir}/${__rayrc_package}/main.sh"
 		fi
 

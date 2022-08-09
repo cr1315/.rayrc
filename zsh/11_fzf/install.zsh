@@ -3,17 +3,7 @@
 # shortcut
 
 __rayrc_install() {
-    local __rayrc_ctl_dir
-    local __rayrc_data_dir
-
-    __rayrc_ctl_dir=$1
-    # echo "\${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
-
-    __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-    # echo "\${__rayrc_data_dir}: ${__rayrc_data_dir}"
-    if [[ ! -d ${__rayrc_data_dir} ]]; then
-        mkdir -p ${__rayrc_data_dir}
-    fi
+    __rayrc_module_common_setup
 
     if ! command -v fzf >&/dev/null; then
 
@@ -22,14 +12,15 @@ __rayrc_install() {
             "${__rayrc_data_dir}/fzf" >&/dev/null
 
         # we don't need to auto-generated configurations
-        ${__rayrc_data_dir}/fzf/install --bin
+        "${__rayrc_data_dir}/fzf/install" --bin >&/dev/null
 
         cp -f "${__rayrc_data_dir}"/fzf/bin/* "${__rayrc_bin_dir}"
 
     else
+        echo ""
         echo "##### $(command -v fzf) installed #####"
+        echo ""
     fi
-
 }
 
 __rayrc_install ${0:A:h}
