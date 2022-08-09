@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_main() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     #
     # was defined in ROOT/bash/main.sh as if it is a GLOBAL variable.

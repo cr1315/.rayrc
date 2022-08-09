@@ -68,3 +68,7 @@ Plug 'junegunn/fzf.vim'
 " Initialize plugin system
 call plug#end()
 
+try
+    colorscheme dracula
+catch
+endtry

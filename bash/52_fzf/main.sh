@@ -3,7 +3,7 @@
 # should come before git and vim
 
 __rayrc_main() {
-  __rayrc_common_setup_module
+  __rayrc_module_common_setup
 
   # setup fzf
   if ! command -v fzf >&/dev/null; then

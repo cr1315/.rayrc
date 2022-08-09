@@ -3,7 +3,7 @@
 command -v docker >/dev/null 2>&1 || { return; }
 
 __rayrc_main() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     alias d="docker"
     alias dp="docker-compose"

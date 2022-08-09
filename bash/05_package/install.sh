@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     if [[ "$__rayrc_facts_os_type" == "linux" ]]; then
         # determine distribution name from
@@ -18,7 +18,9 @@ __rayrc_install() {
 
         __rayrc_package_manager="brew"
     else
-        echo ".rayrc: not supported OS by now.."
+        echo ""
+        echo ".rayrc: not supported OS type for now.."
+        echo ""
         return 8
     fi
 

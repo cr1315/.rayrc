@@ -51,24 +51,6 @@ __rayrc_github_downloader() {
 #
 #
 ######################################################################
-__rayrc_common_setup_module() {
-	# echo "__rayrc_common_setup_module: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
-
-	__rayrc_ctl_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/${__rayrc_package}"
-	# echo "__rayrc_common_setup_module: \${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
-
-	__rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
-	# echo "__rayrc_common_setup_module: \${__rayrc_data_dir}: ${__rayrc_data_dir}"
-	if [[ ! -d "${__rayrc_data_dir}" ]]; then
-		mkdir -p "${__rayrc_data_dir}"
-	fi
-}
-
-######################################################################
-#
-#
-#
-######################################################################
 __rayrc_delegate_install() {
 	## declare global variables here
 	##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
@@ -78,6 +60,15 @@ __rayrc_delegate_install() {
 	local __rayrc_delegate_dir
 	__rayrc_delegate_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 	# echo "\${__rayrc_delegate_dir}: ${__rayrc_delegate_dir}"
+
+	local __rayrc_root_dir
+	__rayrc_root_dir="$(cd -- "${__rayrc_delegate_dir}/.." && pwd -P)"
+	local __rayrc_libs_dir
+	__rayrc_libs_dir="$(cd -- "${__rayrc_delegate_dir}/../libs" && pwd -P)"
+
+	local __rayrc_ctl_dir
+	local __rayrc_data_dir
+	source "${__rayrc_delegate_dir}/module_common_setup.sh"
 
 	local __rayrc_facts_os_type
 	if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -106,8 +97,6 @@ __rayrc_delegate_install() {
 
 	### auto setup
 	echo ""
-	local __rayrc_ctl_dir
-	local __rayrc_data_dir
 	local __rayrc_package
 	for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
 
@@ -159,4 +148,4 @@ EOF
 
 __rayrc_delegate_install
 unset -f __rayrc_delegate_install
-unset -f __rayrc_common_setup_module
+unset -f __rayrc_module_common_setup

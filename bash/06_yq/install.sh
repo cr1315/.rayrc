@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     if [[ ${__rayrc_facts_os_type} == "linux" ]]; then
         __rayrc_github_downloader "mikefarah/yq" "${__rayrc_data_dir}/yq" 'linux_amd64"'

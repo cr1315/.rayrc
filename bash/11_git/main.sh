@@ -3,11 +3,11 @@
 command -v git >/dev/null 2>&1 || { return; }
 
 __rayrc_main() {
-	__rayrc_common_setup_module
+	__rayrc_module_common_setup
 
-	# echo "$__rayrc_main/git-prompt.sh"
+	# echo "$__rayrc_ctl_dir/git-prompt.sh"
 	# GIT_PS1_SHOWCOLORHINTS=true
-	# source "$__rayrc_main/git-prompt.sh"
+	# source "$__rayrc_ctl_dir/git-prompt.sh"
 	# PROMPT_COMMAND='__git_ps1 "\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]" "\n\\\$"'
 	source "${__rayrc_data_dir}/gitstatus.prompt.sh"
 

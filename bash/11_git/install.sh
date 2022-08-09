@@ -3,7 +3,7 @@
 command -v git >/dev/null 2>&1 || { return; }
 
 __rayrc_install() {
-	__rayrc_common_setup_module
+	__rayrc_module_common_setup
 
 	git clone --quiet --depth 1 "https://github.com/romkatv/gitstatus.git" \
 		"${__rayrc_data_dir}/gitstatus" >&/dev/null

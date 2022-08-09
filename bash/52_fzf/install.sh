@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     if ! command -v fzf >&/dev/null; then
 

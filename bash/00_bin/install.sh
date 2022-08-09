@@ -3,7 +3,7 @@
 set -x
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     #
     # defined in ROOT/bash/install.sh as if it is global.

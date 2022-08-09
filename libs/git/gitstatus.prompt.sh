@@ -3,11 +3,11 @@
 # Source gitstatus.plugin.sh from $GITSTATUS_DIR or from the same directory
 # in which the current script resides if the variable isn't set.
 if [[ -n "${GITSTATUS_DIR:-}" ]]; then
-  source "$GITSTATUS_DIR"                           || return
+  source "$GITSTATUS_DIR" || return
 elif [[ "${BASH_SOURCE[0]}" == */* ]]; then
   source "${BASH_SOURCE[0]%/*}/gitstatus/gitstatus.plugin.sh" || return
 else
-  source gitstatus.plugin.sh                        || return
+  source gitstatus.plugin.sh || return
 fi
 
 # Sets GITSTATUS_PROMPT to reflect the state of the current git repository.
@@ -38,18 +38,18 @@ function gitstatus_prompt_update() {
 
   GITSTATUS_PROMPT=""
 
-  gitstatus_query "$@"                  || return 1  # error
-  [[ "$VCS_STATUS_RESULT" == ok-sync ]] || return 0  # not a git repo
+  gitstatus_query "$@" || return 1                  # error
+  [[ "$VCS_STATUS_RESULT" == ok-sync ]] || return 0 # not a git repo
 
-  local      reset=$'\e[0m'         # no color
-  local      clean=$'\e[38;5;076m'  # green foreground
-  local  untracked=$'\e[38;5;014m'  # teal foreground
-  local   modified=$'\e[38;5;011m'  # yellow foreground
-  local conflicted=$'\e[38;5;196m'  # red foreground
+  local reset=$'\e[0m'             # no color
+  local clean=$'\e[38;5;076m'      # green foreground
+  local untracked=$'\e[38;5;014m'  # teal foreground
+  local modified=$'\e[38;5;011m'   # yellow foreground
+  local conflicted=$'\e[38;5;196m' # red foreground
 
   local p
 
-  local where  # branch name, tag or commit
+  local where # branch name, tag or commit
   if [[ -n "$VCS_STATUS_LOCAL_BRANCH" ]]; then
     where="$VCS_STATUS_LOCAL_BRANCH"
   elif [[ -n "$VCS_STATUS_TAG" ]]; then
@@ -60,33 +60,37 @@ function gitstatus_prompt_update() {
     where="${VCS_STATUS_COMMIT:0:8}"
   fi
 
-  (( ${#where} > 32 )) && where="${where:0:12}…${where: -12}"  # truncate long branch names and tags
+  ((${#where} > 32)) && where="${where:0:12}…${where: -12}" # truncate long branch names and tags
   p+="${clean}${where}"
 
   # ⇣42 if behind the remote.
-  (( VCS_STATUS_COMMITS_BEHIND )) && p+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
+  ((VCS_STATUS_COMMITS_BEHIND)) && p+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
   # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
-  (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && p+=" "
-  (( VCS_STATUS_COMMITS_AHEAD  )) && p+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
+  ((VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND)) && p+=" "
+  ((VCS_STATUS_COMMITS_AHEAD)) && p+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
   # ⇠42 if behind the push remote.
-  (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && p+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
-  (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && p+=" "
+  ((VCS_STATUS_PUSH_COMMITS_BEHIND)) && p+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
+  ((VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND)) && p+=" "
   # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
-  (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && p+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
+  ((VCS_STATUS_PUSH_COMMITS_AHEAD)) && p+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
   # *42 if have stashes.
-  (( VCS_STATUS_STASHES        )) && p+=" ${clean}*${VCS_STATUS_STASHES}"
+  ((VCS_STATUS_STASHES)) && p+=" ${clean}*${VCS_STATUS_STASHES}"
   # 'merge' if the repo is in an unusual state.
-  [[ -n "$VCS_STATUS_ACTION"   ]] && p+=" ${conflicted}${VCS_STATUS_ACTION}"
+  [[ -n "$VCS_STATUS_ACTION" ]] && p+=" ${conflicted}${VCS_STATUS_ACTION}"
   # ~42 if have merge conflicts.
-  (( VCS_STATUS_NUM_CONFLICTED )) && p+=" ${conflicted}~${VCS_STATUS_NUM_CONFLICTED}"
+  ((VCS_STATUS_NUM_CONFLICTED)) && p+=" ${conflicted}~${VCS_STATUS_NUM_CONFLICTED}"
   # +42 if have staged changes.
-  (( VCS_STATUS_NUM_STAGED     )) && p+=" ${modified}+${VCS_STATUS_NUM_STAGED}"
+  ((VCS_STATUS_NUM_STAGED)) && p+=" ${modified}+${VCS_STATUS_NUM_STAGED}"
   # !42 if have unstaged changes.
-  (( VCS_STATUS_NUM_UNSTAGED   )) && p+=" ${modified}!${VCS_STATUS_NUM_UNSTAGED}"
+  ((VCS_STATUS_NUM_UNSTAGED)) && p+=" ${modified}!${VCS_STATUS_NUM_UNSTAGED}"
   # ?42 if have untracked files. It's really a question mark, your font isn't broken.
-  (( VCS_STATUS_NUM_UNTRACKED  )) && p+=" ${untracked}?${VCS_STATUS_NUM_UNTRACKED}"
+  ((VCS_STATUS_NUM_UNTRACKED)) && p+=" ${untracked}?${VCS_STATUS_NUM_UNTRACKED}"
 
   GITSTATUS_PROMPT="${p}${reset}"
+
+  # history -a
+  # history -c
+  # history -r
 
   PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\]${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT}\n${__rayrc_SC}\[\033[00m\] "
 }
@@ -112,4 +116,3 @@ shopt -s promptvars
 # # PS1+='\n\[\033[01;$((31+!$?))m\]${__rayrc_SC}\[\033[00m\] '  # green/red (success/error) $/# (normal/root)
 # PS1+='\n${__rayrc_SC}\[\033[00m\] '
 # # PS1+='\[\e]0;\u@\h: \w\a\]'                                  # terminal title: user@host: dir
-

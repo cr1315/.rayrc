@@ -3,7 +3,7 @@
 command -v vim >/dev/null 2>&1 || { return; }
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     if [[ ! -d "${__rayrc_data_dir}/__rayrc_backup" ]]; then
         mkdir -p "${__rayrc_data_dir}/__rayrc_backup"

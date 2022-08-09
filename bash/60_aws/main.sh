@@ -2,18 +2,16 @@
 
 command -v aws >/dev/null 2>&1 || { return; }
 
-
 ### aws_completer
-complete -C `which aws_completer` aws
-
+complete -C $(which aws_completer) aws
 
 aws.env() {
     local accountId
     accountId=
 
-    if command -v curl >& /dev/null; then
+    if command -v curl >&/dev/null; then
         accountId=$(curl -s "http://169.254.169.254/latest/dynamic/instance-identity/document" | jq -r '.accountId')
-    elif command -v wget >& /dev/null; then
+    elif command -v wget >&/dev/null; then
         accountId=$(wget -qO- "http://169.254.169.254/latest/dynamic/instance-identity/document" | jq -r '.accountId')
     else
         echo "couldnot detect the env.."
@@ -27,7 +25,6 @@ aws.env() {
         true
     fi
 }
-
 
 ### for aws authentication
 aws.mfa() {
@@ -63,7 +60,6 @@ aws.mfa() {
 
     trap - ERR
 }
-
 
 aws.stg() {
     local credential
@@ -105,7 +101,6 @@ aws.stg() {
     export AWS_SECRET_ACCESS_KEY=$(echo "$credential" | jq -r '.Credentials.SecretAccessKey')
     export AWS_SESSION_TOKEN=$(echo "$credential" | jq -r '.Credentials.SessionToken')
 }
-
 
 aws.iac() {
     if [[ "$(aws.env)" == "dev" ]]; then
@@ -175,4 +170,12 @@ aws.iac_stg() {
 
 aws.publicip() {
     curl http://checkip.amazonaws.com
+}
+
+aws.newips() {
+    curl -sSL "https://ip-ranges.amazonaws.com/ip-ranges.json" | jq '[
+    .prefixes[] |
+    select(.service=="API_GATEWAY" and .region=="ap-northeast-1") |
+    .ip_prefix
+  ]'
 }

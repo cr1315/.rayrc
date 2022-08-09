@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __rayrc_install() {
-    __rayrc_common_setup_module
+    __rayrc_module_common_setup
 
     if [[ "${__rayrc_facts_os_type}" =~ "linux" ]]; then
         if uname -m | grep -E -q "86|ia64" >&/dev/null; then
