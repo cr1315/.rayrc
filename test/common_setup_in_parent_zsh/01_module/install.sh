@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_main() {
     echo "inside module: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
