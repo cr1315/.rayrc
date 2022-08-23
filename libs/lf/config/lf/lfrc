@@ -23,8 +23,8 @@ set scrolloff 10
 
 # 
 set icons on
-
-
+# set previewer /home/ray/.rayrc/libs/lf/config/lf/lf-previewer
+# set previewer lf-previewer
 
 # use enter for shell commands
 map <enter> shell
