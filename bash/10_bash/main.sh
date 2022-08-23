@@ -41,6 +41,8 @@ alias view="vim -R"
 alias vi="vim"
 alias cat="bat"
 
+alias ip="ip -c=auto"
+
 __rayrc_main() {
   __rayrc_module_common_setup
 
