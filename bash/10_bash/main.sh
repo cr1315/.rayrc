@@ -44,6 +44,10 @@ alias cat="bat"
 
 alias ip="ip -c=auto"
 
+if [[ -t 0 && $- = *i* ]]; then
+  stty -ixon
+fi
+
 __rayrc_main() {
   __rayrc_module_common_setup
 
