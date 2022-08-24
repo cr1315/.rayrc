@@ -4,7 +4,7 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     __rayrc_github_downloader "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
-        $(uname -m) $(echo -n $OSTYPE)
+        $(uname -m) "linux-musl"
 
     tar xf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
 
