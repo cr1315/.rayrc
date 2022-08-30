@@ -5,3 +5,4 @@
 
 
 setlocal rnu
+on!

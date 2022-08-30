@@ -17,6 +17,14 @@ aws.apigwips() {
     ]'
 }
 
+aws.icips() {
+    curl -sSL "https://ip-ranges.amazonaws.com/ip-ranges.json" | jq '[
+        .prefixes[] |
+        select(.service=="EC2_INSTANCE_CONNECT" and .region=="ap-northeast-1") |
+        .ip_prefix
+    ]'
+}
+
 __rayrc_main() {
     __rayrc_module_common_setup
     source "${__rayrc_ctl_dir}/mfa.sh"
