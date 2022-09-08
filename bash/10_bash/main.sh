@@ -37,7 +37,7 @@ HISTCONTROL=ignoredups:erasedups
 
 # aliases
 alias cls="clear"
-alias la="ls -ahl"
+alias la="ls -Ahl"
 alias ll="ls -hl"
 alias pd="pushd"
 alias ds="dirs -v"
