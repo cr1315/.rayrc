@@ -26,5 +26,7 @@ lfcd () {
     fi
 }
 
-bind '"\C-o":"lfcd\C-m"'
+if [[ "$-" =~ "i" ]]; then
+    bind '"\C-o":"lfcd\C-m"'
+fi
 
