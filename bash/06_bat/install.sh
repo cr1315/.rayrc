@@ -4,9 +4,11 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     __rayrc_github_downloader "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
-        $(uname -m) "linux-musl"
+        $(uname -m) "musl"
 
-    tar xf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
+    ls -Ahl "${__rayrc_data_dir}"
+
+    tar xvf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
 
     cp -f "${__rayrc_data_dir}/bat/bat" "${__rayrc_bin_dir}"
 
