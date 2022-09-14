@@ -41,6 +41,7 @@ HISTCONTROL=ignoredups:erasedups
 if command -v exa >/dev/null 2>&1; then
   alias la="exa -ahl"
   alias ll="exa -hl"
+  alias lt="exa -hlT"
 else
   alias la="ls -Ahl"
   alias ll="ls -hl"
