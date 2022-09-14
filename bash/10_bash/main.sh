@@ -38,9 +38,15 @@ HISTFILESIZE=100000
 HISTCONTROL=ignoredups:erasedups
 
 # aliases
+if command -v exa; then
+  alias la="exa -ahl"
+  alias ll="exa -hl"
+else
+  alias la="ls -Ahl"
+  alias ll="ls -hl"
+fi
+
 alias cls="clear"
-alias la="ls -Ahl"
-alias ll="ls -hl"
 alias pd="pushd"
 alias ds="dirs -v"
 alias view="vim -R"
