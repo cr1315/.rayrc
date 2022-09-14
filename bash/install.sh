@@ -21,12 +21,28 @@ __rayrc_github_downloader() {
 	shift
 	shift
 
+	local disable_output
 	local release_links
+	local release_links_url
 	local downloaded_link
 
 	## https://stackoverflow.com/questions/16703647/why-does-curl-return-error-23-failed-writing-body
 	release_links="$(curl -sfL "https://github.com/${bin_name}/releases/latest")"
-	release_links="$(echo "$release_links" | grep 'href="' | grep 'download/')"
+
+	## github changed real links to lazy-data..
+	if disable_output="$(echo "$release_links" | grep '/expanded_assets')"; then
+		release_links_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oP 'src="[^"]*' | grep -oP 'http.*')"
+		release_links="$(curl -sfL "${release_links_url}")"
+	fi
+	if release_links="$(echo "$release_links" | grep 'href="' | grep 'download/')"; then
+		# echo "release_links: ${release_links}"
+		true
+	else
+		## fail fast..
+		echo "unable to extract download link for ${bin_name}:"
+		echo "release_links: ${release_links}"
+		return 8
+	fi
 
 	# while [[ `echo "$release_links" | wc -l` -gt 1 && -n "$1" ]]; do
 	while [[ $(echo "$release_links" | wc -l) -gt 1 && ! "$1" =~ ^[[:space:]]*$ ]]; do
@@ -34,13 +50,13 @@ __rayrc_github_downloader() {
 		shift
 	done
 
-	if [[ $(echo "$release_links" | wc -l) -ne 1 ]]; then
+	if [[ $(echo "$release_links" | wc -l) -ne 1 || "$release_links" =~ ^[[:space:]]*$ ]]; then
 		echo "unable to extract download link for ${bin_name}:"
-		echo "$release_links"
+		echo "release_links: ${release_links}"
 		return 8
 	fi
 
-	downloaded_link="$(echo "$release_links" | perl -pe's/.*(?<=href=")([^"]*).*/$1/')"
+	downloaded_link="$(echo "$release_links" | grep -oP 'href="[^"]+' | grep -oP '/.*')"
 	# echo "https://github.com${downloaded_link}"
 	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "${target_path}"
 	return 0
