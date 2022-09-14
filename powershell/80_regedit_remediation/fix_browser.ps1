@@ -1,5 +1,24 @@
 
 
+$Logfile = "C:\Users\taihang.lei\AppData\Local\Temp\regedit_remediation.log"
+Add-content $LogFile -value ""
+Add-content $LogFile -value "#######################################################################"
+Add-content $LogFile -value "# Triggered on at $((Get-Date).toString("yyyy/MM/dd HH:mm:ss"))"
+Add-content $LogFile -value "#######################################################################"
+
+function WriteLog() {
+    Param ([string]$LogString)
+    $Stamp = (Get-Date).toString("yyyy/MM/dd HH:mm:ss")
+    $LogMessage = "$Stamp $LogString"
+    Add-content $LogFile -value $LogMessage
+}
+
+writeLog "Who I am: $(whoami)"
+writeLog "Where I am: $(pwd)"
+writeLog "What I have: $(ls)"
+
+
+
 function safelyRemoveRegistryKey($path) {
     if (test-path "${path}") {
         remove-item "${path}"
