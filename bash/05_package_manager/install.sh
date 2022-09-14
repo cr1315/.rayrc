@@ -37,6 +37,10 @@ __rayrc_install() {
         ${__rayrc_package_manager} update -y
         ${__rayrc_package_manager} install -y grep
     fi
+    if ! command -v tar >&/dev/null; then
+        ${__rayrc_package_manager} update -y
+        ${__rayrc_package_manager} install -y tar
+    fi
 }
 
 __rayrc_install
