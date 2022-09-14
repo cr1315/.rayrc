@@ -28,8 +28,10 @@ export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 export TERM=xterm-256color
 
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+## set for perl in __rayrc_github_downloader
+## now, given up using perl to extract words..
+# export LC_CTYPE=en_US.UTF-8
+# export LC_ALL=en_US.UTF-8
 
 HISTSIZE=100000
 HISTFILESIZE=100000

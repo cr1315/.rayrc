@@ -11,8 +11,6 @@ __rayrc_install() {
         return 8
     fi
 
-    ls -Ahl "${__rayrc_data_dir}"
-
     tar xvf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
 
     cp -f "${__rayrc_data_dir}/bat/bat" "${__rayrc_bin_dir}"
