@@ -38,7 +38,7 @@ HISTFILESIZE=100000
 HISTCONTROL=ignoredups:erasedups
 
 # aliases
-if command -v exa; then
+if command -v exa >/dev/null 2>&1; then
   alias la="exa -ahl"
   alias ll="exa -hl"
 else
