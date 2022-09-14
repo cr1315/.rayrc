@@ -4,7 +4,12 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     __rayrc_github_downloader "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
-        $(uname -m) "linux-musl"
+        $(uname -m) "musl"
+
+    if [[ $? -ne 0 ]]; then
+        echo "  .rayrc: failed to setup ${__rayrc_package:3}"
+        return 8
+    fi
 
     tar xf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
 
