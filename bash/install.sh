@@ -23,7 +23,7 @@ __rayrc_github_downloader() {
 
 	local disable_output
 	local release_links
-	local release_links_url
+	local release_links_lazy_url
 	local downloaded_link
 
 	## https://stackoverflow.com/questions/16703647/why-does-curl-return-error-23-failed-writing-body
@@ -31,8 +31,8 @@ __rayrc_github_downloader() {
 
 	## github changed real links to lazy-data..
 	if disable_output="$(echo "$release_links" | grep '/expanded_assets')"; then
-		release_links_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oP 'src="[^"]*' | grep -oP 'http.*')"
-		release_links="$(curl -sfL "${release_links_url}")"
+		release_links_lazy_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oP 'src="[^"]*' | grep -oP 'http.*')"
+		release_links="$(curl -sfL "${release_links_lazy_url}")"
 	fi
 	if release_links="$(echo "$release_links" | grep 'href="' | grep 'download/')"; then
 		# echo "release_links: ${release_links}"
