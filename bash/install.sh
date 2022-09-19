@@ -31,7 +31,7 @@ __rayrc_github_downloader() {
 
 	## github changed real links to lazy-data..
 	if disable_output="$(echo "$release_links" | grep '/expanded_assets')"; then
-		release_links_lazy_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oP 'src="[^"]*' | grep -oP 'http.*')"
+		release_links_lazy_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oE 'src="[^"]*' | grep -oE 'http.*')"
 		release_links="$(curl -sfL "${release_links_lazy_url}")"
 	fi
 	if release_links="$(echo "$release_links" | grep 'href="' | grep 'download/')"; then
@@ -56,7 +56,7 @@ __rayrc_github_downloader() {
 		return 8
 	fi
 
-	downloaded_link="$(echo "$release_links" | grep -oP 'href="[^"]+' | grep -oP '/.*')"
+	downloaded_link="$(echo "$release_links" | grep -oE 'href="[^"]+' | grep -oE '/.*')"
 	# echo "https://github.com${downloaded_link}"
 	curl -fsL "https://github.com${downloaded_link}" --create-dirs -o "${target_path}"
 	return 0
