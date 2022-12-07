@@ -9,9 +9,7 @@
 #
 ######################################################################
 __rayrc_delegate_install() {
-    __rayrc_global_vars
-
-    ### auto setup Main logic
+    ### auto setup
     echo ""
     for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
 
@@ -26,6 +24,7 @@ __rayrc_delegate_install() {
 }
 
 __rayrc_delegate_install_test01() {
+    __rayrc_global_vars "$@"
     echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
 }
 
@@ -157,7 +156,7 @@ __rayrc_github_downloader() {
 ######################################################################
 # pre main
 ######################################################################
-__rayrc_global_vars() {
+__rayrc_delegate_entry() {
     ## declare global variables here
     ##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
     local __rayrc_package_manager
@@ -173,16 +172,20 @@ __rayrc_global_vars() {
     __rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
     local __rayrc_all_packages
-    local __rayrc_installed_packages
+    local __rayrc_packages_to_install
+    local __rayrc_packages_to_enable
+    local __rayrc_packages_to_disable
     declare -a __rayrc_all_packages
-    declare -a __rayrc_installed_packages
+    declare -a __rayrc_packages_to_install
+    declare -a __rayrc_packages_to_enable
+    declare -a __rayrc_packages_to_disable
 
     for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
 
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
         if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
-            echo "  .rayrc: package name to be added '${__rayrc_package:3}'.."
-            __rayrc_all_packages+=("${__rayrc_package:3}")
+            echo "  .rayrc: package name to be added '${__rayrc_package}'.."
+            __rayrc_all_packages+=("${__rayrc_package}")
         fi
     done
 
@@ -223,14 +226,66 @@ __rayrc_global_vars() {
 }
 
 __rayrc_validate_prm() {
-    echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-    for prm in "$@"; do
-        echo "prm: $prm"
+    local __rayrc_package_filters
+    local __rayrc_package_filter
+
+    local __rayrc_all_prms
+    __rayrc_all_prms=("$@")
+
+    local __rayrc_i
+    local __rayrc_j
+    for ((__rayrc_i = 0; __rayrc_i < "${#__rayrc_all_prms[@]}"; __rayrc_i++)); do
+        # echo "__rayrc_all_prms[$__rayrc_i]: ${__rayrc_all_prms[$__rayrc_i]}"
+        case "${__rayrc_all_prms[$__rayrc_i]}" in
+        --install)
+            __rayrc_i=$((__rayrc_i + 1))
+            __rayrc_package_filters=(${__rayrc_all_prms[$__rayrc_i]//,/ })
+            # echo "\${__rayrc_package_filters[@]}: ${__rayrc_package_filters[@]}"
+            # for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_package_filters[@]}"; __rayrc_j++)); do
+            #     echo "\${__rayrc_package_filters[$__rayrc_j]}: ${__rayrc_package_filters[$__rayrc_j]}"
+            # done
+            ;;
+        --enable)
+            __rayrc_i=$((__rayrc_i + 1))
+            __rayrc_packages_to_enable=(${__rayrc_all_prms[$__rayrc_i]//,/ })
+            ;;
+        --disable)
+            __rayrc_i=$((__rayrc_i + 1))
+            __rayrc_packages_to_disable=(${__rayrc_all_prms[$__rayrc_i]//,/ })
+            ;;
+        *)
+            print_help
+            ;;
+        esac
     done
+
+    local __rayrc_package
+    local __rayrc_filter_matched
+    for ((__rayrc_i = 0; __rayrc_i < "${#__rayrc_all_packages[@]}"; __rayrc_i++)); do
+        __rayrc_package="${__rayrc_all_packages[$__rayrc_i]}"
+        # echo "\${__rayrc_package}: ${__rayrc_package}"
+        __rayrc_filter_matched=false
+
+        for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_package_filters[@]}"; __rayrc_j++)); do
+            # echo "\${__rayrc_package_filters[$__rayrc_j]}: ${__rayrc_package_filters[$__rayrc_j]}"
+            if [[ "${__rayrc_package}" == *"${__rayrc_package_filters[$__rayrc_j]}" ]]; then
+                __rayrc_filter_matched=true
+                break
+            fi
+        done
+
+        if [[ "${__rayrc_filter_matched}" == "true" ]]; then
+            __rayrc_packages_to_install+=("${__rayrc_package}")
+        fi
+    done
+
+    # echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
+    # for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_packages_to_install[@]}"; __rayrc_j++)); do
+    #     echo "\${__rayrc_packages_to_install[$__rayrc_j]}: ${__rayrc_packages_to_install[$__rayrc_j]}"
+    # done
 }
 
-__rayrc_global_vars "$@"
-__rayrc_delegate_install_test01
+__rayrc_delegate_entry "$@"
 # __rayrc_delegate_install
 
 unset -f __rayrc_delegate_install

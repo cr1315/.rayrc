@@ -64,3 +64,4 @@ __rayrc_delegate_main() {
 
 __rayrc_delegate_main
 unset -f __rayrc_delegate_main
+unset -f __rayrc_module_common_setup
