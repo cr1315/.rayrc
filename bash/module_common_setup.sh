@@ -6,7 +6,7 @@
 __rayrc_module_common_setup() {
     # echo "__rayrc_module_common_setup: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 
-    __rayrc_ctl_dir="${__rayrc_delegate_dir}/${__rayrc_package}"
+    __rayrc_ctl_dir="${__rayrc_main_dir}/${__rayrc_package}"
     # echo "__rayrc_module_common_setup: \${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
     __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"

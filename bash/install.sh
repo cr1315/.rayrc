@@ -13,66 +13,20 @@ __rayrc_delegate_install() {
 
     ### auto setup Main logic
     echo ""
-    for __rayrc_package in $(ls -1 "${__rayrc_delegate_dir}"); do
+    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
 
-        # echo "\${__rayrc_delegate_dir}/\${__rayrc_package}: ${__rayrc_delegate_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_delegate_dir}/${__rayrc_package}" && -f "${__rayrc_delegate_dir}/${__rayrc_package}/install.sh" ]]; then
+        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
+        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
             echo "  .rayrc: setting up for ${__rayrc_package:3}.."
-            source "${__rayrc_delegate_dir}/${__rayrc_package}/install.sh"
+            source "${__rayrc_main_dir}/${__rayrc_package}/install.sh"
         fi
     done
 
     __rayrc_bootstrap_rc
 }
 
-######################################################################
-# pre main
-######################################################################
-__rayrc_global_vars() {
-    ## declare global variables here
-    ##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
-    local __rayrc_package_manager
-    local __rayrc_bin_dir
-
-    local __rayrc_delegate_dir
-    __rayrc_delegate_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-    # echo "\${__rayrc_delegate_dir}: ${__rayrc_delegate_dir}"
-
-    local __rayrc_root_dir
-    __rayrc_root_dir="$(cd -- "${__rayrc_delegate_dir}/.." && pwd -P)"
-    local __rayrc_libs_dir
-    __rayrc_libs_dir="$(cd -- "${__rayrc_delegate_dir}/../libs" && pwd -P)"
-
-    local __rayrc_ctl_dir
-    local __rayrc_data_dir
-    source "${__rayrc_delegate_dir}/module_common_setup.sh"
-
-    local __rayrc_facts_os_type
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        __rayrc_facts_os_type="linux"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        __rayrc_facts_os_type="macos"
-    else
-        echo ""
-        echo ".rayrc: not supported OS type for now.."
-        echo ""
-        return 8
-    fi
-
-    local __rayrc_facts_os_distribution
-    #
-    # would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
-    #
-    # for EC2:
-    #   `sudo dmidecode --string system-uuid'
-    #   `cat /sys/hypervisor/uuid'
-    # TODO: case switch
-    #       set __rayrc_facts_os_distribution
-    #
-    # or, create a function __rayrc_determin_os_distribution()
-    #
-
-    local __rayrc_package
+__rayrc_delegate_install_test01() {
+    echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
 }
 
 ######################################################################
@@ -88,7 +42,7 @@ __rayrc_bootstrap_rc() {
 
         # use here document to add two lines
         "cat" <<-EOF >>"$HOME/.bashrc"
-			[[ -f "${__rayrc_delegate_dir}/main.sh" ]] && source "${__rayrc_delegate_dir}/main.sh"
+			[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
 		EOF
 
         # "cat" "$HOME/.bashrc"
@@ -102,7 +56,7 @@ __rayrc_bootstrap_rc() {
         fi
 
         "cat" <<-EOF >>"$HOME/.profile"
-			[[ -f "${__rayrc_delegate_dir}/main.sh" ]] && source "${__rayrc_delegate_dir}/main.sh"
+			[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
 		EOF
 
     else
@@ -110,7 +64,7 @@ __rayrc_bootstrap_rc() {
         echo ".rayrc: both .bashrc and .profile not found.."
         echo ".rayrc: you may need to add this line to your profile file manually: "
         echo ""
-        echo "[[ -f \"${__rayrc_delegate_dir}/main.sh\" ]] && source \"${__rayrc_delegate_dir}/main.sh\""
+        echo "[[ -f \"${__rayrc_main_dir}/main.sh\" ]] && source \"${__rayrc_main_dir}/main.sh\""
         echo ""
     fi
 }
@@ -200,6 +154,84 @@ __rayrc_github_downloader() {
     return 0
 }
 
-__rayrc_delegate_install
+######################################################################
+# pre main
+######################################################################
+__rayrc_global_vars() {
+    ## declare global variables here
+    ##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
+    local __rayrc_package_manager
+    local __rayrc_bin_dir
+
+    local __rayrc_main_dir
+    __rayrc_main_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+    # echo "\${__rayrc_main_dir}: ${__rayrc_main_dir}"
+
+    local __rayrc_root_dir
+    __rayrc_root_dir="$(cd -- "${__rayrc_main_dir}/.." && pwd -P)"
+    local __rayrc_libs_dir
+    __rayrc_libs_dir="${__rayrc_root_dir}/libs"
+
+    local __rayrc_all_packages
+    local __rayrc_installed_packages
+    declare -a __rayrc_all_packages
+    declare -a __rayrc_installed_packages
+
+    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
+
+        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
+        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
+            echo "  .rayrc: package name to be added '${__rayrc_package:3}'.."
+            __rayrc_all_packages+=("${__rayrc_package:3}")
+        fi
+    done
+
+    ## for every package
+    local __rayrc_ctl_dir
+    local __rayrc_data_dir
+    source "${__rayrc_main_dir}/module_common_setup.sh"
+
+    local __rayrc_facts_os_type
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        __rayrc_facts_os_type="linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        __rayrc_facts_os_type="macos"
+    else
+        echo ""
+        echo ".rayrc: not supported OS type for now.."
+        echo ""
+        return 8
+    fi
+
+    ## __rayrc_facts
+    local __rayrc_facts_os_distribution
+    #
+    # would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
+    #
+    # for EC2:
+    #   `sudo dmidecode --string system-uuid'
+    #   `cat /sys/hypervisor/uuid'
+    # TODO: case switch
+    #       set __rayrc_facts_os_distribution
+    #
+    # or, create a function __rayrc_determin_os_distribution()
+    #
+
+    local __rayrc_package
+
+    __rayrc_validate_prm "$@"
+}
+
+__rayrc_validate_prm() {
+    echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
+    for prm in "$@"; do
+        echo "prm: $prm"
+    done
+}
+
+__rayrc_global_vars "$@"
+__rayrc_delegate_install_test01
+# __rayrc_delegate_install
+
 unset -f __rayrc_delegate_install
 unset -f __rayrc_module_common_setup
