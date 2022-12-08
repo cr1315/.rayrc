@@ -269,12 +269,15 @@ __rayrc_determin_os_distribution() {
         elif grep -q 'amazon_linux' "/etc/os-release"; then
             __rayrc_facts_os_distribution="amzn"
             __rayrc_package_manager="yum"
-        elif grep -q 'centos' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="centos"
-            __rayrc_package_manager="dnf"
         elif grep -q 'rhel' "/etc/os-release"; then
             __rayrc_facts_os_distribution="rhel"
             __rayrc_package_manager="yum"
+        elif grep -q 'debian' "/etc/os-release"; then
+            __rayrc_facts_os_distribution="debian"
+            __rayrc_package_manager="apt"
+        elif grep -q 'centos' "/etc/os-release"; then
+            __rayrc_facts_os_distribution="centos"
+            __rayrc_package_manager="dnf"
         elif grep -q 'photon' "/etc/os-release"; then
             __rayrc_facts_os_distribution="photon"
             __rayrc_package_manager="tdnf"
@@ -283,13 +286,13 @@ __rayrc_determin_os_distribution() {
             __rayrc_package_manager="opkg"
         else
             echo ""
-            echo ".rayrc: could not determined OS distribution.."
+            echo ".rayrc: could not determine OS distribution.."
             echo ""
             return 8
         fi
     else
         echo ""
-        echo ".rayrc: could not determined OS distribution.."
+        echo ".rayrc: could not determine OS distribution.."
         echo ""
     fi
 }
