@@ -4,6 +4,7 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     if [[ "$__rayrc_facts_os_type" == "linux" ]]; then
+        ## TODO:
         # determine distribution name from
         #   - `uname -a`
         #   - `cat /etc/os-relase`
