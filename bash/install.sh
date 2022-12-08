@@ -169,7 +169,6 @@ __rayrc_delegate_entry() {
     ## declare global variables here
     ##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
     local __rayrc_package_manager
-    local __rayrc_bin_dir
 
     local __rayrc_main_dir
     __rayrc_main_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -180,8 +179,14 @@ __rayrc_delegate_entry() {
     local __rayrc_libs_dir
     __rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
-    local __rayrc_yes_no
+    local __rayrc_bin_dir
+    __rayrc_bin_dir="${__rayrc_libs_dir}/bin"
+    # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
+    if [[ ! -d "${__rayrc_bin_dir}" ]]; then
+        mkdir -p "${__rayrc_bin_dir}"
+    fi
 
+    local __rayrc_yes_no
     local __rayrc_prms
     __rayrc_prms=("$@")
 
