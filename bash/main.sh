@@ -17,7 +17,7 @@ __rayrc_delegate_main() {
 
     local __rayrc_ctl_dir
     local __rayrc_data_dir
-    source "${__rayrc_main_dir}/module_common_setup.sh"
+    source "${__rayrc_main_dir}/common.sh"
 
     # determine the os type and set __rayrc_facts_os_type
     local __rayrc_facts_os_type

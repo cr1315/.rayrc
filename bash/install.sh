@@ -23,11 +23,6 @@ __rayrc_delegate_install() {
     __rayrc_bootstrap_rc
 }
 
-__rayrc_delegate_install_test01() {
-    __rayrc_global_vars "$@"
-    echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-}
-
 ######################################################################
 # post main
 ######################################################################
@@ -61,16 +56,24 @@ __rayrc_bootstrap_rc() {
     else
         echo ""
         echo ".rayrc: both .bashrc and .profile not found.."
-        echo ".rayrc: you may need to add this line to your profile file manually: "
+        echo ".rayrc: you may need to add this line to your profile file: "
         echo ""
         echo "[[ -f \"${__rayrc_main_dir}/main.sh\" ]] && source \"${__rayrc_main_dir}/main.sh\""
         echo ""
+
+        echo ".rayrc: let us create .profile and add this line for you?"
+        read -p ".rayrc: (Y/n): " __rayrc_yes_no
+        if [[ "x${__rayrc_yes_no}" =~ ^x[yY].*$ ]]; then
+            "cat" <<-EOF >>"$HOME/.profile"
+				[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
+			EOF
+        fi
     fi
 }
 
 ######################################################################
 #
-#
+# Helper
 #
 ######################################################################
 __rayrc_getopts() {
@@ -78,6 +81,12 @@ __rayrc_getopts() {
 }
 
 unset -f __rayrc_getopts
+
+__rayrc_print_help() {
+    true
+}
+
+unset -f __rayrc_print_help
 
 ######################################################################
 #
@@ -171,6 +180,11 @@ __rayrc_delegate_entry() {
     local __rayrc_libs_dir
     __rayrc_libs_dir="${__rayrc_root_dir}/libs"
 
+    local __rayrc_yes_no
+
+    local __rayrc_prms
+    __rayrc_prms=("$@")
+
     local __rayrc_all_packages
     local __rayrc_packages_to_install
     local __rayrc_packages_to_enable
@@ -180,20 +194,28 @@ __rayrc_delegate_entry() {
     declare -a __rayrc_packages_to_enable
     declare -a __rayrc_packages_to_disable
 
+    ## prepare __rayrc_all_packages
+    local __rayrc_package
     for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
 
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
         if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
-            echo "  .rayrc: package name to be added '${__rayrc_package}'.."
+            # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
             __rayrc_all_packages+=("${__rayrc_package}")
         fi
     done
+    # echo "\${__rayrc_all_packages[@]}: ${__rayrc_all_packages[@]}"
+    # for ((j = 0; j < "${#__rayrc_all_packages[@]}"; j++)); do
+    #     echo "\${__rayrc_all_packages[$j]}: ${__rayrc_all_packages[$j]}"
+    # done
+    __rayrc_validate_prm
 
     ## for every package
     local __rayrc_ctl_dir
     local __rayrc_data_dir
-    source "${__rayrc_main_dir}/module_common_setup.sh"
+    source "${__rayrc_main_dir}/common.sh"
 
+    ## __rayrc_facts
     local __rayrc_facts_os_type
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         __rayrc_facts_os_type="linux"
@@ -206,7 +228,6 @@ __rayrc_delegate_entry() {
         return 8
     fi
 
-    ## __rayrc_facts
     local __rayrc_facts_os_distribution
     #
     # would be better to determine if this is an EC2 instance, photon OS, ubuntu, CentOS
@@ -220,73 +241,87 @@ __rayrc_delegate_entry() {
     # or, create a function __rayrc_determin_os_distribution()
     #
 
-    local __rayrc_package
-
-    __rayrc_validate_prm "$@"
+    __rayrc_delegate_install
 }
 
 __rayrc_validate_prm() {
-    local __rayrc_package_filters
-    local __rayrc_package_filter
+    local package_filters
+    local package_filter
 
-    local __rayrc_all_prms
-    __rayrc_all_prms=("$@")
-
-    local __rayrc_i
-    local __rayrc_j
-    for ((__rayrc_i = 0; __rayrc_i < "${#__rayrc_all_prms[@]}"; __rayrc_i++)); do
-        # echo "__rayrc_all_prms[$__rayrc_i]: ${__rayrc_all_prms[$__rayrc_i]}"
-        case "${__rayrc_all_prms[$__rayrc_i]}" in
+    local i
+    local j
+    for ((i = 0; i < "${#__rayrc_prms[@]}"; i++)); do
+        # echo "__rayrc_prms[$i]: ${__rayrc_prms[$i]}"
+        case "${__rayrc_prms[$i]}" in
         --install)
-            __rayrc_i=$((__rayrc_i + 1))
-            __rayrc_package_filters=(${__rayrc_all_prms[$__rayrc_i]//,/ })
-            # echo "\${__rayrc_package_filters[@]}: ${__rayrc_package_filters[@]}"
-            # for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_package_filters[@]}"; __rayrc_j++)); do
-            #     echo "\${__rayrc_package_filters[$__rayrc_j]}: ${__rayrc_package_filters[$__rayrc_j]}"
+            i=$((i + 1))
+            package_filters=(${__rayrc_prms[$i]//,/ })
+            # echo "\${package_filters[@]}: ${package_filters[@]}"
+            # for ((j = 0; j < "${#package_filters[@]}"; j++)); do
+            #     echo "\${package_filters[$j]}: ${package_filters[$j]}"
             # done
             ;;
         --enable)
-            __rayrc_i=$((__rayrc_i + 1))
-            __rayrc_packages_to_enable=(${__rayrc_all_prms[$__rayrc_i]//,/ })
+            i=$((i + 1))
+            __rayrc_packages_to_enable=(${__rayrc_prms[$i]//,/ })
             ;;
         --disable)
-            __rayrc_i=$((__rayrc_i + 1))
-            __rayrc_packages_to_disable=(${__rayrc_all_prms[$__rayrc_i]//,/ })
+            i=$((i + 1))
+            __rayrc_packages_to_disable=(${__rayrc_prms[$i]//,/ })
             ;;
         *)
-            print_help
+            __rayrc_print_help
             ;;
         esac
     done
 
-    local __rayrc_package
-    local __rayrc_filter_matched
-    for ((__rayrc_i = 0; __rayrc_i < "${#__rayrc_all_packages[@]}"; __rayrc_i++)); do
-        __rayrc_package="${__rayrc_all_packages[$__rayrc_i]}"
-        # echo "\${__rayrc_package}: ${__rayrc_package}"
-        __rayrc_filter_matched=false
+    local package
+    local filter_matched
+    # echo "\${#package_filters[@]}: ${#package_filters[@]}"
+    if [[ "${#package_filters[@]}" -gt 0 ]]; then
+        for ((i = 0; i < "${#__rayrc_all_packages[@]}"; i++)); do
+            package="${__rayrc_all_packages[$i]}"
+            # echo "\${package}: ${package}"
+            filter_matched=false
 
-        for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_package_filters[@]}"; __rayrc_j++)); do
-            # echo "\${__rayrc_package_filters[$__rayrc_j]}: ${__rayrc_package_filters[$__rayrc_j]}"
-            if [[ "${__rayrc_package}" == *"${__rayrc_package_filters[$__rayrc_j]}" ]]; then
-                __rayrc_filter_matched=true
-                break
+            for ((j = 0; j < "${#package_filters[@]}"; j++)); do
+                # echo "\${package_filters[$j]}: ${package_filters[$j]}"
+                if [[ "${package}" == *"${package_filters[$j]}" ]]; then
+                    filter_matched=true
+                    break
+                fi
+            done
+
+            if [[ "${filter_matched}" == "true" ]]; then
+                __rayrc_packages_to_install+=("${package}")
             fi
         done
+    else
+        __rayrc_packages_to_install=("${__rayrc_all_packages[@]}")
+    fi
 
-        if [[ "${__rayrc_filter_matched}" == "true" ]]; then
-            __rayrc_packages_to_install+=("${__rayrc_package}")
-        fi
+    echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
+    for ((j = 0; j < "${#__rayrc_packages_to_install[@]}"; j++)); do
+        echo "\${__rayrc_packages_to_install[$j]}: ${__rayrc_packages_to_install[$j]}"
     done
-
-    # echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
-    # for ((__rayrc_j = 0; __rayrc_j < "${#__rayrc_packages_to_install[@]}"; __rayrc_j++)); do
-    #     echo "\${__rayrc_packages_to_install[$__rayrc_j]}: ${__rayrc_packages_to_install[$__rayrc_j]}"
-    # done
 }
 
+######################################################################
+#
+# Tests
+#
+######################################################################
+__rayrc_delegate_install_test01() {
+    __rayrc_global_vars "$@"
+    echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
+}
+
+######################################################################
+#
+# Entry
+#
+######################################################################
 __rayrc_delegate_entry "$@"
-# __rayrc_delegate_install
 
 unset -f __rayrc_delegate_install
 unset -f __rayrc_module_common_setup
