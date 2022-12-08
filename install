@@ -8,7 +8,7 @@
 ##
 
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-    __rayrc_facade ${0:A:h} "$@"
+    source "${0:A:h}/zsh/install.zsh" "$@"
 elif [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
     # __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
     # echo "__rayrc_root_dir: ${__rayrc_root_dir}"
