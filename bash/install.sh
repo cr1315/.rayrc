@@ -14,7 +14,10 @@ __rayrc_delegate_install() {
     for __rayrc_package in "${__rayrc_packages_to_install[@]}"; do
 
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
+        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" &&
+            -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" &&
+            ! -f "${__rayrc_main_dir}/${__rayrc_package}/disable" ]]; then
+
             echo "  .rayrc: setting up for ${__rayrc_package:3}.."
             source "${__rayrc_main_dir}/${__rayrc_package}/install.sh"
         fi
@@ -305,10 +308,10 @@ __rayrc_validate_prm() {
         __rayrc_packages_to_install=("${__rayrc_all_packages[@]}")
     fi
 
-    echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
-    for ((j = 0; j < "${#__rayrc_packages_to_install[@]}"; j++)); do
-        echo "\${__rayrc_packages_to_install[$j]}: ${__rayrc_packages_to_install[$j]}"
-    done
+    # echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
+    # for ((j = 0; j < "${#__rayrc_packages_to_install[@]}"; j++)); do
+    #     echo "\${__rayrc_packages_to_install[$j]}: ${__rayrc_packages_to_install[$j]}"
+    # done
 }
 
 ######################################################################
