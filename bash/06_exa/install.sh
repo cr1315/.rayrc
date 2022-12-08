@@ -41,7 +41,7 @@ __rayrc_install() {
 
     command -v unzip >/dev/null 2>&1 || { return; }
 
-    unzip "${__rayrc_data_dir}/exa.zip" -d "${__rayrc_data_dir}/exa/"
+    unzip "${__rayrc_data_dir}/exa.zip" -d "${__rayrc_data_dir}/exa/" >/dev/null 2>&1
 
     cp -f "${__rayrc_data_dir}/exa/bin/exa" "${__rayrc_bin_dir}"
 
