@@ -3,7 +3,7 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    if [[ "${__rayrc_facts_os_type}" =~ "linux" ]]; then
+    if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
         if uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
@@ -16,7 +16,7 @@ __rayrc_install() {
             echo ".rayrc: unsupported cpu architecture for downloading rg.."
             return 8
         fi
-    elif [[ "${__rayrc_facts_os_type}" =~ "macos" ]]; then
+    elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
         if uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \

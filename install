@@ -1,52 +1,22 @@
 ## As we use this script both for bash and zsh,
 ## we "do not / could not" include shebang here.
-## basically, if this script works under /bin/sh, it will work, probably,
+## Basically, this script will also, probably, work under `/bin/sh'
 ##
 ## ## procedures
-##
 ## - determine which shell is being used
-## - call the corresponding install script
+## - call the corresponding install script and pass-through all parameters
 ##
 
-__rayrc_facade() {
-	## declare global variables here
-	##   as our goal is to do all the things on the fly, I'll try to EXPORT nothing in the implementation
-	local __rayrc_facts_os_type
-	local __rayrc_facts_os_distribution
-
-	local __rayrc_facts_shell
-	local __rayrc_root_dir
-	local __rayrc_libs_dir
-
-	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		__rayrc_facts_shell="bash"
-		__rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
-
-		source "${__rayrc_root_dir}/${__rayrc_facts_shell}/install.sh"
-	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		__rayrc_facts_shell="zsh"
-		__rayrc_root_dir=$1
-		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
-
-		source "${__rayrc_root_dir}/${__rayrc_facts_shell}/install.zsh"
-	else
-		echo ""
-		echo ".rayrc: not supported SHELL for now.."
-		echo "  feel free to create an issue, or even add your own implementation to this project ~"
-		echo ""
-		return 8
-	fi
-}
-
-## zsh uses a different way to determine pwd of the script
-##   TODO: or try something like this:
-##   __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-	__rayrc_facade ${0:A:h}
+    source "${0:A:h}/zsh/install.zsh" "$@"
+elif [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
+    # __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
+    # echo "__rayrc_root_dir: ${__rayrc_root_dir}"
+    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/bash/install.sh" "$@"
 else
-	__rayrc_facade
+    echo ""
+    echo ".rayrc: not supported SHELL for now.."
+    echo "        feel free to create an issue, or even add your own implementation to this project ~"
+    echo ""
+    exit 8
 fi
-
-## As if we have never come here ~
-unset -f __rayrc_facade

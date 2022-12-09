@@ -5,6 +5,10 @@ command -v tmux >/dev/null 2>&1 || { return; }
 __rayrc_install() {
     __rayrc_module_common_setup
 
+    if [[ ! -d "${__rayrc_data_dir}/__rayrc_backup" ]]; then
+        mkdir -p "${__rayrc_data_dir}/__rayrc_backup"
+    fi
+
     # backup the user's .tmux.conf or even .tmux folder
     if [[ -f "${HOME}/.tmux.conf" && ! -L "${HOME}/.tmux.conf" ]]; then
         mv "${HOME}/.tmux.conf" "${__rayrc_data_dir}/__rayrc_backup/.tmux.conf"
