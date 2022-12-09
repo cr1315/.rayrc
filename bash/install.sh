@@ -115,6 +115,20 @@ __rayrc_delegate_entry() {
     declare -a __rayrc_packages_to_install
 
     source "${__rayrc_main_dir}/common.sh"
+    ## populate __rayrc_all_packages
+    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
+
+        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
+        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
+            # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
+            __rayrc_all_packages+=("${__rayrc_package}")
+        fi
+    done
+    # echo "\${__rayrc_all_packages[@]}: ${__rayrc_all_packages[@]}"
+    # echo "\${#__rayrc_all_packages[@]}: ${#__rayrc_all_packages[@]}"
+    # for ((j = 0; j < "${#__rayrc_all_packages[@]}"; j++)); do
+    #     echo "\${__rayrc_all_packages[$j]}: ${__rayrc_all_packages[$j]}"
+    # done
 
     __rayrc_populate_arrays
     unset -f __rayrc_filter_packages

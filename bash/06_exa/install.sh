@@ -3,20 +3,20 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    if [[ "${__rayrc_facts_os_type}" =~ "linux" ]]; then
-        if uname -m | grep -E -q "86|ia64" >&/dev/null; then
+    if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
+        if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
                 "ogham/exa" "${__rayrc_data_dir}/exa.zip" \
-                "linux" "musl"
-        elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
+                "arm" "linux"
+        elif uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "ogham/exa" "${__rayrc_data_dir}/exa.zip" \
-                "linux" "arm"
+                "musl" "x86_64"
         else
             echo ".rayrc: unsupported cpu architecture for downloading exa.."
             return 8
         fi
-    elif [[ "${__rayrc_facts_os_type}" =~ "macos" ]]; then
+    elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
         if uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "ogham/exa" "${__rayrc_data_dir}/exa.zip" \
@@ -24,7 +24,7 @@ __rayrc_install() {
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
                 "ogham/exa" "${__rayrc_data_dir}/exa.zip" \
-                "linux" "arm"
+                "macos" "arm"
         else
             echo ".rayrc: unsupported cpu architecture for downloading exa.."
             return 8

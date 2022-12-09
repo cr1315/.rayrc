@@ -76,21 +76,6 @@ __rayrc_populate_arrays() {
     local i
     local j
 
-    ## populate __rayrc_all_packages
-    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
-
-        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.sh" ]]; then
-            # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
-            __rayrc_all_packages+=("${__rayrc_package}")
-        fi
-    done
-    # echo "\${__rayrc_all_packages[@]}: ${__rayrc_all_packages[@]}"
-    # echo "\${#__rayrc_all_packages[@]}: ${#__rayrc_all_packages[@]}"
-    # for ((j = 0; j < "${#__rayrc_all_packages[@]}"; j++)); do
-    #     echo "\${__rayrc_all_packages[$j]}: ${__rayrc_all_packages[$j]}"
-    # done
-
     local __rayrc_install_filters
     declare -a __rayrc_install_filters
     local __rayrc_enable_filters
@@ -244,7 +229,7 @@ __rayrc_determine_os_type() {
         __rayrc_package_manager="brew"
     else
         echo ""
-        echo ".rayrc: not supported OS type for now.."
+        echo ".rayrc: could not determine OS type..."
         echo ""
         return 8
     fi
@@ -257,10 +242,6 @@ __rayrc_determin_os_distribution() {
     # for EC2:
     #   `sudo dmidecode --string system-uuid'
     #   `cat /sys/hypervisor/uuid'
-    # TODO: case switch
-    #       set __rayrc_facts_os_distribution
-    #
-    # or, create a function __rayrc_determin_os_distribution()
     #
     if [[ -f "/etc/os-release" ]]; then
         if grep -q 'ubuntu' "/etc/os-release"; then
@@ -282,6 +263,7 @@ __rayrc_determin_os_distribution() {
             __rayrc_facts_os_distribution="photon"
             __rayrc_package_manager="tdnf"
         elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
+            __rayrc_facts_os_type="linux"
             __rayrc_facts_os_distribution="openwrt"
             __rayrc_package_manager="opkg"
         else
