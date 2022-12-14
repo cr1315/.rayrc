@@ -14,5 +14,5 @@ __rayrc_main() {
 
 }
 
-__rayrc_main ${0:A:h}
+__rayrc_main
 unset -f __rayrc_main

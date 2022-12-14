@@ -83,29 +83,30 @@ __rayrc_populate_arrays() {
     local __rayrc_disable_filters
     declare -a __rayrc_disable_filters
 
-    echo "\${#__rayrc_prms[@]}: ${#__rayrc_prms[@]}"
+    # echo "\${#__rayrc_prms[@]}: ${#__rayrc_prms[@]}"
     i=1
-    while ((i < ${#__rayrc_prms[@]})); do
-        echo "__rayrc_prms[$i]: ${__rayrc_prms[$i]}"
+    while ((i <= ${#__rayrc_prms[@]})); do
+        # echo "__rayrc_prms[$i]: ${__rayrc_prms[$i]}"
         case "${__rayrc_prms[$i]}" in
         --install)
-            ((i = i + 1))
-            __rayrc_install_filters=(${__rayrc_prms[$i]//,/ })
+            __rayrc_install_filters=(${__rayrc_prms[$i + 1]//,/ })
+            ((i = i + 2))
             # echo "\${__rayrc_install_filters[@]}: ${__rayrc_install_filters[@]}"
-            # for ((j = 0; j < "${#__rayrc_install_filters[@]}"; j++)); do
+            # for j in {1..${#__rayrc_install_filters[@]}}; do
             #     echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
             # done
             ;;
         --enable)
-            ((i = i + 1))
-            __rayrc_enable_filters=(${__rayrc_prms[$i]//,/ })
+            __rayrc_enable_filters=(${__rayrc_prms[$i + 1]//,/ })
+            ((i = i + 2))
             ;;
         --disable)
-            ((i = i + 1))
-            __rayrc_disable_filters=(${__rayrc_prms[$i]//,/ })
+            __rayrc_disable_filters=(${__rayrc_prms[$i + 1]//,/ })
+            ((i = i + 2))
             ;;
         *)
             __rayrc_print_help
+            ((i = i + 1))
             ;;
         esac
     done
@@ -117,12 +118,12 @@ __rayrc_populate_arrays() {
 
 __rayrc_filter_packages() {
     local filter_matched
-    # echo "\${__rayrc_install_filters[@]}: ${__rayrc_install_filters[@]}"
-    # echo "\${#__rayrc_install_filters[@]}: ${#__rayrc_install_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_install_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
-    # done
     if [[ "${#__rayrc_install_filters[@]}" -gt 0 ]]; then
+        # echo "\${__rayrc_install_filters[@]}: ${__rayrc_install_filters[@]}"
+        # echo "\${#__rayrc_install_filters[@]}: ${#__rayrc_install_filters[@]}"
+        # for j in {1..${#__rayrc_install_filters[@]}}; do
+        #     echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
+        # done
         for i in {1..${#__rayrc_all_packages[@]}}; do
             __rayrc_package="${__rayrc_all_packages[$i]}"
             # echo "\${__rayrc_package}: ${__rayrc_package}"
@@ -147,12 +148,12 @@ __rayrc_filter_packages() {
 
 __rayrc_enable_packages() {
     local filter_matched
-    # echo "\${__rayrc_enable_filters[@]}: ${__rayrc_enable_filters[@]}"
-    # echo "\${#__rayrc_enable_filters[@]}: ${#__rayrc_enable_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_enable_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_enable_filters[$j]}: ${__rayrc_enable_filters[$j]}"
-    # done
     if [[ "${#__rayrc_enable_filters[@]}" -gt 0 ]]; then
+        # echo "\${__rayrc_enable_filters[@]}: ${__rayrc_enable_filters[@]}"
+        # echo "\${#__rayrc_enable_filters[@]}: ${#__rayrc_enable_filters[@]}"
+        # for j in {1..${#__rayrc_enable_filters[@]}}; do
+        #     echo "\${__rayrc_enable_filters[$j]}: ${__rayrc_enable_filters[$j]}"
+        # done
         for i in {1..${#__rayrc_all_packages[@]}}; do
             __rayrc_package="${__rayrc_all_packages[$i]}"
             # echo "\${__rayrc_package}: ${__rayrc_package}"
@@ -175,12 +176,12 @@ __rayrc_enable_packages() {
 
 __rayrc_disable_packages() {
     local filter_matched
-    # echo "\${__rayrc_disable_filters[@]}: ${__rayrc_disable_filters[@]}"
-    # echo "\${#__rayrc_disable_filters[@]}: ${#__rayrc_disable_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_disable_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_disable_filters[$j]}: ${__rayrc_disable_filters[$j]}"
-    # done
     if [[ "${#__rayrc_disable_filters[@]}" -gt 0 ]]; then
+        # echo "\${__rayrc_disable_filters[@]}: ${__rayrc_disable_filters[@]}"
+        # echo "\${#__rayrc_disable_filters[@]}: ${#__rayrc_disable_filters[@]}"
+        # for j in {1..${#__rayrc_disable_filters[@]}}; do
+        #     echo "\${__rayrc_disable_filters[$j]}: ${__rayrc_disable_filters[$j]}"
+        # done
         for i in {1..${#__rayrc_all_packages[@]}}; do
             __rayrc_package="${__rayrc_all_packages[$i]}"
             # echo "\${__rayrc_package}: ${__rayrc_package}"
@@ -245,34 +246,42 @@ __rayrc_determin_os_distribution() {
     #   `sudo dmidecode --string system-uuid'
     #   `cat /sys/hypervisor/uuid'
     #
-    if [[ -f "/etc/os-release" ]]; then
-        if grep -q 'ubuntu' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="ubuntu"
-            __rayrc_package_manager="apt"
-        elif grep -q 'amazon_linux' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="amzn"
-            __rayrc_package_manager="yum"
-        elif grep -q 'rhel' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="rhel"
-            __rayrc_package_manager="yum"
-        elif grep -q 'debian' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="debian"
-            __rayrc_package_manager="apt"
-        elif grep -q 'centos' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="centos"
-            __rayrc_package_manager="dnf"
-        elif grep -q 'photon' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="photon"
-            __rayrc_package_manager="tdnf"
-        elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
-            __rayrc_facts_os_type="linux"
-            __rayrc_facts_os_distribution="openwrt"
-            __rayrc_package_manager="opkg"
+    if [[ "$__rayrc_facts_os_type" == "macos" ]]; then
+        true
+    elif [[ "$__rayrc_facts_os_type" == "linux" ]]; then
+        if [[ -f "/etc/os-release" ]]; then
+            if grep -q 'ubuntu' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="ubuntu"
+                __rayrc_package_manager="apt"
+            elif grep -q 'amazon_linux' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="amzn"
+                __rayrc_package_manager="yum"
+            elif grep -q 'rhel' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="rhel"
+                __rayrc_package_manager="yum"
+            elif grep -q 'debian' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="debian"
+                __rayrc_package_manager="apt"
+            elif grep -q 'centos' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="centos"
+                __rayrc_package_manager="dnf"
+            elif grep -q 'photon' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="photon"
+                __rayrc_package_manager="tdnf"
+            elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
+                __rayrc_facts_os_type="linux"
+                __rayrc_facts_os_distribution="openwrt"
+                __rayrc_package_manager="opkg"
+            else
+                echo ""
+                echo ".rayrc: could not determine OS distribution.."
+                echo ""
+                return 8
+            fi
         else
             echo ""
             echo ".rayrc: could not determine OS distribution.."
             echo ""
-            return 8
         fi
     else
         echo ""

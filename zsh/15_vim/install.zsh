@@ -34,5 +34,5 @@ __rayrc_install() {
 
 }
 
-__rayrc_install ${0:A:h}
+__rayrc_install
 unset -f __rayrc_install
