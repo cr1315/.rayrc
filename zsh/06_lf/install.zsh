@@ -45,11 +45,11 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
-
-    cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/lf"*
+    if [[ -f "${__rayrc_data_dir}/lf.tar.gz" ]]; then
+        tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
+        cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
+        rm -rf "${__rayrc_data_dir}/lf"*
+    fi
 }
 
 __rayrc_install
