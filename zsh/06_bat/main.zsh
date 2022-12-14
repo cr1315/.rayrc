@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+command -v bat >/dev/null 2>&1 || { return; }
 
 __rayrc_main() {
     __rayrc_module_common_setup
@@ -10,7 +11,8 @@ __rayrc_main() {
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
     # set aliases
-    alias cat=bat
+    alias bat="bat --color always"
+    alias cat="bat"
 
 }
 

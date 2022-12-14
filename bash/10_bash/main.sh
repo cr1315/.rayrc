@@ -52,7 +52,6 @@ alias pd="pushd"
 alias ds="dirs -v"
 alias view="vim -R"
 alias vi="vim"
-alias cat="bat"
 
 alias ip="ip -c=auto"
 

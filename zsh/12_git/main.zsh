@@ -11,6 +11,7 @@ __rayrc_main() {
         export __rayrc_inside_docker=""
     fi
 
+    ## TODO: disable gitstatus in power10k
     # source "${__rayrc_data_dir}/gitstatus.prompt.sh"
 }
 

@@ -12,12 +12,11 @@ __rayrc_delegate_main() {
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
         if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" &&
             -f "${__rayrc_main_dir}/${__rayrc_package}/main.zsh" &&
-            ! -f "${__rayrc_main_dir}/${__rayrc_package}/disable" ]]; then
+            ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
 
             # echo source "${__rayrc_main_dir}/${__rayrc_package}/main.zsh"
             source "${__rayrc_main_dir}/${__rayrc_package}/main.zsh"
         fi
-
     done
 }
 

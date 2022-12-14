@@ -15,7 +15,7 @@ __rayrc_main() {
 
     # set for History, size, cache file..
     #set history size
-    export HISTSIZE=10000
+    export HISTSIZE=100000
     #save history after logout
     export SAVEHIST=100000
     #append into history file
@@ -29,6 +29,7 @@ __rayrc_main() {
 
     # set aliases
     source "${__rayrc_ctl_dir}/alias.zsh"
+    source "${__rayrc_ctl_dir}/functions.sh"
 
     # set env for zsh-completion
     # TODO: don't know why that there is no effect after run cmpinit

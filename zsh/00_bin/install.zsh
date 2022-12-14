@@ -4,9 +4,6 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     #
-    # defined in ROOT/bash/install.sh as if it is global.
-    # local __rayrc_bin_dir
-    #
     # we need git, curl, etc A.S.A.P.
     if ! command -v git >&/dev/null; then
         ${__rayrc_package_manager} update -y

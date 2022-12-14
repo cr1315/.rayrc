@@ -7,41 +7,16 @@
 # - delete .rayrc-created directories
 
 
-__rayrc_uninstall() {
-	local __rayrc_facts_os_type
-	local __rayrc_facts_os_distribution
-
-	local __rayrc_facts_shell
-	local __rayrc_root_dir
-	local __rayrc_libs_dir
-
-	if [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
-		__rayrc_facts_shell="bash"
-		__rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
-
-        if [[ -f "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.sh" ]]; then
-		    source "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.sh"
-        fi
-	elif [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-		__rayrc_facts_shell="zsh"
-		__rayrc_root_dir="$1"
-		__rayrc_libs_dir="${__rayrc_root_dir}/libs"
-
-        if [[ -f "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.zsh" ]]; then
-		    source "${__rayrc_root_dir}/${__rayrc_facts_shell}/uninstall.zsh"
-        fi
-	else
-		echo ".rayrc: not supported SHELL by now.."
-		return 8
-	fi
-}
-
-# call with current_path when zsh
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-	__rayrc_uninstall ${0:A:h}
+    source "${0:A:h}/zsh/uninstall.zsh" "$@"
+elif [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
+    # __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
+    # echo "__rayrc_root_dir: ${__rayrc_root_dir}"
+    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/bash/uninstall.sh" "$@"
 else
-	__rayrc_uninstall
+    echo ""
+    echo ".rayrc: not supported SHELL for now.."
+    echo "        feel free to create an issue, or even add your own implementation to this project ~"
+    echo ""
+    exit 8
 fi
-
-unset -f __rayrc_uninstall

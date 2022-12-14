@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# should come before git and vim
+command -v fzf >/dev/null 2>&1 || { return 8; }
+
 __rayrc_main() {
     __rayrc_module_common_setup
 
@@ -14,7 +17,7 @@ __rayrc_main() {
 
     # set env variables for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
-    export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border'
+    # export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border'
     export FZF_DEFAULT_OPTS="--ansi --height 70% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
     export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
     --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff
@@ -24,8 +27,6 @@ __rayrc_main() {
 
     export FZF_CTRL_T_COMMAND='fd --type f --color always --hidden --follow --exclude .git'
     export FZF_CTRL_T_OPTS="--ansi --layout=reverse --height 70% --border --margin 0,0 --preview-window 'right:60%' --preview 'bat --color=always --style=numbers,grid --line-range :200 {}'"
-
-    # export FZF_CTRL_R_OPTS=''
 
     # export FZF_ALT_C_COMMAND=''
     export FZF_ALT_C_OPTS='--no-preview'

@@ -164,8 +164,8 @@ __rayrc_enable_packages() {
                 fi
             done
 
-            if [[ "${filter_matched}" == "true" && -f "${__rayrc_main_dir}/${__rayrc_package}/disable" ]]; then
-                rm -f "${__rayrc_main_dir}/${__rayrc_package}/disable"
+            if [[ "${filter_matched}" == "true" && -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
+                rm -f "${__rayrc_main_dir}/${__rayrc_package}/disabled"
             fi
         done
     fi
@@ -192,8 +192,8 @@ __rayrc_disable_packages() {
                 fi
             done
 
-            if [[ "${filter_matched}" == "true" && ! -f "${__rayrc_main_dir}/${__rayrc_package}/disable" ]]; then
-                touch "${__rayrc_main_dir}/${__rayrc_package}/disable"
+            if [[ "${filter_matched}" == "true" && ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
+                touch "${__rayrc_main_dir}/${__rayrc_package}/disabled"
             fi
         done
     fi

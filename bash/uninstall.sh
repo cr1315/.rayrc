@@ -5,20 +5,41 @@
 # Main
 #
 ######################################################################
-__rayrc_delegate_main() {
+__rayrc_delegate_uninstall() {
     ### auto setup
     for __rayrc_package in "${__rayrc_all_packages[@]}"; do
 
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
         if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" &&
-            -f "${__rayrc_main_dir}/${__rayrc_package}/main.sh" &&
+            -f "${__rayrc_main_dir}/${__rayrc_package}/uninstall.sh" &&
             ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
 
-            # echo source "${__rayrc_main_dir}/${__rayrc_package}/main.sh"
-            source "${__rayrc_main_dir}/${__rayrc_package}/main.sh"
+            # echo source "${__rayrc_main_dir}/${__rayrc_package}/uninstall.sh"
+            source "${__rayrc_main_dir}/${__rayrc_package}/uninstall.sh"
+        fi
+    done
+    __rayrc_final_clear
+}
+
+######################################################################
+# post main
+######################################################################
+__rayrc_final_clear() {
+    ### after all installation completed, setup the .zshrc
+    if [[ -f "$HOME/.bashrc" ]]; then
+        if grep -q '.rayrc' "$HOME/.bashrc"; then
+            # we assume that sed is installed..
+            sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.bashrc"
         fi
 
-    done
+        # use here document to add two lines
+        rm -rf "${__rayrc_root_dir}"
+
+        # "cat" $HOME/.zshrc
+        echo ""
+        echo ".rayrc: all done!"
+        echo ".rayrc: we've put you back to your old environment as if you've never ever used this tool!"
+    fi
 }
 
 ######################################################################
@@ -42,6 +63,7 @@ __rayrc_delegate_entry() {
     __rayrc_root_dir="$(cd -- "${__rayrc_main_dir}/.." && pwd -P)"
     local __rayrc_libs_dir
     __rayrc_libs_dir="$(cd -- "${__rayrc_root_dir}/libs" && pwd -P)"
+    # echo "\${__rayrc_root_dir}: '${__rayrc_root_dir}'"
 
     local __rayrc_bin_dir
     __rayrc_bin_dir="${__rayrc_libs_dir}/bin"
@@ -65,7 +87,7 @@ __rayrc_delegate_entry() {
     for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
 
         # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/main.sh" ]]; then
+        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/uninstall.sh" ]]; then
             # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
             __rayrc_all_packages+=("${__rayrc_package}")
         fi
@@ -101,11 +123,12 @@ __rayrc_delegate_entry() {
     # echo "\${__rayrc_facts_os_distribution}: ${__rayrc_facts_os_distribution}"
     # echo "\${__rayrc_package_manager}: ${__rayrc_package_manager}"
 
-    __rayrc_delegate_main
+    __rayrc_delegate_uninstall
 }
 
 __rayrc_delegate_entry "$@"
 
+unset -f __rayrc_final_clear
+unset -f __rayrc_delegate_uninstall
 unset -f __rayrc_module_common_setup
-unset -f __rayrc_delegate_main
 unset -f __rayrc_delegate_entry
