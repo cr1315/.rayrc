@@ -243,34 +243,42 @@ __rayrc_determin_os_distribution() {
     #   `sudo dmidecode --string system-uuid'
     #   `cat /sys/hypervisor/uuid'
     #
-    if [[ -f "/etc/os-release" ]]; then
-        if grep -q 'ubuntu' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="ubuntu"
-            __rayrc_package_manager="apt"
-        elif grep -q 'amazon_linux' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="amzn"
-            __rayrc_package_manager="yum"
-        elif grep -q 'rhel' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="rhel"
-            __rayrc_package_manager="yum"
-        elif grep -q 'debian' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="debian"
-            __rayrc_package_manager="apt"
-        elif grep -q 'centos' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="centos"
-            __rayrc_package_manager="dnf"
-        elif grep -q 'photon' "/etc/os-release"; then
-            __rayrc_facts_os_distribution="photon"
-            __rayrc_package_manager="tdnf"
-        elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
-            __rayrc_facts_os_type="linux"
-            __rayrc_facts_os_distribution="openwrt"
-            __rayrc_package_manager="opkg"
+    if [[ "$__rayrc_facts_os_type" == "macos" ]]; then
+        true
+    elif [[ "$__rayrc_facts_os_type" == "linux" ]]; then
+        if [[ -f "/etc/os-release" ]]; then
+            if grep -q 'ubuntu' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="ubuntu"
+                __rayrc_package_manager="apt"
+            elif grep -q 'amazon_linux' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="amzn"
+                __rayrc_package_manager="yum"
+            elif grep -q 'rhel' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="rhel"
+                __rayrc_package_manager="yum"
+            elif grep -q 'debian' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="debian"
+                __rayrc_package_manager="apt"
+            elif grep -q 'centos' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="centos"
+                __rayrc_package_manager="dnf"
+            elif grep -q 'photon' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="photon"
+                __rayrc_package_manager="tdnf"
+            elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
+                __rayrc_facts_os_type="linux"
+                __rayrc_facts_os_distribution="openwrt"
+                __rayrc_package_manager="opkg"
+            else
+                echo ""
+                echo ".rayrc: could not determine OS distribution.."
+                echo ""
+                return 8
+            fi
         else
             echo ""
             echo ".rayrc: could not determine OS distribution.."
             echo ""
-            return 8
         fi
     else
         echo ""
