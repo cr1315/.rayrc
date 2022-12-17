@@ -4,6 +4,6 @@ showpath() {
     echo $PATH | sed -e 's/:/\n/g'
 }
 
-pubip() {
+ip.pub() {
     curl http://checkip.amazonaws.com
 }
