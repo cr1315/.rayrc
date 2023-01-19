@@ -80,79 +80,12 @@ git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.ray
 It may sounds ridiculous to use the word "architecutre"..  
 Whatever, I think you can understand THE MOMENT you see this folder structure:
 
-- base folder
-
-```
-├── README.md
-├── bash
-├── docs
-├── install
-├── install.ps1
-├── libs
-├── powershell
-├── test
-├── uninstall
-├── uninstall.ps1
-└── zsh
-```
-
-- bash folder
-
-```
-bash
-├── 00_bin
-├── 05_package
-├── 06_bat
-├── 06_fd
-├── 06_jq
-├── 06_rg
-├── 06_yq
-├── 10_bash
-├── 11_git
-├── 40_docker
-├── 49_ranger
-├── 51_vim
-├── 52_fzf
-├── 60_aws
-├── 61_terraform
-├── 62_kubectl
-├── 80_hulft
-├── 90_misc
-├── install.sh
-└── main.sh
-```
-
-- zsh folder
-
-```
-zsh
-├── 05_raypm
-├── 10_zsh
-├── 11_fzf
-├── 12_git
-├── 15_vim
-├── 20_bat
-├── install.zsh
-├── main.zsh
-└── uninstall.zsh
-```
-
-- libs dolers
-
-```
-libs
-├── bat
-├── bin
-├── fd
-├── fzf
-├── git
-├── jq
-├── rg
-├── vim
-├── yq
-└── zsh
-```
+![beautiful and useful prompt](./docs/images/rayrc_architecture.png)
 
 # some pricipals
 
+I would assume that this repo could create a Terminal rc Pluggable Platform.
+
+- unified management
+- extensibility / pluggable
 - idempotency
