@@ -25,7 +25,7 @@ set scrolloff 10
 set icons on
 # set previewer /home/ray/.rayrc/libs/lf/config/lf/lf-previewer
 # set previewer lf-previewer
-set previewer ./preview
+set previewer preview
 # set cleaner ./cleaner
 
 # use enter for shell commands
