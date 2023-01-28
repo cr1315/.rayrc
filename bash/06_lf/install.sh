@@ -49,6 +49,10 @@ __rayrc_install() {
     tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
 
     cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
+
+    if [[ ! -d "${HOME}/.cache/lf" ]]; then
+        mkdir -p "${HOME}/.cache/lf"
+    fi
     cp -f "${__rayrc_data_dir}/config/lf/preview" "${__rayrc_bin_dir}"
 
     rm -rf "${__rayrc_data_dir}/lf"*
