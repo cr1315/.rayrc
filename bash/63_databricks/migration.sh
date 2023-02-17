@@ -2,7 +2,7 @@
 
 ## define members array
 declare -a target_user_emails
-target_user_emails=("yuto.ohtsuka@accenture.com" "miho.b.tanaka@accenture.com")
+target_user_emails=("" "")
 
 ##
 main() {
@@ -19,8 +19,7 @@ main() {
 
 ## get user info
 get_databricks_user_id() {
-    # echo "curl -s --netrc -G --data-urlencode 'filter=userName sw ${target_user_email}' 'https://dbc-cbb40dd7-5d7b.cloud.databricks.com/api/2.0/preview/scim/v2/Users'"
-    databricks_user=$(curl -s --netrc -G --data-urlencode "filter=userName sw ${target_user_email}" 'https://accounts.cloud.databricks.com/api/2.0/accounts/99de7e02-45ef-4107-a953-488249935be6/scim/v2/Users')
+    databricks_user=$(curl -s --netrc -G --data-urlencode "filter=userName sw ${target_user_email}" "https://accounts.cloud.databricks.com/api/2.0/accounts/${TF_VAR_databricks_nszd_mws_account_id}/scim/v2/Users")
     # echo "$databricks_user" | jq '.'
 
     ## TODO: try-catch
