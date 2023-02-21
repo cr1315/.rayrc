@@ -10,6 +10,7 @@ __rayrc_install() {
         sudo_username="${USER}"
     fi
     sudo sh -c 'echo "'${sudo_username}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
+    touch "${__rayrc_ctl_dir}/disable"
 }
 
 __rayrc_install
