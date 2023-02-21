@@ -1,9 +1,9 @@
 
 function ssh() {
-  $ssh_bin = (gcm ssh).path
+  $ssh_bin = (gcm -type "Application" ssh).path
   # $args.count
   if ($args.count -ge 2) {
-    $ssh_bin $args
+    & "$ssh_bin" $args
   }
 
   $result = $(ls "$env:USERPROFILE/.ssh" -filter "*config" -recurse | %{
@@ -11,5 +11,6 @@ function ssh() {
       $_.line -replace '^Host ','ssh '
     }
   } | fzf)
-  Invoke-Expression $($result -replace '^ssh', "${ssh_bin}")
+  echo $($result -replace '^ssh', "& '${ssh_bin}'")
+  Invoke-Expression $($result -replace '^ssh', "& '${ssh_bin}'")
 }
