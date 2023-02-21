@@ -1,4 +1,5 @@
-function ssh() {
+
+function ssh_test() {
   $ssh_bin = (gcm -type "Application" ssh).path
 
   ## shortcut
@@ -29,3 +30,5 @@ function ssh() {
   # echo $($result -replace '^', "& '${ssh_bin}' ")
   Invoke-Expression $($result -replace '^', "& '${ssh_bin}' ")
 }
+
+ssh_test nsaiac
