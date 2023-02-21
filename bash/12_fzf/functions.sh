@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 
 ssh() {
-    ## shortcut
+    ## save ssh bin path for subclassing
     local ssh_bin=`which ssh`
-    if [[ "$#" -gt 1 ]]; then
-        # echo "parameter count: $#"
+
+    ## shortcut
+    if [[ "$#" -ge 2 ]]; then
+        # echo "parameters: $@"
+        $ssh_bin "$@"
+        return
+    fi
+    if [[ "$#" -eq 1 && "$1" =~ ^- ]]; then
+        # echo "parameters: $@"
         $ssh_bin "$@"
         return
     fi
@@ -20,7 +27,7 @@ ssh() {
 
     if [[ ! "${search_pattern}" =~ ^[[:space:]]*$ ]]; then
         hosts_filtered=$(echo "$host_lists" | grep -E "${search_pattern}")
-        echo "hosts_filtered:" "$hosts_filtered"
+        # echo "hosts_filtered:" "$hosts_filtered"
     else
         hosts_filtered="$host_lists"
     fi
