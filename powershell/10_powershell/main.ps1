@@ -8,12 +8,19 @@ function ssh() {
     return
   }
 
+  if ($args.count -eq 1) {
+    if ("$(${args}[0])" -match '^-') {
+      Invoke-Expression "& '$ssh_bin' $args"
+      return
+    }
+  }
+
   $host_lists = (ls "$env:USERPROFILE/.ssh" -filter "*config" -recurse | %{
     sls '^Host ' $_.fullname
   }).line -replace '^Host ', ''
   # $host_lists
 
-  if ($args.count -eq 1 && "$(${args}[0])" -notmatch '^-') {
+  if ($args.count -eq 1) {
     $hosts_filtered = ($host_lists | sls "$(${args}[0])").line
   } else {
     $hosts_filtered = $host_lists
