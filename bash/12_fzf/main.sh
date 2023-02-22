@@ -34,6 +34,8 @@ __rayrc_main() {
 
     # export FZF_ALT_C_COMMAND=''
     export FZF_ALT_C_OPTS='--no-preview'
+
+    source "${__rayrc_ctl_dir}/functions.sh"
 }
 
 __rayrc_main

@@ -17,7 +17,7 @@ __rayrc_main() {
 
     # set env variables for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
-    # export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border'
+    export FZF_DEFAULT_OPTS='--layout=reverse --height 70% --border'
     export FZF_DEFAULT_OPTS="--ansi --height 70% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
     export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
     --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff
@@ -29,8 +29,11 @@ __rayrc_main() {
     export FZF_CTRL_T_OPTS="--ansi --layout=reverse --height 70% --border --margin 0,0 --preview-window 'right:60%' --preview 'bat --color=always --style=numbers,grid --line-range :200 {}'"
 
     # export FZF_ALT_C_COMMAND=''
-    export FZF_ALT_C_OPTS='--no-preview'
+    # export FZF_ALT_C_OPTS=''
 
+    # export FZF_CTRL_R_OPTS=''
+
+    source "${__rayrc_ctl_dir}/functions.sh"
 }
 
 __rayrc_main

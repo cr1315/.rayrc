@@ -39,7 +39,10 @@ __rayrc_install() {
         return 8
     fi
 
-    command -v unzip >/dev/null 2>&1 || { return; }
+    command -v unzip >/dev/null 2>&1 || {
+        echo "  .rayrc: unzip not found for exa.."
+        return
+    }
 
     unzip "${__rayrc_data_dir}/exa.zip" -d "${__rayrc_data_dir}/exa/" >/dev/null 2>&1
 

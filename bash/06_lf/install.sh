@@ -3,6 +3,7 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
+    ## download lf.tar.gz
     if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
         if uname -m | grep -q "86" >&/dev/null; then
             if uname -m | grep -q "64" >&/dev/null; then
@@ -46,11 +47,19 @@ __rayrc_install() {
         return 8
     fi
 
+    ## install to my bin dir
     tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
-
     cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
 
+    ## clean
     rm -rf "${__rayrc_data_dir}/lf"*
+
+    ## preapre for lfrc
+    if [[ ! -d "${HOME}/.cache/lf" ]]; then
+        mkdir -p "${HOME}/.cache/lf"
+    fi
+    cp -f "${__rayrc_data_dir}/config/lf/"*preview* "${__rayrc_bin_dir}"
+
 }
 
 __rayrc_install
