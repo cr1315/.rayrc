@@ -22,8 +22,8 @@ __rayrc_install() {
                 "ogham/exa" "${__rayrc_data_dir}/exa.zip" \
                 "macos" "x86"
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            ${__rayrc_package_manager} update -y
-            ${__rayrc_package_manager} install -y exa
+            ${__rayrc_package_manager} update &>/dev/null
+            ${__rayrc_package_manager} install exa &>/dev/null
         else
             echo ".rayrc: unsupported cpu architecture for downloading exa.."
             return 8

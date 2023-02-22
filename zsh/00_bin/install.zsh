@@ -6,20 +6,20 @@ __rayrc_install() {
     #
     # we need git, curl, etc A.S.A.P.
     if ! command -v git >&/dev/null; then
-        ${__rayrc_package_manager} update -y
-        ${__rayrc_package_manager} install -y git
+        ${__rayrc_package_manager} update &>/dev/null
+        ${__rayrc_package_manager} install git &>/dev/null
     fi
     if ! command -v curl >&/dev/null; then
-        ${__rayrc_package_manager} update -y
-        ${__rayrc_package_manager} install -y curl
+        ${__rayrc_package_manager} update &>/dev/null
+        ${__rayrc_package_manager} install curl &>/dev/null
     fi
     if ! command -v grep >&/dev/null; then
-        ${__rayrc_package_manager} update -y
-        ${__rayrc_package_manager} install -y grep
+        ${__rayrc_package_manager} update &>/dev/null
+        ${__rayrc_package_manager} install grep &>/dev/null
     fi
     if ! command -v tar >&/dev/null; then
-        ${__rayrc_package_manager} update -y
-        ${__rayrc_package_manager} install -y tar
+        ${__rayrc_package_manager} update &>/dev/null
+        ${__rayrc_package_manager} install tar &>/dev/null
     fi
 }
 

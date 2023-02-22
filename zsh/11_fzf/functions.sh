@@ -41,6 +41,6 @@ ssh() {
         ssh_command=$(echo "$host_lists" | sed -E "s|^|ssh |" | fzf --no-preview)
     fi
     ssh_command=$(echo "$ssh_command" | sed -E "s|^ssh|${ssh_bin}|")
-    echo ${ssh_command}
-    # ${ssh_command}
+    # echo ${ssh_command}
+    eval ${ssh_command}
 }

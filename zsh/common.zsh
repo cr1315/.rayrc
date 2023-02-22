@@ -247,7 +247,8 @@ __rayrc_determin_os_distribution() {
     #   `cat /sys/hypervisor/uuid'
     #
     if [[ "$__rayrc_facts_os_type" == "macos" ]]; then
-        true
+        __rayrc_facts_os_distribution="macos"
+        __rayrc_package_manager="brew"
     elif [[ "$__rayrc_facts_os_type" == "linux" ]]; then
         if [[ -f "/etc/os-release" ]]; then
             if grep -q 'ubuntu' "/etc/os-release"; then
