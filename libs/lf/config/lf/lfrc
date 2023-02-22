@@ -118,3 +118,14 @@ cmd zip ${{
 #         *) for f in $fx; do setsid $OPENER $f > /dev/null 2> /dev/null & done;;
 #     esac
 # }}
+
+
+
+######################################################################
+# map
+######################################################################
+## TODO: use $HOME
+# map gh cd $$HOME
+map g/ cd /
+map ge cd /etc
+map gl cd /var/log
