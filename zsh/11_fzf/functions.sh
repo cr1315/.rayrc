@@ -2,17 +2,17 @@
 
 ssh() {
     ## save ssh bin path for subclassing
-    local ssh_bin=`which ssh`
+    local ssh_bin=$(whence -p ssh)
 
     ## shortcut
     if [[ "$#" -ge 2 ]]; then
-        # echo "parameters: $@"
-        $ssh_bin "$@"
+        echo "parameters: $@"
+        # $ssh_bin "$@"
         return
     fi
     if [[ "$#" -eq 1 && "$1" =~ ^- ]]; then
-        # echo "parameters: $@"
-        $ssh_bin "$@"
+        echo "parameters: $@"
+        # $ssh_bin "$@"
         return
     fi
 
@@ -41,5 +41,6 @@ ssh() {
         ssh_command=$(echo "$host_lists" | sed -E "s|^|ssh |" | fzf --no-preview)
     fi
     ssh_command=$(echo "$ssh_command" | sed -E "s|^ssh|${ssh_bin}|")
-    ${ssh_command}
+    echo ${ssh_command}
+    # ${ssh_command}
 }

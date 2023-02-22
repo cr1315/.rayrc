@@ -2,7 +2,7 @@
 
 ssh() {
     ## save ssh bin path for subclassing
-    local ssh_bin=`which ssh`
+    local ssh_bin=$(which ssh)
 
     ## shortcut
     if [[ "$#" -ge 2 ]]; then
@@ -38,7 +38,7 @@ ssh() {
     elif [[ $hosts_filtered_count -eq 1 ]]; then
         ssh_command=$(echo "$hosts_filtered" | sed -E "s|^|ssh |")
     else
-        ssh_command=$(echo "$host_lists" | sed -E "s|^|ssh |" | fzf --no-preview)
+        ssh_command="ssh $1"
     fi
     ssh_command=$(echo "$ssh_command" | sed -E "s|^ssh|${ssh_bin}|")
     ${ssh_command}
