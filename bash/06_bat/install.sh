@@ -45,6 +45,7 @@ __rayrc_install() {
 
     tar xf "${__rayrc_data_dir}/bat.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:bat:'
 
+    ## this will cause idempotent upgrade
     cp -f "${__rayrc_data_dir}/bat/bat" "${__rayrc_bin_dir}"
 
     rm -rf "${__rayrc_data_dir}/bat"*
