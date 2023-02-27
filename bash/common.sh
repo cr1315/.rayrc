@@ -200,14 +200,15 @@ __rayrc_disable_packages() {
 }
 
 __rayrc_print_help() {
-    echo "Default usage:"
+    echo "If you don't want to bother, just run this line:"
     echo "  ~/.rayrc/install"
     echo ""
-    echo "By default, we don't install exa (a cool tool that can replace \`ls'), but"
-    echo "you can enable it manually:"
+    echo "However, by default, we don't install exa (a cool tool that can replace \`ls'),"
+    echo "if you want to include it, you can do like this:"
     echo "  ~/.rayrc/install --enable exa"
     echo ""
-    echo "If you've already installed and is using, you can separately install a package:"
+    echo "If you've already installed and is using .rayrc now, and you want to separately"
+    echo "install a package, maybe exa?"
     echo "  ~/.rayrc/install --enable exa --install exa"
 }
 
@@ -222,11 +223,13 @@ __rayrc_determine_os_type() {
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         __rayrc_facts_os_type="macos"
 
+        ## we do need brew to be installed
         if ! command -v brew >&/dev/null; then
             $(which bash) -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
 
         __rayrc_package_manager="brew"
+    ## TODO: add logic for openWrt, etc..
     else
         echo ""
         echo ".rayrc: could not determine OS type..."
@@ -282,7 +285,7 @@ __rayrc_determin_os_distribution() {
         fi
     else
         echo ""
-        echo ".rayrc: could not determine OS distribution.."
+        echo ".rayrc: not supported OS type for bash.."
         echo ""
     fi
 }
@@ -296,4 +299,5 @@ __rayrc_delegate_entry_test01() {
     __rayrc_global_vars "$@"
     echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
 }
+# __rayrc_delegate_entry_test01
 unset -f __rayrc_delegate_entry_test01

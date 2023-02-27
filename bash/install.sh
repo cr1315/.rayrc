@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-## Well, but, THAT IS NOT A REASON TO WRITE UGLY CODE!!!
-## Coding is just hard work, as we all know! -> It's why I strive to make it an artifact!
+## THERE IS NO REASON TO WRITE UGLY CODE!!!
+## Yes, coding is hard, as we all know! -> It's why we call good code an artifact!
 
 ######################################################################
 #
@@ -33,7 +33,7 @@ __rayrc_bootstrap_rc() {
     ### after all installation completed, setup the .bashrc
     if [[ -f "$HOME/.bashrc" ]]; then
         if grep -q '.rayrc' "$HOME/.bashrc"; then
-            # we assume that sed is installed..
+            # TODO: we assume that sed is installed..
             sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.bashrc"
         fi
 
@@ -45,7 +45,7 @@ __rayrc_bootstrap_rc() {
         # "cat" "$HOME/.bashrc"
         echo ""
         echo ".rayrc: all done!"
-        echo ".rayrc: please logout & login to enjoy your new shell environment!"
+        echo ".rayrc: please logout & login again to enjoy your new shell environment!"
         echo ""
     elif [[ -f "$HOME/.profile" ]]; then
         if grep -q '.rayrc' "$HOME/.profile"; then
@@ -94,6 +94,7 @@ __rayrc_delegate_entry() {
     local __rayrc_root_dir
     __rayrc_root_dir="$(cd -- "${__rayrc_main_dir}/.." && pwd -P)"
     local __rayrc_libs_dir
+    ## maybe someone will install .rayrc to / ???
     __rayrc_libs_dir="$(cd -- "${__rayrc_root_dir}/libs" && pwd -P)"
 
     local __rayrc_bin_dir
