@@ -6,7 +6,11 @@ __rayrc_main() {
     __rayrc_module_common_setup
 
     alias d="docker"
-    alias dp="docker-compose"
+    if docker compose version &>/dev/null; then
+        alias dp="docker compose"
+    else
+        alias dp="docker-compose"
+    fi
     alias dm="docker-machine"
 }
 
