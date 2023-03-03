@@ -8,6 +8,7 @@ __rayrc_install() {
     # local __rayrc_bin_dir
     #
     # we need git, curl, etc A.S.A.P.
+    ## TODO: bufix: yum makecache do the same thing as apt update in debian..
     if ! command -v git >&/dev/null; then
         ${__rayrc_package_manager} update -y
         ${__rayrc_package_manager} install -y git
