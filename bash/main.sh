@@ -40,6 +40,8 @@ __rayrc_delegate_entry() {
 
     local __rayrc_root_dir
     __rayrc_root_dir="$(cd -- "${__rayrc_main_dir}/.." && pwd -P)"
+    # (cd ${__rayrc_root_dir} && git pull &>/dev/null)
+
     local __rayrc_libs_dir
     __rayrc_libs_dir="$(cd -- "${__rayrc_root_dir}/libs" && pwd -P)"
 

@@ -18,6 +18,7 @@ __rayrc_main() {
     fi
 
     source "${__rayrc_data_dir}/gitstatus.prompt.sh"
+    source "${__rayrc_ctl_dir}/functions.sh"
 
     # only for places without network..
     # [[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
