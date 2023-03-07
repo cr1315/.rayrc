@@ -9,7 +9,8 @@ __rayrc_install() {
     else
         sudo_username="${USER}"
     fi
-    sudo sh -c 'echo "'${sudo_username}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
+    # sudo sh -c 'echo "'${sudo_username}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
+    sudo sh -c 'echo "'${USER}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
     touch "${__rayrc_ctl_dir}/disabled"
 }
 
