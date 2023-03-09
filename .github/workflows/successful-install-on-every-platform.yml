@@ -54,4 +54,4 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           source ./install
-          exec bash
+          # exec bash
