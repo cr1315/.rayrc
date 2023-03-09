@@ -5,24 +5,10 @@ command -v aws >/dev/null 2>&1 || { return; }
 ### aws_completer
 complete -C $(which aws_completer) aws
 
-aws.publicip() {
-    curl http://checkip.amazonaws.com
-}
-
-aws.apigwips() {
-    curl -sSL "https://ip-ranges.amazonaws.com/ip-ranges.json" | jq '[
-        .prefixes[] |
-        select(.service=="API_GATEWAY" and .region=="ap-northeast-1") |
-        .ip_prefix
-    ]'
-}
-
-aws.icips() {
-    curl -sSL "https://ip-ranges.amazonaws.com/ip-ranges.json" | jq '[
-        .prefixes[] |
-        select(.service=="EC2_INSTANCE_CONNECT" and .region=="ap-northeast-1") |
-        .ip_prefix
-    ]'
+ec2.start_tester() {
+    local instance_id
+    instance_id=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=nszd_tester' --output text --query 'Reservations[*].Instances[*].InstanceId' | head -1)
+    aws ec2 start-instances --instance-ids "${instance_id}"
 }
 
 __rayrc_main() {
