@@ -19,7 +19,6 @@ Sub BatchConvertDocxToPDF()
             Set objDoc = Documents.Open(FileName:=strFolder & strFile)
             pdfName = strFolder & "pdf\" & strFile
 
-
             objDoc.ExportAsFixedFormat _
                 OutputFileName:=Replace(pdfName, ".docx", ".pdf"), _
                 ExportFormat:=wdExportFormatPDF, OpenAfterExport:=False, OptimizeFor:=wdExportOptimizeForPrint, _
