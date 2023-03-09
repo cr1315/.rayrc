@@ -1,26 +1,26 @@
-# why
+# Why
 
 Recently I found that I'm working on newly created linux workstations so often that time by time I'm annoyed with these repeating work:
 
-- set up my shell aliaes, prompts, color schemas and custom functions, etc..
+- set up my shell aliases, prompts, color schemas and custom functions, etc..
 - install and configure my favorite [`bat`](https://github.com/sharkdp/bat), [`jq`](https://github.com/stedolan/jq), [`fzf`](https://github.com/junegunn/fzf), [`rg`](https://github.com/BurntSushi/ripgrep), [`fd`](https://github.com/sharkdp/fd), etc..
 - install and configure vim plugins..
 
-IT'S TIME to automate all of this with **one command**!
+IT'S TIME to automate all of these with [**one command**](#how)!
 
-# what
+# What
 
-It's supposed to inlucde all the modifications I've done to the machine.  
-Yes, all the modifications.
+It's supposed to inlucde all my customizations on this machine.  
+Yes, all my customizations.
 
-- Why? (You may ask)
-- Well, you know, kind of, company policies, security blahblah..
+> Why? (You may ask)
+- Well, you know, there are many, that kind of, company policies, security rules, blahblah..
 
-Anyway, I'll try my best to include all my modifications with inside the `$HOME/.rayrc` folder.
+Anyway, I tried my best to include all customizations within inside the `$HOME/.rayrc` folder.
 
-And finally, after installtion, it gives me a consistent shell environment as usual, whenever I log in, whichever workstation I log in to.
+And, after installation, it gives me a consistent shell environment, whichever workstation I log in to.
 
-## features
+## Features
 
 Something like:
 
@@ -38,24 +38,22 @@ Something like:
 - some useful custom functions
   - k.conf..
 
-# who
+# Who cares
 
-## for me, and for all
+## For me, and for all,
 
 I created this for myself, but I expect this to work for anyone who wants a somehow beautiful and useful shell environment.
 
-## some prerequisites
+## but with some prerequisites
 
-- for linux, we assume the shell to be the standard bash
-- for macos, we assume the shell to be the standard zsh
-- and besides of this repo, we expect you to do some customizations for your terminal environment:
-  - one somehow nowadays terminal? Like [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/install) on Win, [iTerm2](https://iterm2.com/) on Mac..
+- Besides of this repo, we expect you to do some customizations for your terminal environment:
+  - somehow nowadays terminal application? Like [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/install) on Win, [iTerm2](https://iterm2.com/) on Mac..
   - [Nerd Fonts:](https://www.nerdfonts.com/) beautiful monospace fonts with highly crafted icons..
   - some colorschemas, like [Solarized](https://ethanschoonover.com/solarized/)..
 
-# how
+# How
 
-It should be easy to setup, as easy as executing a single command:
+It should be easy to setup, as easy as running this one-line command:
 
 ## installation for Unix
 
@@ -69,23 +67,23 @@ git clone https://github.com/cr1315/.rayrc.git && source .rayrc/install
 git clone https://github.com/cr1315/.rayrc.git && . .rayrc/install.ps1
 ```
 
-## for test
+#### for test only
 
 ```
 git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.rayrc.git && source .rayrc/install
 ```
 
-## architecture
+## Architecture
 
 It may sounds ridiculous to use the word "architecutre"..  
-Whatever, I think you can understand THE MOMENT you see this folder structure:
+Whatever, I think you can understand the concept after you see this folder structure image:
 
-![beautiful and useful prompt](./docs/images/rayrc_architecture.png)
+![folder structure image](./docs/images/rayrc_architecture.png)
 
-# some pricipals
+# Some pricipals
 
-I would assume that this repo could create a Terminal rc Pluggable Platform.
+I assume that this repo could create a **Pluggable Terminal rc Platform** with these considerations in mind:
 
 - unified management
-- extensibility / pluggable
 - idempotency
+- extensibility / pluggable
