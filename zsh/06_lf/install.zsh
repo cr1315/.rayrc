@@ -34,7 +34,7 @@ __rayrc_install() {
                 "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
                 "darwin" "amd64"
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            ${__rayrc_package_manager} update &>/dev/null
+            ${__rayrc_pm_update_repo} >&/dev/null
             ${__rayrc_package_manager} install lf &>/dev/null
         else
             echo ".rayrc: unsupported cpu architecture for downloading lf.."

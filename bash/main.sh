@@ -42,6 +42,10 @@ __rayrc_delegate_entry() {
     __rayrc_root_dir="$(cd -- "${__rayrc_main_dir}/.." && pwd -P)"
     # (cd ${__rayrc_root_dir} && git pull &>/dev/null)
 
+    ## TODO: auto-determine "${__rayrc_parent_dir}/.rayrc_per_project/" and source its main.sh
+    # local __rayrc_parent_dir
+    # __rayrc_parent_dir="$(cd -- "${__rayrc_root_dir}/.." && pwd -P)"
+
     local __rayrc_libs_dir
     __rayrc_libs_dir="$(cd -- "${__rayrc_root_dir}/libs" && pwd -P)"
 
@@ -92,14 +96,16 @@ __rayrc_delegate_entry() {
 
     ## __rayrc_facts
     local __rayrc_facts_os_type
-    __rayrc_determine_os_type
-    unset -f __rayrc_determine_os_type
-    # echo "\${__rayrc_facts_os_type}: ${__rayrc_facts_os_type}"
-
     local __rayrc_facts_os_distribution
     local __rayrc_package_manager
+    local __rayrc_pm_update_repo
+
+    __rayrc_determine_os_type
+    unset -f __rayrc_determine_os_type
+
     __rayrc_determin_os_distribution
     unset -f __rayrc_determin_os_distribution
+    # echo "\${__rayrc_facts_os_type}: ${__rayrc_facts_os_type}"
     # echo "\${__rayrc_facts_os_distribution}: ${__rayrc_facts_os_distribution}"
     # echo "\${__rayrc_package_manager}: ${__rayrc_package_manager}"
 

@@ -91,14 +91,16 @@ __rayrc_delegate_entry() {
 
     ## __rayrc_facts
     local __rayrc_facts_os_type
-    __rayrc_determine_os_type
-    unset -f __rayrc_determine_os_type
-    # echo "\${__rayrc_facts_os_type}: ${__rayrc_facts_os_type}"
-
     local __rayrc_facts_os_distribution
     local __rayrc_package_manager
+    local __rayrc_pm_update_repo
+
+    __rayrc_determine_os_type
+    unset -f __rayrc_determine_os_type
+
     __rayrc_determin_os_distribution
     unset -f __rayrc_determin_os_distribution
+    # echo "\${__rayrc_facts_os_type}: ${__rayrc_facts_os_type}"
     # echo "\${__rayrc_facts_os_distribution}: ${__rayrc_facts_os_distribution}"
     # echo "\${__rayrc_package_manager}: ${__rayrc_package_manager}"
 

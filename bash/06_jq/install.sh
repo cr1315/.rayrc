@@ -6,7 +6,7 @@ __rayrc_install() {
     if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
         if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             if [[ ! "${__rayrc_package_manager}" =~ ^[[:space:]]*$ ]]; then
-                ${__rayrc_package_manager} update -y >&/dev/null
+                ${__rayrc_pm_update_repo} >&/dev/null
                 ${__rayrc_package_manager} install -y jq >&/dev/null
             fi
         elif uname -m | grep -E -q "64" >&/dev/null; then
@@ -28,7 +28,7 @@ __rayrc_install() {
                 "osx"
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             if [[ ! "${__rayrc_package_manager}" =~ ^[[:space:]]*$ ]]; then
-                ${__rayrc_package_manager} update -y >&/dev/null
+                ${__rayrc_pm_update_repo} >&/dev/null
                 ${__rayrc_package_manager} install -y jq >&/dev/null
             fi
         else

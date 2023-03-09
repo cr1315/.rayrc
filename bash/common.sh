@@ -229,6 +229,7 @@ __rayrc_determine_os_type() {
         fi
 
         __rayrc_package_manager="brew"
+        __rayrc_pm_update_repo="brew update"
     ## TODO: add logic for openWrt, etc..
     else
         echo ""
@@ -253,25 +254,32 @@ __rayrc_determin_os_distribution() {
             if grep -q 'ubuntu' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="ubuntu"
                 __rayrc_package_manager="apt"
+                __rayrc_pm_update_repo="apt update -y"
             elif grep -q 'amazon_linux' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="amzn"
                 __rayrc_package_manager="yum"
+                __rayrc_pm_update_repo="yum makecache"
             elif grep -q 'rhel' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="rhel"
                 __rayrc_package_manager="yum"
+                __rayrc_pm_update_repo="yum makecache"
             elif grep -q 'debian' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="debian"
                 __rayrc_package_manager="apt"
+                __rayrc_pm_update_repo="apt update -y"
             elif grep -q 'centos' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="centos"
                 __rayrc_package_manager="dnf"
+                __rayrc_pm_update_repo="dnf makecache"
             elif grep -q 'photon' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="photon"
                 __rayrc_package_manager="tdnf"
+                __rayrc_pm_update_repo="tdnf makecache"
             elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="openwrt"
                 __rayrc_package_manager="opkg"
+                __rayrc_pm_update_repo="opkg update -y"
             else
                 echo ""
                 echo ".rayrc: could not determine OS distribution.."
