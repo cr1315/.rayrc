@@ -2,6 +2,9 @@
 
 if [[ $(whoami) == *"root" ]]; then
     export USER="$(basename $HOME)"
+
+    ## mangle /etc/profile settings
+    export MAIL="/var/spool/mail/$USER"
 else
     true
 fi
