@@ -32,9 +32,9 @@ __rayrc_delegate_install() {
 __rayrc_bootstrap_rc() {
     ### after all installation completed, setup the .bashrc
     if [[ -f "$HOME/.bashrc" ]]; then
-        if grep -q '.rayrc' "$HOME/.bashrc"; then
+        if grep -q "${__rayrc_installed_name}" "$HOME/.bashrc"; then
             # TODO: we assume that sed is installed..
-            sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.bashrc"
+            sed -i -e '/'"${__rayrc_installed_name}"'.*main\.sh/ d' "$HOME/.bashrc"
         fi
 
         # use here document to add two lines
@@ -48,8 +48,8 @@ __rayrc_bootstrap_rc() {
         echo ".rayrc: please logout & login again to enjoy your new shell environment!"
         echo ""
     elif [[ -f "$HOME/.profile" ]]; then
-        if grep -q '.rayrc' "$HOME/.profile"; then
-            sed -i -e '/\.rayrc.*main\.sh/ d' "$HOME/.profile"
+        if grep -q "${__rayrc_installed_name}" "$HOME/.profile"; then
+            sed -i -e '/'"${__rayrc_installed_name}"'.*main\.sh/ d' "$HOME/.profile";
         fi
 
         "cat" <<-EOF >>"$HOME/.profile"
