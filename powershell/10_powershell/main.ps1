@@ -29,15 +29,16 @@ function ssh() {
 
   if (($hosts_filtered).count -gt 1) {
     $result = $hosts_filtered | fzf
+    if ($lastexitcode -ne 0) {
+      return 0
+    }
   } elseif (($hosts_filtered).count -eq 1) {
     $result = $hosts_filtered
   } else {
     $result = "$(${args}[0])"
   }
 
-  if ($lastexitcode -eq 0) {
-    echo $($result -replace '^', "& '${ssh_bin}' ")
-    Invoke-Expression $($result -replace '^', "& '${ssh_bin}' ")
-  }
+  echo $($result -replace '^', "& '${ssh_bin}' ")
+  Invoke-Expression $($result -replace '^', "& '${ssh_bin}' ")
 }
 
