@@ -57,7 +57,7 @@ alias ds="dirs -v"
 alias view="vim -R"
 alias vi="vim"
 
-alias ip="ip -c=auto"
+alias ip="ip -c"
 
 if [[ -t 0 && $- = *i* ]]; then
     stty -ixon
