@@ -6,7 +6,7 @@ $env:LESSCHARSET = "utf-8"
 Set-PSReadlineOption -BellStyle None
 
 ##
-$env:FZF_DEFAULT_OPTS="--ansi --border --preview-window 'right:60%' --layout reverse --margin=1,4"
+$env:FZF_DEFAULT_OPTS="--border --preview-window 'right:60%' --layout reverse --margin=1,4"
 
 
 # 履歴検索
