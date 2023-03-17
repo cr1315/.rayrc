@@ -11,6 +11,9 @@ __rayrc_main() {
     # PROMPT_COMMAND='__git_ps1 "\[\033[33m\]ray\[\033[35m\]@\h \[\033[34m\]$PWD\[\033[00m\]" "\n\\\$"'
     export GITSTATUS_CACHE_DIR="${__rayrc_bin_dir}"
 
+    ## add GITSTATUS_DIR for per series
+    export GITSTATUS_DIR="${__rayrc_data_dir}/gitstatus/gitstatus.plugin.sh"
+
     if [ -f /.dockerenv ]; then
         export __rayrc_inside_docker=$'\033[1m(docker)\033[00m'
     else
