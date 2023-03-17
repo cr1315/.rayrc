@@ -104,7 +104,8 @@ function gitstatus_prompt_update() {
   PS1+="\[\033[33m\]${USER}\[\033[00m\]"
   PS1+="\[\033[1;30m\]@\[\033[00m\]"
   PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\]"
-  PS1+="${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n"
+  PS1+="${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT}"
+  PS1+="${__rayrc_inside_docker}\n"
   PS1+="${__rayrc_SC}\[\033[00m\] "
 
 }
