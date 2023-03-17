@@ -34,16 +34,12 @@ function gitstatus_prompt_update() {
   else
     __rayrc_SC="\[\033[31m\]:("
   fi
-  # if [[ -f /.dockerenv ]]; then
-  #   export __rayrc_inside_docker=$'\033[1m(docker)\033[00m'
-  # else
-  #   export __rayrc_inside_docker=""
-  # fi
+
   # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\] ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
   PS1=""
   PS1+="\[\033[33m\]${USER}\[\033[00m\]"
-  PS1+="\[\033[33m\]@\[\033[00m\]"
-  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\] "
+  PS1+="\[\033[1;30m\]@\[\033[00m\]"
+  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\]"
   PS1+="${__rayrc_inside_docker}\n"
   PS1+="${__rayrc_SC}\[\033[00m\] "
 
@@ -106,8 +102,8 @@ function gitstatus_prompt_update() {
   # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\]${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
   PS1=""
   PS1+="\[\033[33m\]${USER}\[\033[00m\]"
-  PS1+="\[\033[33m\]@\[\033[00m\]"
-  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\] "
+  PS1+="\[\033[1;30m\]@\[\033[00m\]"
+  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\]"
   PS1+="${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n"
   PS1+="${__rayrc_SC}\[\033[00m\] "
 
@@ -121,16 +117,3 @@ PROMPT_COMMAND=gitstatus_prompt_update
 
 # Enable promptvars so that ${GITSTATUS_PROMPT} in PS1 is expanded.
 shopt -s promptvars
-
-# Customize prompt. Put $GITSTATUS_PROMPT in it reflect git status.
-#
-# Example:
-#
-#   user@host ~/projects/skynet master ⇡42
-#   $ █
-# PS1='\[\033[01;33m\]ray\[\033[35m\]@\h\[\033[00m\] '           # green user@host
-# PS1+='\[\033[01;34m\]\w\[\033[00m\]'                           # blue current working directory
-# PS1+='${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT}'                 # git status (requires promptvars option)
-# # PS1+='\n\[\033[01;$((31+!$?))m\]${__rayrc_SC}\[\033[00m\] '  # green/red (success/error) $/# (normal/root)
-# PS1+='\n${__rayrc_SC}\[\033[00m\] '
-# # PS1+='\[\e]0;\u@\h: \w\a\]'                                  # terminal title: user@host: dir
