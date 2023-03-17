@@ -39,7 +39,13 @@ function gitstatus_prompt_update() {
   # else
   #   export __rayrc_inside_docker=""
   # fi
-  PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\] ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
+  # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\] ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
+  PS1=""
+  PS1+="\[\033[33m\]${USER}\[\033[00m\]"
+  PS1+="\[\033[33m\]@\[\033[00m\]"
+  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\] "
+  PS1+="${__rayrc_inside_docker}\n"
+  PS1+="${__rayrc_SC}\[\033[00m\] "
 
   GITSTATUS_PROMPT=""
 
@@ -97,7 +103,14 @@ function gitstatus_prompt_update() {
   # history -c
   # history -r
 
-  PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\]${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
+  # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\]${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
+  PS1=""
+  PS1+="\[\033[33m\]${USER}\[\033[00m\]"
+  PS1+="\[\033[33m\]@\[\033[00m\]"
+  PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\] "
+  PS1+="${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n"
+  PS1+="${__rayrc_SC}\[\033[00m\] "
+
 }
 
 # Start gitstatusd in the background.
