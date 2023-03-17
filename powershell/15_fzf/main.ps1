@@ -5,6 +5,10 @@ $env:LESSCHARSET = "utf-8"
 # 音を消す
 Set-PSReadlineOption -BellStyle None
 
+##
+$env:FZF_DEFAULT_OPTS="--ansi --border --preview-window 'right:60%' --layout reverse --margin=1,4"
+
+
 # 履歴検索
 Set-PSReadLineKeyHandler -Chord Ctrl+r -ScriptBlock {
   [System.Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("utf-8")
