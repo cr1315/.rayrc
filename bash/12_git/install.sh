@@ -9,7 +9,7 @@ __rayrc_install() {
         "${__rayrc_data_dir}/gitstatus" >&/dev/null
 
     # git aliases
-    if git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1; then
+    if git config --global --list 2>&1 | grep 'pull.rebase=' >/dev/null 2>&1; then
         true
     else
         git config --global alias.st status
