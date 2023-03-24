@@ -75,7 +75,8 @@ git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.ray
 
 ## Architecture
 
-It may sounds ridiculous to use the word "architecutre", and I've been thinking about, like taking around 30min to explain it. Unfortunately, I'm not good at bragging, although I'm working in a consulting company :).  
+It may sounds ridiculous to use the word "architecutre", and I've been thinking about, like taking around 30min to explain it. Unfortunately, I'm not good at bragging, although I'm working in a consulting company :).
+
 Whatever, I think you can understand the concept/intention after you see this folder structure image:
 
 ![folder structure image](./docs/images/rayrc_architecture.png)
