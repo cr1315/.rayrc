@@ -10,13 +10,13 @@ IT'S TIME to automate all of these with [**one command**](#how)!
 
 # What
 
-It's supposed to inlucde all my customizations on this machine.  
-Yes, all my customizations.
+It's supposed to inlucde all my customizations on a workstation,  
+it means that all my custom settings would settle down inside the `$HOME/.rayrc` folder.
 
 > Why? (You may ask)
-- Well, you know, there are many, that kind of, company policies, security rules, blahblah..
+- Well, you know, there are many, those kinds of, company policies, security policies, blahblah blahblah..
 
-Anyway, I tried my best to include all customizations within inside the `$HOME/.rayrc` folder.
+Anyway, I tried my best to include all my customizations within inside the `$HOME/.rayrc` folder.
 
 And, after installation, it gives me a consistent shell environment, whichever workstation I log in to.
 
@@ -47,13 +47,13 @@ I created this for myself, but I expect this to work for anyone who wants a some
 ## but with some prerequisites
 
 - Besides of this repo, we expect you to do some customizations for your terminal environment:
-  - somehow nowadays terminal application? Like [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/install) on Win, [iTerm2](https://iterm2.com/) on Mac..
+  - somehow nowadays terminal application? Like for example, [Windows Terminal](https://docs.microsoft.com/en-us/windows/terminal/install) on Win, [iTerm2](https://iterm2.com/) on Mac..
   - [Nerd Fonts:](https://www.nerdfonts.com/) beautiful monospace fonts with highly crafted icons..
   - some colorschemas, like [Solarized](https://ethanschoonover.com/solarized/)..
 
 # How
 
-It should be easy to setup, as easy as running this one-line command:
+It should be easy to install, as easy as running this single one-liner:
 
 ## installation for Unix
 
@@ -75,8 +75,8 @@ git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.ray
 
 ## Architecture
 
-It may sounds ridiculous to use the word "architecutre"..  
-Whatever, I think you can understand the concept after you see this folder structure image:
+It may sounds ridiculous to use the word "architecutre", and I've been thinking about, like taking around 30min to explain it. Unfortunately, I'm not good at bragging, although I'm working in a consulting company :).  
+Whatever, I think you can understand the concept/intention after you see this folder structure image:
 
 ![folder structure image](./docs/images/rayrc_architecture.png)
 
