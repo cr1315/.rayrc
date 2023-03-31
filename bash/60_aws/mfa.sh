@@ -96,3 +96,29 @@ aws.stg() {
     export AWS_SECRET_ACCESS_KEY=$(echo "$credential" | jq -r '.Credentials.SecretAccessKey')
     export AWS_SESSION_TOKEN=$(echo "$credential" | jq -r '.Credentials.SessionToken')
 }
+
+
+aws.assume() {
+    local credential
+    local target_role
+    local rc
+
+    target_role="$1"
+
+    # TODO: target_role=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
+    credential=$(aws sts assume-role --role-arn $target_role --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+    rc=$?
+    if [[ $rc != 0 ]]; then
+        echo "failed to \`assume-role'"
+        return $rc
+    fi
+
+    # we got the credential
+    unset AWS_PROFILE
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+    export AWS_ACCESS_KEY_ID=$(echo "$credential" | jq -r '.Credentials.AccessKeyId')
+    export AWS_SECRET_ACCESS_KEY=$(echo "$credential" | jq -r '.Credentials.SecretAccessKey')
+    export AWS_SESSION_TOKEN=$(echo "$credential" | jq -r '.Credentials.SessionToken')
+}
