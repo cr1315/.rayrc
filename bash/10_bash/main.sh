@@ -37,9 +37,9 @@ export TERM="xterm-256color"
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-HISTSIZE=100000
-HISTFILESIZE=100000
-HISTCONTROL=ignoredups:erasedups
+export HISTSIZE=100000
+export HISTFILESIZE=100000
+export HISTCONTROL=ignoredups:erasedups
 
 # aliases
 if command -v exa >/dev/null 2>&1; then
