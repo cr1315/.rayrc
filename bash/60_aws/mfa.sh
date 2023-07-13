@@ -116,6 +116,7 @@ aws.assume() {
     rc=$?
     if [[ $rc != 0 ]]; then
         echo "failed to \`assume-role'"
+        echo "$credential"
         return $rc
     fi
 
