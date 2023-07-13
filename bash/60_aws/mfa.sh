@@ -58,7 +58,7 @@ aws.mfa() {
 
 aws.stg() {
     local credential
-    local target_role
+    local target_role_arn
     local rc
 
     # test privilege
@@ -79,7 +79,7 @@ aws.stg() {
         fi
     fi
 
-    # TODO: target_role=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
+    # TODO: target_role_arn=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
     credential=$(aws sts assume-role --role-arn "arn:aws:iam::${ACCOUNT_ID_STG}:role/switchRole-From-dev" --role-session-name "stg-admin" --duration-seconds 3600 2>/dev/null)
     rc=$?
     if [[ $rc != 0 ]]; then
@@ -100,13 +100,19 @@ aws.stg() {
 
 aws.assume() {
     local credential
-    local target_role
+    local target_role_arn
+    local external_id
     local rc
 
-    target_role="$1"
+    target_role_arn="$1"
+    external_id="$2"
 
-    # TODO: target_role=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
-    credential=$(aws sts assume-role --role-arn $target_role --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+    # TODO: target_role_arn=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
+    if [[ -z "$external_id" ]]; then
+        credential=$(aws sts assume-role --role-arn $target_role_arn --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+    else
+        credential=$(aws sts assume-role --role-arn $target_role_arn --external-id "$external_id" --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+    fi
     rc=$?
     if [[ $rc != 0 ]]; then
         echo "failed to \`assume-role'"
