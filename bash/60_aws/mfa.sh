@@ -109,9 +109,9 @@ aws.assume() {
 
     # TODO: target_role_arn=$(aws iam list-roles | jq -r '.Roles[].Arn' | grep 'From')
     if [[ -z "$external_id" ]]; then
-        credential=$(aws sts assume-role --role-arn $target_role_arn --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+        credential=$(aws sts assume-role --role-arn $target_role_arn --role-session-name "assume_role" --duration-seconds 3600 2>&1)
     else
-        credential=$(aws sts assume-role --role-arn $target_role_arn --external-id "$external_id" --role-session-name "assume_role" --duration-seconds 3600 2>/dev/null)
+        credential=$(aws sts assume-role --role-arn $target_role_arn --external-id "$external_id" --role-session-name "assume_role" --duration-seconds 3600 2>&1)
     fi
     rc=$?
     if [[ $rc != 0 ]]; then
