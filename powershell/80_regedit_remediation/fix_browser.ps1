@@ -57,3 +57,5 @@ safelyRemoveRegistryKey hklm:\Software\Policies\Google\Chrome\SyncTypesListDisab
 
 set-ItemProperty hklm:\SOFTWARE\Policies\Google\Chrome -name "ImportSavedPasswords" -value 1
 set-ItemProperty hklm:\SOFTWARE\Policies\Google\Chrome -name "PasswordManagerEnabled" -value 1
+
+set-ItemProperty hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -name "DisableBkGndGroupPolicy" -value 1
