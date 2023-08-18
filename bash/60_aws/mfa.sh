@@ -40,15 +40,15 @@ aws.mfa() {
         duration=43200
     fi
 
+    local serial_number
+    local credential
+    serial_number="$(aws iam list-mfa-devices | jq -r '.MFADevices[0].SerialNumber')"
+    credential=$(aws sts get-session-token --duration-seconds $duration --serial-number $serial_number --token-code $auth_code)
+
     unset AWS_PROFILE
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
-    local serial_number
-    local credential
-
-    serial_number="$(aws iam list-mfa-devices | jq -r '.MFADevices[0].SerialNumber')"
-    credential=$(aws sts get-session-token --duration-seconds $duration --serial-number $serial_number --token-code $auth_code)
     export AWS_ACCESS_KEY_ID=$(echo "$credential" | jq -r '.Credentials.AccessKeyId')
     export AWS_SECRET_ACCESS_KEY=$(echo "$credential" | jq -r '.Credentials.SecretAccessKey')
     export AWS_SESSION_TOKEN=$(echo "$credential" | jq -r '.Credentials.SessionToken')
