@@ -17,10 +17,10 @@ __rayrc_main() {
     [[ $- == *i* ]] && source "${__rayrc_data_dir}/fzf/shell/completion.bash" 2>/dev/null
     source "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
-    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:40%:wrap --bind '?:toggle-preview'"
 
     # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
-    export FZF_DEFAULT_OPTS="--ansi --height 70% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
+    export FZF_DEFAULT_OPTS="--ansi --height 80% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
 
     export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
     --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff
