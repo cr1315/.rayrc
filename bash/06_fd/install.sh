@@ -13,7 +13,7 @@ __rayrc_install() {
                 "sharkdp/fd" "${__rayrc_data_dir}/fd.tar.gz" \
                 "musl" "x86_64"
         else
-            echo ".rayrc: unsupported cpu architecture for downloading exa.."
+            echo ".rayrc: unsupported cpu architecture for downloading fd.."
             return 8
         fi
     elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
@@ -26,11 +26,11 @@ __rayrc_install() {
                 "sharkdp/fd" "${__rayrc_data_dir}/fd.tar.gz" \
                 "macos" "arm"
         else
-            echo ".rayrc: unsupported cpu architecture for downloading exa.."
+            echo ".rayrc: unsupported cpu architecture for downloading fd.."
             return 8
         fi
     else
-        echo ".rayrc: unsupported os for downloading exa.."
+        echo ".rayrc: unsupported os for downloading fd.."
         return 8
     fi
 
