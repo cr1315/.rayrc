@@ -129,3 +129,11 @@ aws.assume() {
     export AWS_SECRET_ACCESS_KEY=$(echo "$credential" | jq -r '.Credentials.SecretAccessKey')
     export AWS_SESSION_TOKEN=$(echo "$credential" | jq -r '.Credentials.SessionToken')
 }
+
+aws.resume() {
+    # we got the credential
+    unset AWS_PROFILE
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+}
