@@ -13,7 +13,6 @@ __rayrc_github_downloader() {
     shift
     shift
 
-    local disable_output
     local release_links
     local release_links_lazy_url
     local downloaded_link
@@ -22,7 +21,7 @@ __rayrc_github_downloader() {
     release_links="$(curl -sfL "https://github.com/${bin_name}/releases/latest")"
 
     ## github changed real links to lazy-data..
-    if disable_output="$(echo "$release_links" | grep '/expanded_assets')"; then
+    if echo "$release_links" | grep '/expanded_assets' >&/dev/null; then
         release_links_lazy_url="$(echo "$release_links" | grep '/expanded_assets' | grep -oE 'src="[^"]*' | grep -oE 'http.*')"
         release_links="$(curl -sfL "${release_links_lazy_url}")"
     fi
