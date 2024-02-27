@@ -7,11 +7,11 @@ __rayrc_install() {
         if uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "linux" "86"
+                "86" 'linux-gnu.tar.gz"'
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "linux" "arm"
+                "arm" 'linux-musleabihf.tar.gz"'
         else
             echo ".rayrc: unsupported cpu architecture for downloading rg.."
             return 8
@@ -24,7 +24,7 @@ __rayrc_install() {
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "linux" "arm"
+                "linux" "aarch"
         else
             echo ".rayrc: unsupported cpu architecture for downloading rg.."
             return 8
