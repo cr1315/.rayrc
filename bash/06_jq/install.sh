@@ -5,10 +5,9 @@ __rayrc_install() {
 
     if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
         if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            if [[ ! "${__rayrc_package_manager}" =~ ^[[:space:]]*$ ]]; then
-                ${__rayrc_pm_update_repo} >&/dev/null
-                ${__rayrc_package_manager} install -y jq >&/dev/null
-            fi
+            __rayrc_github_downloader \
+                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "linux" "arm64"
         elif uname -m | grep -E -q "64" >&/dev/null; then
             __rayrc_github_downloader \
                 "stedolan/jq" "${__rayrc_data_dir}/jq" \
@@ -27,10 +26,9 @@ __rayrc_install() {
                 "stedolan/jq" "${__rayrc_data_dir}/jq" \
                 "osx"
         elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            if [[ ! "${__rayrc_package_manager}" =~ ^[[:space:]]*$ ]]; then
-                ${__rayrc_pm_update_repo} >&/dev/null
-                ${__rayrc_package_manager} install -y jq >&/dev/null
-            fi
+            __rayrc_github_downloader \
+                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "macos" "arm64"
         else
             echo ".rayrc: unsupported cpu architecture for downloading exa.."
             return 8
