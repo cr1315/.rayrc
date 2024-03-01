@@ -15,7 +15,7 @@ __rayrc_install() {
         elif uname -m | grep -E -q "86" >&/dev/null; then
             __rayrc_github_downloader \
                 "stedolan/jq" "${__rayrc_data_dir}/jq" \
-                "linux32"
+                "linux" "i386"
         else
             echo ".rayrc: unsupported cpu architecture for downloading exa.."
             return 8
