@@ -7,7 +7,7 @@ __rayrc_install() {
         if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
                 "sharkdp/fd" "${__rayrc_data_dir}/fd.tar.gz" \
-                "arm" "linux-musleabihf.tar"
+                "aarch64" "linux"
         elif uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "sharkdp/fd" "${__rayrc_data_dir}/fd.tar.gz" \
