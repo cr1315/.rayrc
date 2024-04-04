@@ -2,7 +2,7 @@
 # POWERSHELL
 
 ## list all routes for up link
-Get-NetRoute -AddressFamily ipv4 | ?{$_.ifIndex -in ((Get-NetIPInterface -AddressFamily ipv4 | ?{$_.ConnectionState -eq "Connected"} | select ifIndex).ifIndex)} | select -property ifIndex, DestinationPrefix, @{Name="mask";Expression={[int]($_.DestinationPrefix -replace '.*/(\d+)$','$1')}}, NextHop, RouteMetric, interfaceMetric | sort ifindex, @{Expression="mask"; Descending=$True}, routemetric, interfaceMetric, DestinationPrefix | ft
+Get-NetRoute -AddressFamily ipv4 | ? { $_.ifIndex -in ((Get-NetIPInterface -AddressFamily ipv4 | ? { $_.ConnectionState -eq "Connected" } | select ifIndex).ifIndex) } | select -property ifIndex, DestinationPrefix, @{Name = "mask"; Expression = { [int]($_.DestinationPrefix -replace '.*/(\d+)$', '$1') } }, NextHop, RouteMetric, interfaceMetric | sort ifindex, @{Expression = "mask"; Descending = $True }, routemetric, interfaceMetric, DestinationPrefix | ft
 
 New-NetRoute -PolicyStore ActiveStore -DestinationPrefix "192.168.0.0/20" -NextHop "10.10.34.1" -InterfaceIndex 4
 
