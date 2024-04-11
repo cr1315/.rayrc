@@ -14,3 +14,5 @@ libs/rg
 __pycache__/
 
 docs/.DS_Store
+
+**/__rayrc_backup/
