@@ -14,6 +14,7 @@ It's supposed to inlucde all my customizations on a workstation,
 it means that all my custom settings would settle down inside the `$HOME/.rayrc` folder.
 
 > Why? (You may ask)
+
 - Well, you know, there are many, those kinds of, company policies, security policies, blahblah blahblah..
 
 Anyway, I tried my best to include all my customizations within inside the `$HOME/.rayrc` folder.
@@ -75,16 +76,20 @@ git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.ray
 
 ## Architecture
 
-It may sounds ridiculous to use the word "architecutre", and I've been thinking about, like taking around 30min to explain it. Unfortunately, I'm not good at bragging, although I'm working in a consulting company :).
+It may sounds a bit ridiculous to use the word "architecutre" for such a little project, but I'd say I've really crafted a lot.
 
-Whatever, I think you can understand the concept/intention after you see this folder structure image:
-
-![folder structure image](./docs/images/rayrc_architecture.png)
-
-# Some pricipals
+### Some pricipals
 
 I assume that this repo could create a **Pluggable Terminal rc Platform** with these considerations in mind:
 
 - unified management
 - idempotency
 - extensibility / pluggable
+
+### Advertise and boast
+
+Unfortunately, I'm not good at bragging, although I'm working in a consulting company :).
+
+Whatever, I think you can understand the concept/intention as soon as you see this folder structure image:
+
+![folder structure image](./docs/images/rayrc_architecture.png)
