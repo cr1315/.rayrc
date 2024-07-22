@@ -4,7 +4,11 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
-        if uname -m | grep -E -q "86|ia64" >&/dev/null; then
+        if uname -m | grep -E -q "x86_64" >&/dev/null; then
+            __rayrc_github_downloader \
+                "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
+                "x86_64" 'musl.tar.gz"'
+        elif uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
                 "86" 'linux-gnu.tar.gz"'
