@@ -2,7 +2,7 @@
 
 ssh() {
     ## save ssh bin path for subclassing
-    local ssh_bin=$(which ssh)
+    local ssh_bin=$(/usr/bin/which ssh)
 
     ## shortcut
     if [[ "$#" -ge 2 ]]; then
