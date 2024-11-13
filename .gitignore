@@ -9,6 +9,7 @@ libs/bat
 libs/bin
 libs/fd
 libs/rg
+libs/poetry
 
 *.pyc
 __pycache__/
