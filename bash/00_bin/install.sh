@@ -15,22 +15,22 @@ __rayrc_install() {
        ! command -v tar >&/dev/null ||
        ! command -v unzip >&/dev/null; then
 
-        ${__rayrc_pm_update_repo}
+        ${__rayrc_pm_update_repo} >&/dev/null
     fi
     if ! command -v git >&/dev/null; then
-        ${__rayrc_package_manager} install -y git
+        ${__rayrc_package_manager} install -y git >&/dev/null
     fi
     if ! command -v curl >&/dev/null; then
-        ${__rayrc_package_manager} install -y curl
+        ${__rayrc_package_manager} install -y curl >&/dev/null
     fi
     if ! command -v grep >&/dev/null; then
-        ${__rayrc_package_manager} install -y grep
+        ${__rayrc_package_manager} install -y grep >&/dev/null
     fi
     if ! command -v tar >&/dev/null; then
-        ${__rayrc_package_manager} install -y tar
+        ${__rayrc_package_manager} install -y tar >&/dev/null
     fi
     if ! command -v unzip >&/dev/null; then
-        ${__rayrc_package_manager} install -y unzip
+        ${__rayrc_package_manager} install -y unzip >&/dev/null
     fi
 }
 
