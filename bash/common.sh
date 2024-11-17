@@ -272,8 +272,8 @@ __rayrc_determin_os_distribution() {
                 __rayrc_pm_update_repo="dnf makecache"
             elif grep -q 'photon' "/etc/os-release"; then
                 __rayrc_facts_os_distribution="photon"
-                __rayrc_package_manager="tdnf"
-                __rayrc_pm_update_repo="tdnf makecache"
+                __rayrc_package_manager="sudo tdnf"
+                __rayrc_pm_update_repo="sudo tdnf makecache"
             elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="openwrt"
