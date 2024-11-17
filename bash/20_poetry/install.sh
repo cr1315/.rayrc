@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-command -v poetry >/dev/null 2>&1 || { return; }
+command -v poetry >/dev/null 2>&1 && { return; }
 
 __rayrc_install() {
     __rayrc_module_common_setup
