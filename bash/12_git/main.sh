@@ -10,16 +10,18 @@ __rayrc_main() {
     ## add GITSTATUS_DIR for .rayrc_per_series
     export GITSTATUS_DIR="${__rayrc_data_dir}/gitstatus/gitstatus.plugin.sh"
 
-    # TODO: determine if we are in docker
-    # TODO: move to docker main.sh?
-    if [ -f /.dockerenv ]; then
-        export __rayrc_inside_docker=$'\033[1m (docker)\033[00m'
-    else
-        export __rayrc_inside_docker=""
-    fi
+    if [[ -f "${GITSTATUS_DIR}" ]]; then
+        # TODO: determine if we are in docker
+        # TODO: move to docker main.sh?
+        if [ -f /.dockerenv ]; then
+            export __rayrc_inside_docker=$'\033[1m (docker)\033[00m'
+        else
+            export __rayrc_inside_docker=""
+        fi
 
-    source "${__rayrc_data_dir}/gitstatus.prompt.sh"
-    source "${__rayrc_ctl_dir}/functions.sh"
+        source "${__rayrc_data_dir}/gitstatus.prompt.sh"
+        source "${__rayrc_ctl_dir}/functions.sh"
+    fi
 
     # only for places without network..
     # [[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
