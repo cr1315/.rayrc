@@ -52,10 +52,10 @@ else
 fi
 
 alias cls="clear"
-alias pd="pushd"
 alias ds="dirs -v"
-alias view="vim -R"
+alias pd="pushd"
 alias vi="vim"
+alias view="vim -R"
 
 alias ip="ip -c"
 
