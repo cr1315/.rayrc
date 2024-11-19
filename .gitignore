@@ -10,6 +10,7 @@ libs/bin
 libs/fd
 libs/rg
 libs/poetry
+libs/ansible
 
 *.pyc
 __pycache__/
