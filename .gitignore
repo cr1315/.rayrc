@@ -11,6 +11,7 @@ libs/fd
 libs/rg
 libs/poetry
 libs/ansible
+libs/glances
 
 *.pyc
 __pycache__/

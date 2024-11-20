@@ -9,6 +9,7 @@ __rayrc_install() {
     python3 -m venv "${__rayrc_data_dir}"
     (
         source "${__rayrc_data_dir}/bin/activate"
+        pip install --upgrade pip
         pip install 'ansible<2.10.0'
     ) >&/dev/null
 
