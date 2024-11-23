@@ -5,6 +5,9 @@ command -v glances >/dev/null 2>&1 && { return; }
 __rayrc_install() {
     __rayrc_module_common_setup
 
+    ## memo: for photon os
+    ##   tdnf install -y python3-devel python3-curses
+
     python3 -m venv "${__rayrc_data_dir}"
     (
         source "${__rayrc_data_dir}/bin/activate"
