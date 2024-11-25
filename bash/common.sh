@@ -274,6 +274,12 @@ __rayrc_determin_os_distribution() {
                 __rayrc_facts_os_distribution="photon"
                 __rayrc_package_manager="sudo tdnf"
                 __rayrc_pm_update_repo="sudo tdnf makecache"
+            elif grep -qiE 'synology' "/etc/os-release"; then
+                __rayrc_facts_os_type="linux"
+                __rayrc_facts_os_distribution="Synology"
+                ## TODO: Synology package manager
+                __rayrc_package_manager="echo"
+                __rayrc_pm_update_repo="echo"
             elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="openwrt"
