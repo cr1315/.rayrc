@@ -39,16 +39,22 @@ __rayrc_install() {
         return 8
     fi
 
-    command -v unzip >/dev/null 2>&1 || {
-        echo "  .rayrc: unzip not found for exa.."
-        return
-    }
+    if command -v unzip >/dev/null 2>&1; then
 
-    unzip "${__rayrc_data_dir}/exa.zip" -d "${__rayrc_data_dir}/exa/" >/dev/null 2>&1
+        unzip "${__rayrc_data_dir}/exa.zip" -d "${__rayrc_data_dir}/exa/" >/dev/null 2>&1
+        cp -f "${__rayrc_data_dir}/exa/bin/exa" "${__rayrc_bin_dir}"
+        rm -rf "${__rayrc_data_dir}/exa"*
 
-    cp -f "${__rayrc_data_dir}/exa/bin/exa" "${__rayrc_bin_dir}"
+    elif command -v 7z >/dev/null 2>&1; then
 
-    rm -rf "${__rayrc_data_dir}/exa"*
+        7z x "${__rayrc_data_dir}/exa.zip" -o"${__rayrc_data_dir}/exa/" >/dev/null 2>&1
+        cp -f "${__rayrc_data_dir}/exa/bin/exa" "${__rayrc_bin_dir}"
+        rm -rf "${__rayrc_data_dir}/exa"*
+
+    else
+        echo ".rayrc: unzip or 7z is required to install exa.."
+        return 8
+    fi
 }
 
 __rayrc_install
