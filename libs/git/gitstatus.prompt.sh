@@ -37,6 +37,7 @@ function gitstatus_prompt_update() {
 
   # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\] ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
   PS1=""
+  PS1+="${VIRTUAL_ENV_PROMPT:+(${VIRTUAL_ENV_PROMPT}) }"
   PS1+="\[\033[33m\]${USER}\[\033[00m\]"
   PS1+="\[\033[1;30m\]@\[\033[00m\]"
   PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\]"
@@ -103,6 +104,7 @@ function gitstatus_prompt_update() {
 
   # PS1="\[\033[33m\]${USER}\[\033[35m\]@\h \[\033[34m\]\w\[\033[00m\]${GITSTATUS_PROMPT:+ $GITSTATUS_PROMPT} ${__rayrc_inside_docker}\n${__rayrc_SC}\[\033[00m\] "
   PS1=""
+  PS1+="${VIRTUAL_ENV_PROMPT:+(${VIRTUAL_ENV_PROMPT}) }"
   PS1+="\[\033[33m\]${USER}\[\033[00m\]"
   PS1+="\[\033[1;30m\]@\[\033[00m\]"
   PS1+="\[\033[35m\]\h \[\033[34m\]\w\[\033[00m\]"
