@@ -1,13 +1,13 @@
 #!/usr/bin/env zsh
 
 # aliases
-if command -v exa >/dev/null 2>&1; then
-    # alias ls="exa --icons"
-    # alias ll="exa -lg --icons"
-    # alias la="exa -ahlg --icons"
-    alias la="exa -ahl --icons"
-    alias ll="exa -hl --icons"
-    alias lt="exa -hlT --icons"
+if command -v eza >/dev/null 2>&1; then
+    # alias ls="eza --icons"
+    # alias ll="eza -lg --icons"
+    # alias la="eza -ahlg --icons"
+    alias la="eza -ahl --icons"
+    alias ll="eza -hl --icons"
+    alias lt="eza -hlT --icons"
 else
     alias la="ls -Ahl"
     alias ll="ls -hl"

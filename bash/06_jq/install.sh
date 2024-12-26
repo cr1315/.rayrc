@@ -17,7 +17,7 @@ __rayrc_install() {
                 "stedolan/jq" "${__rayrc_data_dir}/jq" \
                 "linux" "i386"
         else
-            echo ".rayrc: unsupported cpu architecture for downloading exa.."
+            echo ".rayrc: unsupported cpu architecture for downloading jq.."
             return 8
         fi
     elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
@@ -30,11 +30,11 @@ __rayrc_install() {
                 "stedolan/jq" "${__rayrc_data_dir}/jq" \
                 "macos" "arm64"
         else
-            echo ".rayrc: unsupported cpu architecture for downloading exa.."
+            echo ".rayrc: unsupported cpu architecture for downloading jq.."
             return 8
         fi
     else
-        echo ".rayrc: unsupported os for downloading exa.."
+        echo ".rayrc: unsupported os for downloading jq.."
         return 8
     fi
 

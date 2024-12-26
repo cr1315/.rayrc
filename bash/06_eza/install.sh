@@ -6,24 +6,25 @@ __rayrc_install() {
     if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
         if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
-                "ogham/eza" "${__rayrc_data_dir}/eza.zip" \
-                "arm" "linux"
+                "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
+                "aarch64" "linux" "tar.gz"
         elif uname -m | grep -E -q "86|ia64" >&/dev/null; then
             __rayrc_github_downloader \
-                "ogham/eza" "${__rayrc_data_dir}/eza.zip" \
-                "musl" "x86_64"
+                "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
+                "musl" "x86_64" "tar.gz"
         else
             echo ".rayrc: unsupported cpu architecture for downloading eza.."
             return 8
         fi
     elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
-        if uname -m | grep -E -q "86|ia64" >&/dev/null; then
+        if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
             __rayrc_github_downloader \
-                "ogham/eza" "${__rayrc_data_dir}/eza.zip" \
-                "macos" "x86"
-        elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
-            ${__rayrc_pm_update_repo} >&/dev/null
-            ${__rayrc_package_manager} install eza &>/dev/null
+                "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
+                "arm" "linux" "tar.gz"
+        elif uname -m | grep -E -q "86|ia64" >&/dev/null; then
+            __rayrc_github_downloader \
+                "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
+                "musl" "x86_64" "tar.gz"
         else
             echo ".rayrc: unsupported cpu architecture for downloading eza.."
             return 8
@@ -38,13 +39,12 @@ __rayrc_install() {
         return 8
     fi
 
-    if [[ -f "${__rayrc_data_dir}/eza.zip" ]]; then
-        command -v unzip >/dev/null 2>&1 || { return; }
+    tar xf "${__rayrc_data_dir}/eza.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:eza:'
 
-        unzip "${__rayrc_data_dir}/eza.zip" -d "${__rayrc_data_dir}/eza/" >/dev/null 2>&1
-        cp -f "${__rayrc_data_dir}/eza/bin/eza" "${__rayrc_bin_dir}"
-        rm -rf "${__rayrc_data_dir}/eza"*
-    fi
+    ## this will cause idempotent upgrade
+    cp -f "${__rayrc_data_dir}/eza/eza" "${__rayrc_bin_dir}"
+
+    rm -rf "${__rayrc_data_dir}/eza"*
 }
 
 __rayrc_install

@@ -206,12 +206,12 @@ __rayrc_print_help() {
     echo "Default usage:"
     echo "  ~/.rayrc/install"
     echo ""
-    echo "By default, we don't install exa (a cool tool that can replace \`ls'), but"
+    echo "By default, we don't install eza (a cool tool that can replace \`ls'), but"
     echo "you can enable it manually:"
-    echo "  ~/.rayrc/install --enable exa"
+    echo "  ~/.rayrc/install --enable eza"
     echo ""
     echo "If you've already installed and is using, you can separately install a package:"
-    echo "  ~/.rayrc/install --enable exa --install exa"
+    echo "  ~/.rayrc/install --enable eza --install eza"
 }
 
 ######################################################################

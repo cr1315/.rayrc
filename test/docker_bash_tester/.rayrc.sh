@@ -9,7 +9,7 @@ cd $HOME
 apt update -y
 apt install -y tree
 apt install -y vim
-apt install -y exa
+apt install -y eza
 
 apt-get clean autoclean
 apt-get autoremove --yes

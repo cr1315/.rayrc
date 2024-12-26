@@ -43,10 +43,10 @@ export HISTCONTROL=ignoredups:erasedups
 shopt -u histappend
 
 # aliases
-if command -v exa >/dev/null 2>&1; then
-    alias la="exa -ahl"
-    alias ll="exa -hl"
-    alias lt="exa -hlT"
+if command -v eza >/dev/null 2>&1; then
+    alias la="eza --icons=always --git -ahl"
+    alias ll="eza --icons=always --git -hl"
+    alias lt="eza --icons=always --git -hlT"
 else
     alias la="ls -Ahl"
     alias ll="ls -hl"
