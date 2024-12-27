@@ -9,6 +9,14 @@ __rayrc_install() {
         sed -i -e '/HISTSIZE=/ d' "$HOME/.bashrc"
         sed -i -e '/HISTFILESIZE=/ d' "$HOME/.bashrc"
     fi
+
+    if [[ ! -f "$HOME/.bash_profile" && ! -f "$HOME/.profile" && ! -f "$HOME/.bash_login" ]]; then
+        "cat" <<-EOF >>"$HOME/.bash_profile"
+			if [ -f ~/.bashrc ]; then
+				. ~/.bashrc
+			fi
+		EOF
+    fi
 }
 
 __rayrc_install

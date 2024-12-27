@@ -37,41 +37,18 @@ __rayrc_bootstrap_rc() {
             sed -i -e '/'"${__rayrc_installed_name}"'.*main\.sh/ d' "$HOME/.bashrc"
         fi
 
-        # use here document to add two lines
-        "cat" <<-EOF >>"$HOME/.bashrc"
-			[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
-		EOF
-
-        # "cat" "$HOME/.bashrc"
-        echo ""
-        echo ".rayrc: all done!"
-        echo ".rayrc: please logout & login again to enjoy your new shell environment!"
-        echo ""
-    elif [[ -f "$HOME/.profile" ]]; then
-        if grep -q "${__rayrc_installed_name}" "$HOME/.profile"; then
-            sed -i -e '/'"${__rayrc_installed_name}"'.*main\.sh/ d' "$HOME/.profile";
-        fi
-
-        "cat" <<-EOF >>"$HOME/.profile"
-			[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
-		EOF
-
-    else
-        # echo ""
-        # echo ".rayrc: both .bashrc and .profile not found.."
-        # echo ".rayrc: you may need to add this line to your profile file: "
-        # echo ""
-        # echo "[[ -f \"${__rayrc_main_dir}/main.sh\" ]] && source \"${__rayrc_main_dir}/main.sh\""
-        # echo ""
-
-        # echo ".rayrc: let us create .profile and add this line for you?"
-        # read -p ".rayrc: (Y/n): " __rayrc_yes_no
-        # if [[ "x${__rayrc_yes_no}" =~ ^x[yY].*$ ]]; then
-        "cat" <<-EOF >>"$HOME/.profile"
-			[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
-		EOF
-        # fi
     fi
+
+    # use here document to add two lines
+    "cat" <<-EOF >>"$HOME/.bashrc"
+		[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
+	EOF
+
+    # "cat" "$HOME/.bashrc"
+    echo ""
+    echo ".rayrc: all done!"
+    echo ".rayrc: please logout & login again to enjoy your new shell environment!"
+    echo ""
 }
 
 ######################################################################
