@@ -3,40 +3,37 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    if [[ "${__rayrc_facts_os_type}" == "linux" ]]; then
-        if uname -m | grep -E -q "arm|aarch" >&/dev/null; then
+    case "${__rayrc_facts_os_type}-`uname -m`" in
+        linux-arm* | linux-aarch*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
                 "arm" "musl"
-        elif uname -m | grep -E -q "64" >&/dev/null; then
+            ;;
+        linux-*64*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
                 "musl" "x86_64"
-        elif uname -m | grep -E -q "86" >&/dev/null; then
+            ;;
+        linux-*86*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
                 "musl" "i686"
-        else
-            echo ".rayrc: unsupported cpu architecture for downloading rg.."
-            return 8
-        fi
-    elif [[ "${__rayrc_facts_os_type}" == "macos" ]]; then
-        if uname -m | grep -E -q "86|ia64" >&/dev/null; then
+            ;;
+        macos-*86* | macos-*ia64*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
                 "darwin" "x86"
-        elif uname -m | grep -E -q "arm|aarch" >&/dev/null; then
+            ;;
+        macos-arm* | macos-aarch*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
                 "darwin" "arm"
-        else
-            echo ".rayrc: unsupported cpu architecture for downloading rg.."
+            ;;
+        *)
+            echo ".rayrc: could not retrieve binary for ${__rayrc_package:3}.."
             return 8
-        fi
-    else
-        echo ".rayrc: unsupported os for downloading rg.."
-        return 8
-    fi
+            ;;
+    esac
 
     if [[ $? -ne 0 ]]; then
         echo "  .rayrc: failed to setup ${__rayrc_package:3}"

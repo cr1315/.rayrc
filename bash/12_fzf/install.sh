@@ -3,9 +3,14 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    # echo "##### fzf not installed #####"
-    git clone --quiet --depth 1 https://github.com/junegunn/fzf.git \
-        "${__rayrc_data_dir}/fzf" >&/dev/null
+    if [[ -d "${__rayrc_data_dir}/fzf" ]]; then
+        (
+            cd "${__rayrc_data_dir}/fzf" && git pull --quiet >&/dev/null
+        )
+    else
+        git clone --quiet --depth 1 https://github.com/junegunn/fzf.git \
+            "${__rayrc_data_dir}/fzf" >&/dev/null
+    fi
 
     # we don't need to auto-generated configurations
     "${__rayrc_data_dir}/fzf/install" --bin >&/dev/null
