@@ -44,9 +44,9 @@ shopt -u histappend
 
 # aliases
 if command -v eza >/dev/null 2>&1; then
-    alias la="eza --icons=always --git -ahl"
-    alias ll="eza --icons=always --git -hl"
-    alias lt="eza --icons=always --git -hlT"
+    alias la="eza --icons --git --time-style long-iso -ahl"
+    alias ll="eza --icons --git --time-style long-iso -hl"
+    alias lt="eza --icons --git --time-style long-iso -hlT"
 else
     alias la="ls -Ahl"
     alias ll="ls -hl"
