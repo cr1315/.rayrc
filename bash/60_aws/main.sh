@@ -13,7 +13,7 @@ ec2.start_tester() {
 
 __rayrc_main() {
     __rayrc_module_common_setup
-    source "${__rayrc_ctl_dir}/mfa.sh"
+    source "${__rayrc_ctl_dir}/ecs.sh"
 }
 
 __rayrc_main
