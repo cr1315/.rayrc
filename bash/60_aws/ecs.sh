@@ -7,6 +7,6 @@ ecs.exec() {
     aws ecs execute-command --interactive \
         --cluster $cluster_name \
         --command "/bin/bash" \
-        --task $(echo $tasks | fzf --preview 'echo {}' --preview-window down:40%:wrap)
+        --task $(echo "$tasks" | fzf --preview 'echo {}' --preview-window down:40%:wrap)
 }
 
