@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-command -v python3 >&/dev/null && { return; }
+command -v python3 >&/dev/null || { return; }
 
 __rayrc_install() {
     __rayrc_module_common_setup
