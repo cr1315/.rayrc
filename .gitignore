@@ -9,6 +9,7 @@ libs/bat
 libs/bin
 libs/fd
 libs/rg
+libs/pipx
 libs/poetry
 libs/ansible
 libs/glances
