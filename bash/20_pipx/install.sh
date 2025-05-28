@@ -23,12 +23,12 @@ __rayrc_install() {
         "${__rayrc_bin_dir}/pipx" install poetry
     fi
 
-    if ! command -v ansible >&/dev/null; then
-        "${__rayrc_bin_dir}/pipx" install --include-deps --system-site-packages "ansible<2.10"
-    fi
-
     if ! command -v glances >&/dev/null; then
         "${__rayrc_bin_dir}/pipx" install glances
+    fi
+
+    if ! command -v ansible >&/dev/null; then
+        "${__rayrc_bin_dir}/pipx" install --include-deps --system-site-packages "ansible<2.10"
     fi
 }
 
