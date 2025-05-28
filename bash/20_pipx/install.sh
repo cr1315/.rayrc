@@ -14,7 +14,7 @@ __rayrc_install() {
         ) >&/dev/null
 
         ln -snf "${__rayrc_data_dir}/venv/bin/pipx" "${__rayrc_bin_dir}/pipx"
-        # eval "$(register-python-argcomplete pipx)"
+        eval "$(${__rayrc_data_dir}/venv/bin/register-python-argcomplete pipx)"
     fi
 
     export PIPX_HOME="${__rayrc_data_dir}/run"
@@ -25,7 +25,7 @@ __rayrc_install() {
     fi
 
     if ! command -v ansible >&/dev/null; then
-        "${__rayrc_bin_dir}/pipx" install "ansible<2.10"
+        "${__rayrc_bin_dir}/pipx" install --include-deps --system-site-packages "ansible<2.10"
     fi
 
     if ! command -v glances >&/dev/null; then
