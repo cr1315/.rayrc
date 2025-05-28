@@ -6,15 +6,14 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     if ! command -v pipx >&/dev/null; then
-        python3 -m venv "${__rayrc_data_dir}/venv"
+        python3 -m venv "${__rayrc_data_dir}/boot"
         (
-            source "${__rayrc_data_dir}/venv/bin/activate"
+            source "${__rayrc_data_dir}/boot/bin/activate"
             pip install --upgrade pip
             pip install pipx
         ) >&/dev/null
 
-        ln -snf "${__rayrc_data_dir}/venv/bin/pipx" "${__rayrc_bin_dir}/pipx"
-        eval "$(${__rayrc_data_dir}/venv/bin/register-python-argcomplete pipx)"
+        ln -snf "${__rayrc_data_dir}/boot/bin/pipx" "${__rayrc_bin_dir}/pipx"
     fi
 
     export PIPX_HOME="${__rayrc_data_dir}/run"

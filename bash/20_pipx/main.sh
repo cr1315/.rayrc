@@ -7,6 +7,8 @@ __rayrc_main() {
 
     export PIPX_HOME="${__rayrc_data_dir}"
     export PIPX_BIN_DIR="${__rayrc_bin_dir}"
+
+    eval "$(${__rayrc_data_dir}/boot/bin/register-python-argcomplete pipx)"
 }
 
 __rayrc_main
