@@ -10,3 +10,9 @@ git.user() {
     fi
     git config --global user.name "${USER}@$(hostname -s)"
 }
+
+git.sshremote() {
+    local remote_url
+    remote_url=`git remote get-url origin | sed 's|https://github.com/|git@github.com:|'`
+    git remote set-url origin $remote_url
+}
