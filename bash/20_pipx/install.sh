@@ -29,7 +29,7 @@ __rayrc_install() {
             fi
 
             if ! command -v ansible >&/dev/null; then
-                "${__rayrc_bin_dir}/pipx" install --include-deps --system-site-packages "ansible<2.10"
+                "${__rayrc_bin_dir}/pipx" install --include-deps --system-site-packages --python python3 "ansible<2.10"
             fi
         fi
     else
@@ -45,7 +45,7 @@ __rayrc_install() {
         fi
 
         if ! command -v ansible >&/dev/null; then
-            pipx install --include-deps --system-site-packages "ansible<2.10"
+            pipx install --include-deps --system-site-packages --python python3 "ansible<2.10"
         fi
     fi
 }
