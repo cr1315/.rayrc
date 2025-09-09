@@ -280,6 +280,12 @@ __rayrc_determin_os_distribution() {
                 ## TODO: Synology package manager
                 __rayrc_package_manager="echo"
                 __rayrc_pm_update_repo="echo"
+            elif grep -qiE 'alpine' "/etc/os-release"; then
+                __rayrc_facts_os_type="linux"
+                __rayrc_facts_os_distribution="alpine"
+                ## TODO: Alpine package manager
+                __rayrc_package_manager="apk"
+                __rayrc_pm_update_repo="apk update"
             elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="openwrt"
