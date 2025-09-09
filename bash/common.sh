@@ -217,7 +217,7 @@ __rayrc_print_help() {
 #
 ######################################################################
 __rayrc_determine_os_type() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "linux-musl"* ]]; then
         __rayrc_facts_os_type="linux"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         __rayrc_facts_os_type="macos"
@@ -283,7 +283,6 @@ __rayrc_determin_os_distribution() {
             elif grep -qiE 'alpine' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="alpine"
-                ## TODO: Alpine package manager
                 __rayrc_package_manager="apk"
                 __rayrc_pm_update_repo="apk update"
             elif grep -qiE 'openwrt|lede' "/etc/os-release"; then
