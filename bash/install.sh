@@ -19,7 +19,8 @@ __rayrc_delegate_install() {
             ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
 
             echo "  .rayrc: setting up for ${__rayrc_package:3}.."
-            source "${__rayrc_main_dir}/${__rayrc_package}/install.sh" >&/dev/null
+            # source "${__rayrc_main_dir}/${__rayrc_package}/install.sh" >&/dev/null
+            source "${__rayrc_main_dir}/${__rayrc_package}/install.sh"
         fi
     done
 

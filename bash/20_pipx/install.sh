@@ -41,8 +41,11 @@ __rayrc_install() {
         fi
 
         if ! command -v glances >&/dev/null; then
-            ## apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev && pipx install glances && apk del .build-deps
-            pipx install glances
+            if [[ "$__rayrc_package_manager" = "apk" ]]; then
+                apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev && pipx install glances && apk del .build-deps
+            else
+                pipx install glances
+            fi
         fi
 
         if ! command -v ansible >&/dev/null; then
