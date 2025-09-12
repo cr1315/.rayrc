@@ -33,21 +33,23 @@ __rayrc_install() {
 
 
     if ! command -v poetry >&/dev/null; then
-        "${pipx_bin}" install poetry
+        "${pipx_bin}" install poetry >&/dev/null
     fi
 
     if ! command -v glances >&/dev/null; then
         if [[ "$__rayrc_package_manager" == "apk" ]]; then
-            apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev \
+            {
+                apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev \
                 && "${pipx_bin}" install glances \
                 && apk del .build-deps
+            } >&/dev/null
         else
-            "${pipx_bin}" install glances
+            "${pipx_bin}" install glances >&/dev/null
         fi
     fi
 
     if ! command -v ansible >&/dev/null; then
-        "${pipx_bin}" install --include-deps --system-site-packages --python python3 "ansible<2.10"
+        "${pipx_bin}" install --include-deps --system-site-packages --python python3 "ansible<2.10" >&/dev/null
     fi
 }
 
