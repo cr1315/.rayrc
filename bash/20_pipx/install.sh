@@ -9,11 +9,10 @@ __rayrc_install() {
         if python3 -m venv -h >&/dev/null; then
 
             python3 -m venv "${__rayrc_data_dir}/self"
-            (
-                source "${__rayrc_data_dir}/self/bin/activate"
-                pip install --upgrade pip
-                pip install pipx
-            ) >&/dev/null
+            source "${__rayrc_data_dir}/self/bin/activate" \
+                && pip install --upgrade pip \
+                && pip install pipx \
+                && deactivate
 
             ln -snf "${__rayrc_data_dir}/self/bin/pipx" "${__rayrc_bin_dir}/pipx"
 
@@ -42,7 +41,9 @@ __rayrc_install() {
 
         if ! command -v glances >&/dev/null; then
             if [[ "$__rayrc_package_manager" == "apk" ]]; then
-                apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev && pipx install glances && apk del .build-deps
+                apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev \
+                    && pipx install glances \
+                    && apk del .build-deps
             else
                 pipx install glances
             fi
