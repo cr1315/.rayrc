@@ -41,7 +41,7 @@ __rayrc_install() {
         fi
 
         if ! command -v glances >&/dev/null; then
-            if [[ "$__rayrc_package_manager" = "apk" ]]; then
+            if [[ "$__rayrc_package_manager" == "apk" ]]; then
                 apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev && pipx install glances && apk del .build-deps
             else
                 pipx install glances

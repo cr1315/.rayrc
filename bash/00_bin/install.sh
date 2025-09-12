@@ -28,6 +28,9 @@ __rayrc_install() {
     if ! command -v tar >&/dev/null; then
         ${__rayrc_package_manager} install -y tar >&/dev/null
     fi
+    if [[ "$__rayrc_package_manager" == "apk" ]]; then
+        ${__rayrc_package_manager} add tar >&/dev/null
+    fi
     # if ! command -v unzip >&/dev/null; then
     #     ${__rayrc_package_manager} install -y unzip >&/dev/null
     # fi
