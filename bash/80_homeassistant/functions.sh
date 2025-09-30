@@ -14,12 +14,5 @@ ha_api() {
     local path="$2"
     local data="$3"
 
-    # メソッドに応じて処理を分岐
-    if [ "$method" = "POST" ]; then
-        # POSTの場合はデータ（$3）を付けて実行
-        curl -s -X "$method" -H "Content-Type: application/json" -H "Authorization: Bearer $HASS_TOKEN" "${HASS_SERVER}/api/${path}" -d "$data"
-    else
-        # GETやその他のメソッドの場合はそのまま実行
-        curl -s -X "$method" -H "Content-Type: application/json" -H "Authorization: Bearer $HASS_TOKEN" "${HASS_SERVER}/api/${path}"
-    fi
+    curl -s -X "$method" -H "Content-Type: application/json" -H "Authorization: Bearer $HASS_TOKEN" "${HASS_SERVER}/api/${path}" -d "$data"
 }
