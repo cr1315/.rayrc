@@ -17,21 +17,27 @@ __rayrc_main() {
     [[ $- == *i* ]] && source "${__rayrc_data_dir}/fzf/shell/completion.bash" 2>/dev/null
     source "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
-    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:40%:wrap --bind 'ctrl-/:toggle-preview'"
+    export FZF_CTRL_R_OPTS="--preview 'echo {2..} | bat --color=always --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --bind 'ctrl-/:toggle-preview'"
 
+
+    ## default options for fzf
     # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
     export FZF_DEFAULT_OPTS="--ansi --height 80% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
-
     export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
     --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff
     --color=marker:#87ff00,spinner:#af5fff,header:#87afaf'
 
+
     # set env variables for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
 
+
+    ## CTRL+T to list files
     export FZF_CTRL_T_COMMAND='fd --type f --color always --hidden --follow --exclude .git'
     export FZF_CTRL_T_OPTS="--ansi --layout=reverse --height 70% --border --margin 0,0 --preview-window 'right:60%' --preview 'bat --color=always --style=numbers,grid --line-range :200 {}'"
 
+
+    ## ALT+C to quick change directory
     # export FZF_ALT_C_COMMAND=''
     export FZF_ALT_C_OPTS='--no-preview'
 
