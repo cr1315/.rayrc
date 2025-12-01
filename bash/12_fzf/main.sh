@@ -17,8 +17,7 @@ __rayrc_main() {
     [[ $- == *i* ]] && source "${__rayrc_data_dir}/fzf/shell/completion.bash" 2>/dev/null
     source "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
-    export FZF_CTRL_R_OPTS="--preview 'echo {2..} | bat --color=always --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --bind 'ctrl-/:toggle-preview'"
-
+    export FZF_CTRL_R_OPTS="--preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
 
     ## default options for fzf
     # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
@@ -40,6 +39,11 @@ __rayrc_main() {
     ## ALT+C to quick change directory
     # export FZF_ALT_C_COMMAND=''
     export FZF_ALT_C_OPTS='--no-preview'
+
+
+    ## fzf（およびそのラッパースクリプトである fzf-tmux）は非常に賢く設計されており、「tmuxの中にいるか、いないか」を自動で判別して挙動を切り替えてくれます。
+    export FZF_TMUX=1
+    export FZF_TMUX_OPTS="-p 90%"
 
     source "${__rayrc_ctl_dir}/functions.sh"
 }
