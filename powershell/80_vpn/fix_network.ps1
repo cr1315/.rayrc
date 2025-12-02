@@ -11,7 +11,7 @@ function elevate-self {
   param([Parameter(Mandatory)][ValidateNotNullOrEmpty()][String]$self)
 
   if (! ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).
-      IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
 
     # Relaunch as an elevated process:
     Start-Process -FilePath PowerShell.exe -Verb RunAs -ArgumentList "-noexit", "-ExecutionPolicy Bypass", $self
@@ -36,7 +36,7 @@ function main {
 # first disconnect all
 #######################################################################
 function disconnect-all {
-@"
+  @"
   #######################################################################
   #
   # clear all connections anyway
@@ -75,10 +75,12 @@ function wait-pattern {
     $timer.Stop()
     if ($timer.Elapsed.TotalSeconds -gt $timeout) {
       throw 'Action did not complete before timeout period!'
-    } else {
+    }
+    else {
       Write-Verbose -Message 'Action completed before timeout period.'
     }
-  } catch {
+  }
+  catch {
     Write-Error -Message $_.Exception.Message
   }
 }
@@ -87,7 +89,7 @@ function wait-pattern {
 # connect the stg openvpn next
 #######################################################################
 function connect-stgOvpn {
-@"
+  @"
   #######################################################################
   #
   # next, connect to stg jump server network
@@ -108,10 +110,10 @@ function clear-trash {
   Remove-NetRoute -DestinationPrefix 0.0.0.0/1 -Confirm:$False
   Remove-NetRoute -DestinationPrefix 128.0.0.0/1 -Confirm:$False
 
-  if (@(Get-NetRoute | ?{$_.DestinationPrefix -match '192.168.1.0/24'}).count -gt 0) {
+  if (@(Get-NetRoute | ? { $_.DestinationPrefix -match '192.168.1.0/24' }).count -gt 0) {
     Remove-NetRoute -DestinationPrefix "192.168.1.0/24" -Confirm:$False
   }
-  if (@(Get-NetRoute | ?{$_.DestinationPrefix -match '192.168.2.0/24'}).count -gt 0) {
+  if (@(Get-NetRoute | ? { $_.DestinationPrefix -match '192.168.2.0/24' }).count -gt 0) {
     Remove-NetRoute -DestinationPrefix "192.168.2.0/24" -Confirm:$False
   }
 }
@@ -123,22 +125,22 @@ function prettyprint-route {
   Get-NetRoute -AddressFamily ipv4 | ? {
     $_.ifIndex -in (
       (Get-NetIPInterface -AddressFamily ipv4 |
-        ? {$_.ConnectionState -eq "Connected"} |
-        select ifIndex
+      ? { $_.ConnectionState -eq "Connected" } |
+      select ifIndex
       ).ifIndex
     )
   } |
   select -property RouteMetric,
-    ifIndex,
-    DestinationPrefix,
-    @{Name="mask";Expression={[int]($_.DestinationPrefix -replace '.*/(\d+)$','$1')}},
-    NextHop,
-    interfaceMetric |
+  ifIndex,
+  DestinationPrefix,
+  @{Name = "mask"; Expression = { [int]($_.DestinationPrefix -replace '.*/(\d+)$', '$1') } },
+  NextHop,
+  interfaceMetric |
   sort routemetric,
-    ifindex,
-    @{Expression="mask"; Descending=$True},
-    interfaceMetric,
-    DestinationPrefix |
+  ifindex,
+  @{Expression = "mask"; Descending = $True },
+  interfaceMetric,
+  DestinationPrefix |
   ft
 }
 
@@ -147,10 +149,10 @@ function prettyprint-route {
 #######################################################################
 function prepare-gateway {
   "`nnow, there should be some bad guys like this: "
-  Get-NetRoute | ?{$_.DestinationPrefix -match '.0.0.0/1'}
+  Get-NetRoute | ? { $_.DestinationPrefix -match '.0.0.0/1' }
 
-  if ((Get-NetRoute | ?{$_.DestinationPrefix -match '.0.0.0/1'} | measure).count -gt 2) {
-@"
+  if ((Get-NetRoute | ? { $_.DestinationPrefix -match '.0.0.0/1' } | measure).count -gt 2) {
+    @"
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !
   ! something very bad happened, cleared all rules
@@ -165,20 +167,20 @@ function prepare-gateway {
   }
 
 
-  $targetIp = (Get-NetRoute | ?{$_.DestinationPrefix -match '0.0.0.0/1'}).nexthop
+  $targetIp = (Get-NetRoute | ? { $_.DestinationPrefix -match '0.0.0.0/1' }).nexthop
   if ($targetIp -eq $null) {
     return
   }
   "`nwe got the gateway ip for stg jump server: $targetIp"
-  if ($targetIp -ne (Get-NetRoute | ?{$_.DestinationPrefix -match '128.0.0.0/1'}).nexthop) {
+  if ($targetIp -ne (Get-NetRoute | ? { $_.DestinationPrefix -match '128.0.0.0/1' }).nexthop) {
     "`nso weird, the gateway ip was different?.."
     return
   }
 
-  $ifIndex = (Get-NetRoute | ?{$_.DestinationPrefix -match '0.0.0.0/1'}).InterfaceIndex
+  $ifIndex = (Get-NetRoute | ? { $_.DestinationPrefix -match '0.0.0.0/1' }).InterfaceIndex
   "`nnot everyone will have the same InterfaceIndex for the connection, we had: $ifIndex"
 
-@"
+  @"
 
   #######################################################################
   #
@@ -198,14 +200,14 @@ function prepare-gateway {
 #
 #######################################################################
 function connect-anyConnect {
-@"
+  @"
   #######################################################################
   #
   # finally, connect other cute vpns
   #
   #######################################################################
 "@
-"`nnow starting OpenVPN for ${devOvpn}:"
+  "`nnow starting OpenVPN for ${devOvpn}:"
   # & 'C:\Program Files\OpenVPN\bin\openvpn-gui.exe' "--command", "disconnect", "arise-cdx"
   clc "${home}\OpenVPN\log\$devOvpn.log"
   & 'C:\Program Files\OpenVPN\bin\openvpn-gui.exe' "--connect", $devOvpn
@@ -233,10 +235,10 @@ exit
 #######################################################################
 function useful-commands {
   # get effective interface
-  Get-NetIPInterface -AddressFamily ipv4 -ConnectionState conn| sort InterfaceMetric
+  Get-NetIPInterface -AddressFamily ipv4 -ConnectionState conn | sort InterfaceMetric
 
   # get DnsServerAddress for interface
-  Get-DnsClientServerAddress -AddressFamily ipv4 | ?{$_.InterfaceIndex -in @(12,18)} | fc
+  Get-DnsClientServerAddress -AddressFamily ipv4 | ? { $_.InterfaceIndex -in @(12, 18) } | fc
 }
 
 #######################################################################
@@ -274,7 +276,7 @@ function clear-lawson {
   Remove-NetRoute -DestinationPrefix 0.0.0.0/1 -Confirm:$False
   Remove-NetRoute -DestinationPrefix 128.0.0.0/1 -Confirm:$False
 
-  if (@(Get-NetRoute | ?{$_.DestinationPrefix -match '10.234.0.0/16'}).count -gt 0) {
+  if (@(Get-NetRoute | ? { $_.DestinationPrefix -match '10.234.0.0/16' }).count -gt 0) {
     Remove-NetRoute -DestinationPrefix "10.234.0.0/16" -Confirm:$False
   }
 }
@@ -285,10 +287,10 @@ function clear-lawson {
 #######################################################################
 function prepare-lawson {
   "`nnow, there should be some bad guys like this: "
-  Get-NetRoute | ?{$_.DestinationPrefix -match '.0.0.0/1'}
+  Get-NetRoute | ? { $_.DestinationPrefix -match '.0.0.0/1' }
 
-  if ((Get-NetRoute | ?{$_.DestinationPrefix -match '.0.0.0/1'} | measure).count -gt 2) {
-@"
+  if ((Get-NetRoute | ? { $_.DestinationPrefix -match '.0.0.0/1' } | measure).count -gt 2) {
+    @"
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !
   ! something very bad happened, cleared all rules
@@ -303,20 +305,20 @@ function prepare-lawson {
   }
 
 
-  $targetIp = (Get-NetRoute | ?{$_.DestinationPrefix -match '0.0.0.0/1'}).nexthop
+  $targetIp = (Get-NetRoute | ? { $_.DestinationPrefix -match '0.0.0.0/1' }).nexthop
   if ($targetIp -eq $null) {
     return
   }
   "`nwe got the gateway ip for stg jump server: $targetIp"
-  if ($targetIp -ne (Get-NetRoute | ?{$_.DestinationPrefix -match '128.0.0.0/1'}).nexthop) {
+  if ($targetIp -ne (Get-NetRoute | ? { $_.DestinationPrefix -match '128.0.0.0/1' }).nexthop) {
     "`nso weird, the gateway ip was different?.."
     return
   }
 
-  $ifIndex = (Get-NetRoute | ?{$_.DestinationPrefix -match '0.0.0.0/1'}).InterfaceIndex
+  $ifIndex = (Get-NetRoute | ? { $_.DestinationPrefix -match '0.0.0.0/1' }).InterfaceIndex
   "`nnot everyone will have the same InterfaceIndex for the connection, we had: $ifIndex"
 
-@"
+  @"
 
   #######################################################################
   #

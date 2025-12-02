@@ -1,9 +1,9 @@
-
-
-
+######################################################################
+## Custom Functions
+######################################################################
 Add-Type -AssemblyName System.Web
 function get-urldecode {
-  $decoded = switch($args.length) {
+  $decoded = switch ($args.length) {
     1 { [System.Web.HttpUtility]::UrlDecode($args[0]) }
     2 { [System.Web.HttpUtility]::UrlDecode($args[0], $args[1]) }
     4 { [System.Web.HttpUtility]::UrlDecode($args[0], $args[1], $args[2], $args[3]) }
@@ -17,11 +17,13 @@ function get-urldecode {
     if ($uri.Query -match 'id=/sites/([^&]*)&?') {
       $matched = $true
     }
-  } elseif ($uri.AbsolutePath -like '*/sites/*') {
+  }
+  elseif ($uri.AbsolutePath -like '*/sites/*') {
     if ($uri.AbsolutePath -match '/sites/(.*)$') {
       $matched = $true
     }
-  } elseif ($uri.AbsolutePath -like '*/personal/*/Documents/*') {
+  }
+  elseif ($uri.AbsolutePath -like '*/personal/*/Documents/*') {
     if ($uri.AbsolutePath -match '/personal/(.*)$') {
       $matched = $true
     }
@@ -36,7 +38,8 @@ function get-urldecode {
       try {
         set-clipboard "[$filePath]($url"
         $copyToClipboard = $true
-      } catch {
+      }
+      catch {
         Start-Sleep -Milliseconds 100
       }
     } until ($copyToClipboard -eq $true)
