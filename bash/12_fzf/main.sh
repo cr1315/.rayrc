@@ -17,7 +17,11 @@ __rayrc_main() {
     [[ $- == *i* ]] && source "${__rayrc_data_dir}/fzf/shell/completion.bash" 2>/dev/null
     source "${__rayrc_data_dir}/fzf/shell/key-bindings.bash"
 
-    export FZF_CTRL_R_OPTS="--preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
+    if command -v shfmt &>/dev/null; then
+        export FZF_CTRL_R_OPTS="--preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
+    else
+        export FZF_CTRL_R_OPTS="--preview 'echo {2..} | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
+    fi
 
     ## default options for fzf
     # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
