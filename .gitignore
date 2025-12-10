@@ -13,6 +13,7 @@ libs/pipx
 libs/poetry
 libs/ansible
 libs/glances
+libs/blesh
 
 *.pyc
 __pycache__/
