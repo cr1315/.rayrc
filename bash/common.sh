@@ -274,6 +274,10 @@ __rayrc_determin_os_distribution() {
                 __rayrc_facts_os_distribution="photon"
                 __rayrc_package_manager="sudo tdnf"
                 __rayrc_pm_update_repo="sudo tdnf makecache"
+            elif grep -qiE 'arch' "/etc/os-release"; then
+                __rayrc_facts_os_distribution="arch"
+                __rayrc_package_manager="pacman"
+                __rayrc_pm_update_repo="pacman -Sy"
             elif grep -qiE 'synology' "/etc/os-release"; then
                 __rayrc_facts_os_type="linux"
                 __rayrc_facts_os_distribution="Synology"
