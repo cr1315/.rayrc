@@ -30,7 +30,7 @@ function ssh() {
     # $hosts_filtered
 
     if (($hosts_filtered).count -gt 1) {
-        $result = $hosts_filtered | fzf
+        $result = $hosts_filtered | fzf-real
         if ($lastexitcode -ne 0) {
             return 0
         }
