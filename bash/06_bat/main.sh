@@ -13,7 +13,9 @@ __rayrc_main() {
 
     # set aliases
     alias bat="bat --color always"
-    alias cat="bat"
+    ## TODO: use bat as cat? maybe not, since it adds line numbers and other formatting by default.
+    ##       could be confusing in some contexts. maybe add an alias for "batcat" or something instead?
+    # alias cat="bat"
 
 }
 
