@@ -27,6 +27,15 @@ source ./uninstall
 
 CI runs on push/PR via `.github/workflows/successful-install-on-every-platform.yml` (currently ubuntu-22.04). There is also a Docker-based tester in `test/docker_bash_tester/`.
 
+### Docker Testing (clean environment)
+
+```bash
+docker build --no-cache -t rayrc-test .
+```
+
+Dockerfile is at project root. Clones from remote (dev_docker branch), so commit & push before building.
+Note: Consecutive builds may hit GitHub API rate limits (eget uses GitHub API).
+
 ## Architecture
 
 ### Shell Detection & Dispatch
@@ -40,6 +49,7 @@ Modules are directories under `bash/` or `zsh/` with a numbered prefix that cont
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
 | `00_` | Core binaries/PATH | `00_bin` |
+| `01_` | Bootstrap tools | `01_eget` |
 | `06_` | CLI tool installation | `06_bat`, `06_eza`, `06_fd`, `06_rg` |
 | `10_` | Shell config (prompt, aliases, env) | `10_bash`, `10_zsh` |
 | `12_` | Dev tools (fzf, git, vim) | `12_fzf`, `12_git` |
@@ -61,7 +71,8 @@ Binaries are placed in `libs/bin/` which gets added to PATH.
 
 ### Key Internal Functions (defined in `bash/common.sh`)
 
-- `__rayrc_github_downloader <repo> <target> <filters...>` — downloads latest GitHub release matching architecture filters
+- `__rayrc_github_downloader <repo> <target> <filters...>` — (legacy) downloads latest GitHub release via HTML scraping
+- `__rayrc_eget_install <repo> <binary_name> [--asset filters...]` — downloads GitHub release binary via eget
 - `__rayrc_module_common_setup` — sets `__rayrc_ctl_dir` and `__rayrc_data_dir` for the current module
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
 
