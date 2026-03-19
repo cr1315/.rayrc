@@ -3,7 +3,7 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    if command -v eget >/dev/null 2>&1; then
+    if [[ -x "${__rayrc_bin_dir}/eget" ]]; then
         return 0
     fi
 

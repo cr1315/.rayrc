@@ -60,12 +60,12 @@ __rayrc_eget_install() {
     local binary_name="$2"
     shift 2
 
-    if ! command -v eget >/dev/null 2>&1; then
+    if [[ ! -x "${__rayrc_bin_dir}/eget" ]]; then
         echo "  .rayrc: eget not found, cannot install ${repo}"
         return 8
     fi
 
-    eget "${repo}" --to "${__rayrc_bin_dir}/${binary_name}" "$@" || {
+    "${__rayrc_bin_dir}/eget" "${repo}" --to "${__rayrc_bin_dir}/${binary_name}" "$@" || {
         echo "  .rayrc: failed to install ${binary_name} from ${repo}"
         return 8
     }
