@@ -53,6 +53,24 @@ __rayrc_github_downloader() {
     return 0
 }
 
+## eget-based installer — replaces __rayrc_github_downloader
+## see docs/eget-migration.md for background
+__rayrc_eget_install() {
+    local repo="$1"
+    local binary_name="$2"
+    shift 2
+
+    if ! command -v eget >/dev/null 2>&1; then
+        echo "  .rayrc: eget not found, cannot install ${repo}"
+        return 8
+    fi
+
+    eget "${repo}" --to "${__rayrc_bin_dir}/${binary_name}" "$@" || {
+        echo "  .rayrc: failed to install ${binary_name} from ${repo}"
+        return 8
+    }
+}
+
 __rayrc_module_common_setup() {
     # echo "__rayrc_module_common_setup: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 
