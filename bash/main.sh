@@ -6,19 +6,7 @@
 #
 ######################################################################
 __rayrc_delegate_main() {
-    ### auto setup
-    for __rayrc_package in "${__rayrc_all_packages[@]}"; do
-
-        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" &&
-            -f "${__rayrc_main_dir}/${__rayrc_package}/main.sh" &&
-            ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
-
-            # echo source "${__rayrc_main_dir}/${__rayrc_package}/main.sh"
-            source "${__rayrc_main_dir}/${__rayrc_package}/main.sh"
-        fi
-
-    done
+    __rayrc_source_facade main
 }
 
 ######################################################################
@@ -62,37 +50,7 @@ __rayrc_delegate_entry() {
     ## for packages
     local __rayrc_package
 
-    local __rayrc_all_packages
-    local __rayrc_packages_to_install
-    declare -a __rayrc_all_packages
-    declare -a __rayrc_packages_to_install
-
-    ## populate __rayrc_all_packages
-    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
-
-        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/main.sh" ]]; then
-            # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
-            __rayrc_all_packages+=("${__rayrc_package}")
-        fi
-    done
-    # echo "\${__rayrc_all_packages[@]}: ${__rayrc_all_packages[@]}"
-    # echo "\${#__rayrc_all_packages[@]}: ${#__rayrc_all_packages[@]}"
-    # for ((j = 0; j < "${#__rayrc_all_packages[@]}"; j++)); do
-    #     echo "\${__rayrc_all_packages[$j]}: ${__rayrc_all_packages[$j]}"
-    # done
-
     source "${__rayrc_main_dir}/common.sh"
-    unset -f __rayrc_filter_packages
-    unset -f __rayrc_enable_packages
-    unset -f __rayrc_disable_packages
-    unset -f __rayrc_populate_arrays
-    unset -f __rayrc_print_help
-    # echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
-    # echo "\${#__rayrc_packages_to_install[@]}: ${#__rayrc_packages_to_install[@]}"
-    # for ((j = 0; j < "${#__rayrc_packages_to_install[@]}"; j++)); do
-    #     echo "\${__rayrc_packages_to_install[$j]}: ${__rayrc_packages_to_install[$j]}"
-    # done
 
     ## __rayrc_facts
     local __rayrc_facts_os_type
@@ -115,5 +73,6 @@ __rayrc_delegate_entry() {
 __rayrc_delegate_entry "$@"
 
 unset -f __rayrc_module_common_setup
+unset -f __rayrc_source_facade
 unset -f __rayrc_delegate_main
 unset -f __rayrc_delegate_entry

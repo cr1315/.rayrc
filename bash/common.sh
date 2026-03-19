@@ -56,14 +56,67 @@ __rayrc_github_downloader() {
 __rayrc_module_common_setup() {
     # echo "__rayrc_module_common_setup: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 
-    __rayrc_ctl_dir="${__rayrc_main_dir}/${__rayrc_package}"
+    ## idempotency guard — 同一モジュールで2回呼ばれても二重に積み上がらない
+    if [[ "${__rayrc_ctl_dir}" == *"/${__rayrc_package}" ]]; then
+        return
+    fi
+
+    __rayrc_ctl_dir="${__rayrc_ctl_dir:-${__rayrc_main_dir}}/${__rayrc_package}"
     # echo "__rayrc_module_common_setup: \${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
-    __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
+    __rayrc_data_dir="${__rayrc_data_dir:-${__rayrc_libs_dir}}/${__rayrc_package:3}"
     # echo "__rayrc_module_common_setup: \${__rayrc_data_dir}: ${__rayrc_data_dir}"
     if [[ ! -d "${__rayrc_data_dir}" ]]; then
         mkdir -p "${__rayrc_data_dir}"
     fi
+}
+
+######################################################################
+#
+# Facade
+#
+######################################################################
+# __rayrc_source_facade <mode>
+#
+# mode: install | uninstall | main → sources <mode>.sh in each module
+#
+# スキャンディレクトリの決定:
+#   __rayrc_ctl_dir が設定済み → そのディレクトリ（モジュール内からの呼び出し）
+#   未設定 → __rayrc_main_dir（トップレベルからの呼び出し）
+#
+__rayrc_source_facade() {
+    local mode="$1"
+    local script_name="${mode}.sh"
+    local scan_dir="${__rayrc_ctl_dir:-${__rayrc_main_dir}}"
+
+    ## save caller state (bash dynamic scoping — 子関数は親の local を上書きできるため)
+    local saved_ctl_dir="${__rayrc_ctl_dir}"
+    local saved_data_dir="${__rayrc_data_dir}"
+    local saved_package="${__rayrc_package}"
+
+    local _pkg
+    for _pkg in $(ls -1 "${scan_dir}" 2>/dev/null); do
+        if [[ -d "${scan_dir}/${_pkg}" &&
+              -f "${scan_dir}/${_pkg}/${script_name}" &&
+              ! -f "${scan_dir}/${_pkg}/disabled" ]]; then
+
+            ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
+            __rayrc_ctl_dir="${saved_ctl_dir}"
+            __rayrc_data_dir="${saved_data_dir}"
+            __rayrc_package="${_pkg}"
+
+            if [[ "${mode}" == "install" ]]; then
+                echo "  .rayrc: setting up for ${_pkg:3}.."
+            fi
+
+            source "${scan_dir}/${_pkg}/${script_name}"
+        fi
+    done
+
+    ## restore caller state（呼び出し元モジュールの変数を復元）
+    __rayrc_ctl_dir="${saved_ctl_dir}"
+    __rayrc_data_dir="${saved_data_dir}"
+    __rayrc_package="${saved_package}"
 }
 
 ######################################################################
