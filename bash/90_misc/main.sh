@@ -3,7 +3,9 @@
 __rayrc_main() {
     __rayrc_module_common_setup
 
-    source "${HOME}/"per_project_*.sh
+    for f in "${HOME}"/per_project_*.sh; do
+        [[ -f "$f" ]] && source "$f"
+    done
 
 }
 
