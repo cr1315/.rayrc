@@ -1,23 +1,4 @@
-libs/fzf/fzf
-libs/git/gitstatus
-libs/vim/vimfiles/autoload
-libs/vim/vimfiles/plugged
-libs/vim/vimfiles/viminfo
-libs/vim/vimfiles/.netrwhist
-
-libs/bat
-libs/bin
-libs/fd
-libs/rg
-libs/pipx
-libs/poetry
-libs/ansible
-libs/glances
-libs/blesh
-
 *.pyc
 __pycache__/
-
-docs/.DS_Store
 
 **/__rayrc_backup/
