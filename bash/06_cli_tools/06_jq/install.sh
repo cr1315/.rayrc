@@ -30,13 +30,13 @@ __rayrc_install() {
                 "osx"
             ;;
         *)
-            echo ".rayrc: could not retrieve binary for ${__rayrc_package:3}.."
+            __rayrc_log_info "could not retrieve binary for ${__rayrc_package:3}.."
             return 8
             ;;
     esac
 
     if [[ $? -ne 0 ]]; then
-        echo "  .rayrc: failed to setup ${__rayrc_package:3}"
+        __rayrc_log_info "failed to setup ${__rayrc_package:3}"
         return 8
     fi
 

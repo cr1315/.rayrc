@@ -7,7 +7,7 @@ __rayrc_install() {
 
     ## ansible<2.10 requires Python < 3.11
     python3 -c "import sys; sys.exit(0 if sys.version_info < (3, 11) else 1)" || {
-        echo "  .rayrc: skipping ansible — requires Python < 3.11 (current: $(python3 --version))"
+        __rayrc_log_info "skipping ansible — requires Python < 3.11 (current: $(python3 --version))"
         return
     }
 

@@ -61,12 +61,12 @@ __rayrc_eget_install() {
     shift 2
 
     if [[ ! -x "${__rayrc_bin_dir}/eget" ]]; then
-        echo "  .rayrc: eget not found, cannot install ${repo}"
+        __rayrc_log_info "eget not found, cannot install ${repo}"
         return 8
     fi
 
     "${__rayrc_bin_dir}/eget" "${repo}" --to "${__rayrc_bin_dir}/${binary_name}" "$@" || {
-        echo "  .rayrc: failed to install ${binary_name} from ${repo}"
+        __rayrc_log_info "failed to install ${binary_name} from ${repo}"
         return 8
     }
 }
@@ -88,6 +88,8 @@ __rayrc_module_common_setup() {
         mkdir -p "${__rayrc_data_dir}"
     fi
 }
+
+source "${BASH_SOURCE[0]%/*}/logger.sh"
 
 ######################################################################
 #
@@ -124,7 +126,7 @@ __rayrc_source_facade() {
             __rayrc_package="${_pkg}"
 
             if [[ "${mode}" == "install" ]]; then
-                echo "  .rayrc: setting up for ${_pkg:3}.."
+                __rayrc_log_info "setting up for ${_pkg:3}.."
             fi
 
             source "${scan_dir}/${_pkg}/${script_name}"
@@ -303,7 +305,7 @@ __rayrc_determine_os_type() {
     ## TODO: add logic for openWrt, etc..
     else
         echo ""
-        echo ".rayrc: could not determine OS type..."
+        __rayrc_log_info "could not determine OS type..."
         echo ""
         return 8
     fi
@@ -367,18 +369,18 @@ __rayrc_determin_os_distribution() {
                 __rayrc_pm_update_repo="opkg update -y"
             else
                 echo ""
-                echo ".rayrc: could not determine OS distribution.."
+                __rayrc_log_info "could not determine OS distribution.."
                 echo ""
                 return 8
             fi
         else
             echo ""
-            echo ".rayrc: could not determine OS distribution.."
+            __rayrc_log_info "could not determine OS distribution.."
             echo ""
         fi
     else
         echo ""
-        echo ".rayrc: not supported OS type for bash.."
+        __rayrc_log_info "not supported OS type for bash.."
         echo ""
     fi
 }

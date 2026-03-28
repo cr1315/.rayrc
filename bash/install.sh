@@ -34,8 +34,8 @@ __rayrc_bootstrap_rc() {
 
     # "cat" "$HOME/.bashrc"
     echo ""
-    echo ".rayrc: all done!"
-    echo ".rayrc: please logout & login again to enjoy your new shell environment!"
+    __rayrc_log_info "all done!"
+    __rayrc_log_info "please logout & login again to enjoy your new shell environment!"
     echo ""
 }
 

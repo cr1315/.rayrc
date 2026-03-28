@@ -26,8 +26,8 @@ __rayrc_final_clear() {
 
         # "cat" $HOME/.zshrc
         echo ""
-        echo ".rayrc: all done!"
-        echo ".rayrc: we've put you back to your old environment as if you've never ever used this tool!"
+        __rayrc_log_info "all done!"
+        __rayrc_log_info "we've put you back to your old environment as if you've never ever used this tool!"
     fi
 }
 
