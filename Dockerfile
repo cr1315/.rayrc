@@ -1,5 +1,10 @@
 FROM python:3.13
 
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    vim \
+    less \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /root
 
 # COPY . /root/.rayrc
