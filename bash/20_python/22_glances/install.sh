@@ -11,9 +11,9 @@ __rayrc_install() {
                 apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev \
                 && "${PIPX_BIN_DIR}/pipx" install glances \
                 && apk del .build-deps
-            } >/dev/null
+            } >&/dev/null
         else
-            "${PIPX_BIN_DIR}/pipx" install glances >/dev/null
+            "${PIPX_BIN_DIR}/pipx" install glances >&/dev/null
         fi
     fi
 }
