@@ -44,10 +44,15 @@ Subdirectory `install.sh`/`main.sh` follow the same define-call-unset pattern. `
 
 ## Control Plane vs Data Plane (libs/)
 
-`bash/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). Module `06_bat` stores logic in `bash/06_bat/`, binaries in `libs/bat/`. The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
+`bash/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
+
+Two-level hierarchy mirrors into `libs/` as well: `bash/06_cli_tools/06_bat/` → `libs/cli_tools/bat/`. When adding or renaming a module group, update the corresponding `libs/` structure and `.gitignore` files together.
+
+Some `libs/` subdirs contain tracked config files (e.g. `libs/cli_tools/bat/config/`, `libs/cli_tools/lf/config/`). Do NOT add these directories wholesale to `.gitignore` — only ignore download artifacts (`.tar.gz` etc.) if needed.
 
 ## Key Internal Functions (defined in `bash/common.sh`)
 
+- `__rayrc_log_info <message>` — depth-aware logger (defined in `bash/logger.sh`, sourced by `common.sh`); indents by 2 spaces per `__rayrc_source_facade` nesting level
 - `__rayrc_github_downloader <repo> <target> <filters...>` — (legacy) downloads latest GitHub release via HTML scraping
 - `__rayrc_eget_install <repo> <binary_name> [--asset filters...]` — downloads GitHub release binary via eget
 - `__rayrc_module_common_setup` — sets `__rayrc_ctl_dir` and `__rayrc_data_dir` for the current module

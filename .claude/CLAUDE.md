@@ -44,7 +44,7 @@ Tip: use `/rayrc-docker-test` skill to run the above two commands automatically.
 
 The top-level `install` and `uninstall` scripts detect whether bash or zsh is running, then delegate to the appropriate shell-specific entry point (`bash/install.sh` or `zsh/install.zsh`).
 
-Module system details, key internal functions, and bash conventions are in `.claude/rules/for-bash.md` (auto-loaded when editing `bash/**`).
+Module system details, key internal functions, and bash conventions are in `.claude/rules/bash.md` (auto-loaded when editing `bash/**`).
 
 ### OS Support
 
