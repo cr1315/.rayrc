@@ -40,7 +40,17 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:gdu:'
+    case "${__rayrc_facts_os_type}" in
+        linux)
+            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}" \
+                --warning=no-unknown-keyword \
+                --transform 's:^[^/]*:gdu:'
+            ;;
+        *)
+            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}" \
+                --transform 's:^[^/]*:gdu:'
+            ;;
+    esac
 
     cp -f "${__rayrc_data_dir}/gdu" "${__rayrc_bin_dir}"
 
