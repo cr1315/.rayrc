@@ -34,8 +34,10 @@ export TERM="xterm-256color"
 ## set for perl in __rayrc_github_downloader
 ## now, given up using perl to extract words..
 # export LC_CTYPE=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+if locale -a 2>/dev/null | grep -qiE 'en_US\.utf.?8'; then
+    export LANGUAGE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+fi
 ## disable perl warning message for some docker envs
 export PERL_BADLANG=0
 
