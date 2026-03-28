@@ -1,0 +1,11 @@
+# ignore everything under .claude/
+.claude/*
+
+# keep these explicitly
+!.claude/CLAUDE.md
+!.claude/settings.json
+!.claude/statusline-command.sh
+!.claude/plugins/
+.claude/plugins/*
+!.claude/plugins/installed_plugins.json
+# !.claude/plugins/blocklist.json

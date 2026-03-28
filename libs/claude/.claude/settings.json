@@ -1,0 +1,15 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
+  },
+  "permissions": {
+    "defaultMode": "plan"
+  },
+  "effortLevel": "medium",
+  "model": "sonnet[1m]"
+}
