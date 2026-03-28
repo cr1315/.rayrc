@@ -64,6 +64,9 @@ alias view="vim -R"
 
 alias ip="ip -c"
 
+# -t 0: stdin が端末に接続されている（パイプ/Ansible では false）
+# $- = *i*: インタラクティブシェル
+# stty -ixon: Ctrl+S/Ctrl+Q のXON/XOFFフロー制御を無効化 → Ctrl+S を他のキーバインドに使える
 if [[ -t 0 && $- = *i* ]]; then
     stty -ixon
 fi
