@@ -12,8 +12,7 @@ Modules are directories under `bash/` with a numbered prefix that controls load 
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
 | `00_` | Core binaries/PATH | `00_bin` |
-| `01_` | Bootstrap tools | `01_eget` |
-| `06_` | CLI tool installation | `06_bat`, `06_eza`, `06_fd`, `06_rg` |
+| `05_` | Tool groups (two-level) | `05_tools` |
 | `10_` | Shell config (prompt, aliases, env) | `10_bash`, `10_zsh` |
 | `12_` | Dev tools (fzf, git, vim) | `12_fzf`, `12_git` |
 | `15_` | Terminal multiplexer | `15_tmux` |
@@ -28,7 +27,7 @@ Each module can contain:
 
 ## Two-Level Module Hierarchy
 
-Modules can contain subdirectories with numeric prefixes (e.g. `06_cli_tools/06_bat/`, `20_python/20_pipx/`). The parent module's `install.sh`/`main.sh` acts as a delegate:
+Modules can contain subdirectories with numeric prefixes (e.g. `05_tools/06_bat/`, `20_python/20_pipx/`). The parent module's `install.sh`/`main.sh` acts as a delegate:
 
 ```bash
 #!/usr/bin/env bash
@@ -46,9 +45,9 @@ Subdirectory `install.sh`/`main.sh` follow the same define-call-unset pattern. `
 
 `bash/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
 
-Two-level hierarchy mirrors into `libs/` as well: `bash/06_cli_tools/06_bat/` → `libs/cli_tools/bat/`. When adding or renaming a module group, update the corresponding `libs/` structure and `.gitignore` files together.
+Two-level hierarchy mirrors into `libs/` as well: `bash/05_tools/06_bat/` → `libs/tools/bat/`. When adding or renaming a module group, update the corresponding `libs/` structure and `.gitignore` files together.
 
-Some `libs/` subdirs contain tracked config files (e.g. `libs/cli_tools/bat/config/`, `libs/cli_tools/lf/config/`). Do NOT add these directories wholesale to `.gitignore` — only ignore download artifacts (`.tar.gz` etc.) if needed.
+Some `libs/` subdirs contain tracked config files (e.g. `libs/tools/bat/config/`, `libs/tools/lf/config/`). Do NOT add these directories wholesale to `.gitignore` — only ignore download artifacts (`.tar.gz` etc.) if needed.
 
 ## Key Internal Functions (defined in `bash/common.sh`)
 
