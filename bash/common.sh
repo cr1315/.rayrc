@@ -61,12 +61,12 @@ __rayrc_eget_install() {
     shift 2
 
     if [[ ! -x "${__rayrc_bin_dir}/eget" ]]; then
-        __rayrc_log_info "eget not found, cannot install ${repo}"
+        __rayrc_log_warn "eget not found, cannot install ${repo}"
         return 8
     fi
 
     "${__rayrc_bin_dir}/eget" "${repo}" --to "${__rayrc_bin_dir}/${binary_name}" "$@" || {
-        __rayrc_log_info "failed to install ${binary_name} from ${repo}"
+        __rayrc_log_warn "failed to install ${binary_name} from ${repo}"
         return 8
     }
 }
@@ -305,7 +305,7 @@ __rayrc_determine_os_type() {
     ## TODO: add logic for openWrt, etc..
     else
         echo ""
-        __rayrc_log_info "could not determine OS type..."
+        __rayrc_log_warn "could not determine OS type..."
         echo ""
         return 8
     fi
@@ -369,18 +369,18 @@ __rayrc_determin_os_distribution() {
                 __rayrc_pm_update_repo="opkg update -y"
             else
                 echo ""
-                __rayrc_log_info "could not determine OS distribution.."
+                __rayrc_log_warn "could not determine OS distribution.."
                 echo ""
                 return 8
             fi
         else
             echo ""
-            __rayrc_log_info "could not determine OS distribution.."
+            __rayrc_log_warn "could not determine OS distribution.."
             echo ""
         fi
     else
         echo ""
-        __rayrc_log_info "not supported OS type for bash.."
+        __rayrc_log_warn "not supported OS type for bash.."
         echo ""
     fi
 }

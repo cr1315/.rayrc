@@ -19,7 +19,7 @@ __rayrc_install() {
     )
 
     sudo pacman -S --needed --noconfirm "${packages[@]}" || {
-        __rayrc_log_info "failed to install niri packages"
+        __rayrc_log_warn "failed to install niri packages"
         return 8
     }
 }

@@ -25,13 +25,13 @@ __rayrc_install() {
                 "arm" "linux" "tar.gz"
             ;;
         *)
-            __rayrc_log_info "could not retrieve binary for ${__rayrc_package:3}.."
+            __rayrc_log_warn "could not retrieve binary for ${__rayrc_package:3}.."
             return 8
             ;;
     esac
 
     if [[ $? -ne 0 ]]; then
-        __rayrc_log_info "failed to setup ${__rayrc_package:3}"
+        __rayrc_log_warn "failed to setup ${__rayrc_package:3}"
         return 8
     fi
 

@@ -6,7 +6,7 @@ if [[ -z "${WAYLAND_DISPLAY}" ]] &&
    [[ ! -d /mnt/wslg ]] &&
    [[ ! -f /usr/share/wayland/wayland.xml ]] &&
    ! command -v wayland-scanner >/dev/null 2>&1; then
-    __rayrc_log_info "Wayland not available, skipping niri"
+    __rayrc_log_warn "Wayland not available, skipping niri"
     return
 fi
 
