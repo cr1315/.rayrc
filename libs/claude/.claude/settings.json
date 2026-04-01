@@ -1,18 +1,19 @@
 {
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
-  },
   "env": {
     "CLAUDE_CODE_USE_BEDROCK": "1"
   },
   "permissions": {
     "defaultMode": "plan"
   },
-  "effortLevel": "medium",
-  "model": "global.anthropic.claude-opus-4-6-v1[1m]"
+  "model": "global.anthropic.claude-opus-4-6-v1[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "medium"
 }
