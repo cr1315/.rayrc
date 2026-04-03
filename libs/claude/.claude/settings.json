@@ -5,7 +5,7 @@
   "permissions": {
     "defaultMode": "plan"
   },
-  "model": "global.anthropic.claude-opus-4-6-v1[1m]",
+  "model": "jp.anthropic.claude-sonnet-4-6[1m]",
   "statusLine": {
     "type": "command",
     "command": "bash $HOME/.claude/statusline-command.sh"
