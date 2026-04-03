@@ -9,3 +9,6 @@
 .claude/plugins/*
 # !.claude/plugins/installed_plugins.json
 # !.claude/plugins/blocklist.json
+
+## __rayrc personal memories
+!.claude/personal-memories/
