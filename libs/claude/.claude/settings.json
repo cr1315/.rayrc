@@ -1,6 +1,8 @@
 {
+  "respectGitignore": false,
   "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "1"
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "jp.anthropic.claude-sonnet-4-6"
   },
   "permissions": {
     "defaultMode": "plan"
@@ -16,6 +18,5 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "effortLevel": "medium",
-  "autoDreamEnabled": true,
-  "respectGitignore": false
+  "autoDreamEnabled": true
 }
