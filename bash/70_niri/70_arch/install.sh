@@ -27,6 +27,13 @@ __rayrc_install() {
         __rayrc_log_warn "failed to install niri packages"
         return 8
     }
+
+    # よく使われるNerd Fontのインストール（例: Hack, FiraCode, あるいはシンボルのみ）
+    sudo pacman -S --needed --noconfirm ttf-hack-nerd ttf-firacode-nerd ttf-nerd-fonts-symbols
+    # fontconfigのキャッシュを強制的に再構築（重要）
+    fc-cache -fv
+
+
 }
 
 __rayrc_install

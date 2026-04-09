@@ -1,8 +1,7 @@
 {
   "respectGitignore": false,
   "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "jp.anthropic.claude-sonnet-4-6"
+    "CLAUDE_CODE_USE_BEDROCK": "1"
   },
   "permissions": {
     "defaultMode": "plan"
