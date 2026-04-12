@@ -58,6 +58,17 @@ Some `libs/` subdirs contain tracked config files (e.g. `libs/tools/bat/config/`
 - `__rayrc_source_facade <phase>` — scans `__rayrc_ctl_dir` subdirs and sources `<phase>.sh` in numeric order
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
 
+## Adding a New Tool Module under `05_tools/`
+
+1. Create `bash/05_tools/06_<tool>/install.sh` following the define-call-unset pattern
+2. Check GitHub releases for asset naming (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | grep '"name"'`)
+3. Post-download handling by asset type:
+   - **Single binary** (jq): `mv` to `${__rayrc_bin_dir}`
+   - **tar.gz with subdirectory** (bat, fd): `tar xf --transform 's:^[^/]*:<tool>:'` then `cp`
+   - **tar.gz flat** (navi): `tar xf -C "${__rayrc_data_dir}"` then `cp`
+4. Cleanup: `rm -rf "${__rayrc_data_dir}/<tool>"*`
+5. Tools without macOS releases: `*)` fallback warns and returns 8
+
 ## Conventions
 
 - All internal functions/variables use `__rayrc_` prefix to avoid namespace collisions
