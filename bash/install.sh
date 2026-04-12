@@ -77,6 +77,9 @@ __rayrc_delegate_entry() {
 
     source "${__rayrc_main_dir}/common.sh"
 
+    local __rayrc_install_filter=()
+    __rayrc_parse_args
+
     ## __rayrc_facts
     local __rayrc_facts_os_type
     local __rayrc_facts_os_distribution
