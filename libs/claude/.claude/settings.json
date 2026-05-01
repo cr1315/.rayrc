@@ -17,5 +17,6 @@
     "pyright-lsp@claude-plugins-official": true
   },
   "effortLevel": "medium",
-  "autoDreamEnabled": true
+  "autoDreamEnabled": true,
+  "remoteControlAtStartup": false
 }

@@ -108,12 +108,13 @@ __rayrc_source_facade() {
             __rayrc_data_dir="${saved_data_dir}"
             __rayrc_package="${_pkg}"
 
+            local _saved_filter=("${__rayrc_install_filter[@]}")
             if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
-                local _f _matched=false
-                for _f in "${__rayrc_install_filter[@]}"; do
-                    [[ "${_pkg}" == *"${_f}" ]] && { _matched=true; break; }
-                done
-                [[ "${_matched}" == "false" ]] && continue
+                local _token="${__rayrc_install_filter[0]}"
+                if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
+                    continue
+                fi
+                __rayrc_install_filter=("${__rayrc_install_filter[@]:1}")
             fi
 
             if [[ "${mode}" == "install" ]]; then
@@ -121,6 +122,7 @@ __rayrc_source_facade() {
             fi
 
             source "${scan_dir}/${_pkg}/${script_name}"
+            __rayrc_install_filter=("${_saved_filter[@]}")
         fi
     done
 
