@@ -11,7 +11,7 @@ __rayrc_install() {
     (cd "${__rayrc_data_dir}" && curl -sfL https://zyedidia.github.io/eget.sh | sh) || {
         echo "  .rayrc: failed to bootstrap eget"
         return 8
-    }
+    } >&/dev/null
 
     cp -f "${__rayrc_data_dir}/eget" "${__rayrc_bin_dir}"
     chmod +x "${__rayrc_bin_dir}/eget"
