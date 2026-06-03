@@ -4,9 +4,9 @@
     "CLAUDE_CODE_USE_BEDROCK": "1"
   },
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "auto"
   },
-  "model": "global.anthropic.claude-opus-4-6-v1[1m]",
+  "model": "global.anthropic.claude-opus-4-8[1m]",
   "statusLine": {
     "type": "command",
     "command": "bash $HOME/.claude/statusline-command.sh"

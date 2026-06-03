@@ -1,3 +1,3 @@
 ## file operation built-in tools
-- built-inツール（Edit, Write, Read, Glob, Grep, WebFetch, WebSearch）が存在する操作では、Bashより**遥かに**built-inツールを優先すること
+- Do NOT use the Bash tool to run commands when a relevant dedicated tool is provided.
 - sed, awk等によるBash経由のファイル変更は禁止
