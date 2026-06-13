@@ -16,7 +16,7 @@
     "skill-creator@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
   },
-  "effortLevel": "medium",
+  "effortLevel": "high",
   "autoDreamEnabled": true,
   "remoteControlAtStartup": false
 }
