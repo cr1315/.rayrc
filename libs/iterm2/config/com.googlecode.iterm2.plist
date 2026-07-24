@@ -25,23 +25,13 @@
 	<key>AiMaxTokens</key>
 	<integer>200000</integer>
 	<key>AiModel</key>
-	<string>claude-opus-4-6</string>
+	<string>claude-opus-4-8</string>
 	<key>AiResponseMaxTokens</key>
 	<integer>128000</integer>
 	<key>AitermURL</key>
 	<string>https://api.anthropic.com/v1/messages</string>
 	<key>AppendToExistingDebugLog</key>
 	<false/>
-	<key>AppleAntiAliasingThreshold</key>
-	<integer>1</integer>
-	<key>ApplePressAndHoldEnabled</key>
-	<false/>
-	<key>AppleScrollAnimationEnabled</key>
-	<integer>0</integer>
-	<key>AppleSmoothFixedFontsSizeThreshold</key>
-	<integer>1</integer>
-	<key>AppleWindowTabbingMode</key>
-	<string>manual</string>
 	<key>ClickToSelectCommand</key>
 	<false/>
 	<key>Custom Color Presets</key>
