@@ -14,8 +14,11 @@ else
 fi
 
 alias cls="clear"
+
+unsetopt pushdminus
 alias pd="pushd"
 alias ds="dirs -v"
+
 alias view="vim -R"
 alias vi="vim"
 
