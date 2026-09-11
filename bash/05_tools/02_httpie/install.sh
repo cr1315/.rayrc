@@ -6,7 +6,7 @@ __rayrc_install() {
 
     case "${__rayrc_facts_os_type}" in
         linux*)
-            curl -k -fsL "packages.httpie.io/binaries/linux/http-latest" --create-dirs \
+            curl -k -fsL "https://packages.httpie.io/binaries/linux/http-latest" --create-dirs \
                 -o "${__rayrc_bin_dir}/http" >&/dev/null
             chmod +x "${__rayrc_bin_dir}/http"
             ;;

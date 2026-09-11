@@ -43,15 +43,15 @@ __rayrc_install() {
     rm -rf "${__rayrc_data_dir}/delta"*
 
     # git aliases
-    if git config --global --list 2>&1 | grep 'pull.rebase=' >/dev/null 2>&1; then
-        true
-    else
-        git config --global core.pager delta
-        git config --global interactive.diffFilter 'delta --color-only'
-        git config --global delta.navigate true
-        git config --global delta.dark true
-        git config --global merge.conflictStyle zdiff3
-    fi
+    # if git config --global --list 2>&1 | grep 'pull.rebase=' >/dev/null 2>&1; then
+    #     true
+    # else
+    #     git config --global core.pager delta
+    #     git config --global interactive.diffFilter 'delta --color-only'
+    #     git config --global delta.navigate true
+    #     git config --global delta.dark true
+    #     git config --global merge.conflictStyle zdiff3
+    # fi
 }
 
 __rayrc_install
