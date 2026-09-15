@@ -17,9 +17,9 @@ __rayrc_main() {
 
     # export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
     if command -v shfmt &>/dev/null; then
-        export FZF_CTRL_R_OPTS="--preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
+        export FZF_CTRL_R_OPTS="--no-unicode --preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
     else
-        export FZF_CTRL_R_OPTS="--preview 'echo {2..} | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
+        export FZF_CTRL_R_OPTS="--no-unicode --preview 'echo {2..} | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
     fi
 
     # set env variables for fzf
