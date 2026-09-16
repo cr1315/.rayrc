@@ -13,13 +13,16 @@ __rayrc_install() {
         return 0
     fi
 
-    ## Official installer auto-detects OS/arch (incl. musl vs glibc). Point it
-    ## at libs/bin via UV_UNMANAGED_INSTALL, which drops just the `uv`/`uvx`
-    ## binaries there — no PATH edits, no self-updater, no receipt/env files.
+    ## Official installer auto-detects OS/arch (incl. musl vs glibc).
+    ## UV_INSTALL_DIR drops just the `uv`/`uvx` binaries into libs/bin (flat
+    ## layout, no env script) while keeping `uv self update` working. Unlike
+    ## UV_UNMANAGED_INSTALL it leaves the self-updater enabled; the only extra
+    ## file is the update receipt at ~/.config/uv/uv-receipt.json.
+    ## UV_NO_MODIFY_PATH stops it from editing shell rc files — rayrc owns PATH.
     if ! (
         set -o pipefail
         curl -LsSf https://astral.sh/uv/install.sh \
-            | env UV_UNMANAGED_INSTALL="${__rayrc_bin_dir}" sh
+            | env UV_INSTALL_DIR="${__rayrc_bin_dir}" UV_NO_MODIFY_PATH=1 sh
     ) >&/dev/null; then
         __rayrc_log_warn "failed to install uv"
         return 8
