@@ -1,20 +1,15 @@
 #!/usr/bin/env bash
 
-[[ -x "${PIPX_BIN_DIR}/pipx" ]] || { return; }
+[[ -x "${__rayrc_bin_dir}/uv" ]] || { return; }
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    ## ansible<2.10 requires Python < 3.11
-    python3 -c "import sys; sys.exit(0 if sys.version_info < (3, 11) else 1)" || {
-        __rayrc_log_info "skipping ansible — requires Python < 3.11 (current: $(python3 --version))"
-        return
-    }
-
-    if ! command -v ansible >/dev/null 2>&1; then
-        "${PIPX_BIN_DIR}/pipx" install \
-            --include-deps \
-            --system-site-packages \
+    ## ansible<2.10 requires Python < 3.11; pin 3.10 so uv fetches a compatible
+    ## standalone interpreter regardless of the system Python version.
+    if [[ ! -x "${__rayrc_bin_dir}/ansible" ]]; then
+        "${__rayrc_bin_dir}/uv" tool install \
+            --python 3.10 \
             "ansible<2.10" >&/dev/null
     fi
 }
