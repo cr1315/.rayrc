@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(/**)",
+      "Write(/**)",
+      "Read(//**)",
+      "Bash(code *)",
+      "Bash(curl *)",
+      "Bash(docker build *)",
+      "Bash(docker run *)",
+      "WebSearch",
+      "WebFetch(domain:archlinux.org)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
