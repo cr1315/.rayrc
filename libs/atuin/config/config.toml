@@ -1,0 +1,16 @@
+## rayrc-managed atuin config.
+## The config dir (this file) and the data dir are pointed at libs/atuin via
+## ATUIN_CONFIG_DIR / ATUIN_DATA_DIR exported in bash/18_atuin. Do not set
+## db_path/key_path here — ATUIN_DATA_DIR already keeps all data self-contained.
+## Full reference: https://docs.atuin.sh/configuration/config/
+
+## atuin works fully offline; sync only happens after an explicit `atuin login`.
+auto_sync = false
+
+## rayrc owns the binary (installed via atuin-installer.sh), so silence atuin's
+## own "new version available" check.
+update_check = false
+
+## UI
+style = "auto"
+inline_height = 20
