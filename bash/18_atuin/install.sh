@@ -9,10 +9,9 @@ __rayrc_install() {
     export ATUIN_CONFIG_DIR="${__rayrc_data_dir}/config"
     export ATUIN_DATA_DIR="${__rayrc_data_dir}/data"
 
-    if [[ -x "${__rayrc_bin_dir}/atuin" ]]; then
-        return 0
-    fi
-
+    ## No "already installed" short-circuit: re-running install always pulls
+    ## the latest atuin release.
+    ##
     ## Use the cargo-dist binary installer (atuin-installer.sh), NOT
     ## setup.atuin.sh — the latter rewrites ~/.bashrc/.zshrc/fish config and
     ## installs agent hooks, which collides with rayrc owning PATH and init.
@@ -22,7 +21,7 @@ __rayrc_install() {
     ## libs/bin. ATUIN_NO_MODIFY_PATH stops it from editing rc files.
     if ! (
         set -o pipefail
-        curl --proto '=https' --tlsv1.2 -LsSf \
+        curl -LsSf \
             https://github.com/atuinsh/atuin/releases/latest/download/atuin-installer.sh \
             | env ATUIN_INSTALL_DIR="${__rayrc_bin_dir}" \
                   ATUIN_NO_MODIFY_PATH=1 \
