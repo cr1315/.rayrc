@@ -58,6 +58,24 @@ Some `libs/` subdirs contain tracked config files (e.g. `libs/tools/bat/config/`
 - `__rayrc_source_facade <phase>` — scans `__rayrc_ctl_dir` subdirs and sources `<phase>.sh` in numeric order
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
 
+## Binary Acquisition Strategy (priority order)
+
+Core principle: every tool's binary — or a symlink to it — lives in rayrc's own dedicated location. Binaries land in `libs/bin/` (added to PATH); rayrc manages them itself, self-contained, so keep the external dependency and host footprint minimal. Favor plain `curl`/`tar` over anything that mutates the host system.
+
+When adding a module, pick the acquisition method in this order of preference:
+
+1. **Official install script (highest priority)** — if the tool ships its own installer, read its source first. If it robustly auto-detects OS/arch (glibc vs musl, macOS, etc.), pipe it and point its output at `libs/bin/` instead of hand-rolling a GitHub download. The uv module is the reference implementation (`bash/20_python/20_uv/install.sh`):
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh \
+       | env UV_INSTALL_DIR="${__rayrc_bin_dir}" UV_NO_MODIFY_PATH=1 sh
+   ```
+   - Use the installer's own env vars to (a) target `libs/bin/`, (b) stop it from editing shell rc files (rayrc owns PATH), (c) keep a flat layout with no extra env script.
+   - Wrap the pipe in a subshell with `set -o pipefail` so a mid-pipe failure is caught, then `return 8` on failure.
+
+2. **Direct GitHub release download** — use when the tool ships no install script, or the one it ships relies on a system package manager. Download the release asset directly, extract it if it's a zip/tar, and move only the binary into `libs/bin/`. See the mechanics per asset type in "Adding a New Tool Module under `05_tools/`" below.
+
+3. **System package manager (last resort)** — only when neither of the above is possible. Avoid when you can: it updates package-manager caches and pulls in transitive dependencies, which bloats the image and couples rayrc to the host's package state. The whole point is to stay lean and self-managed.
+
 ## Adding a New Tool Module under `05_tools/`
 
 1. Create `bash/05_tools/06_<tool>/install.sh` following the define-call-unset pattern
