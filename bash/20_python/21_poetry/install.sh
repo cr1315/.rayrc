@@ -6,7 +6,7 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     if [[ ! -x "${__rayrc_bin_dir}/poetry" ]]; then
-        "${__rayrc_bin_dir}/uv" tool install --python 3.13 poetry >&/dev/null
+        "${__rayrc_bin_dir}/uv" tool install --force --python 3.13 poetry >&/dev/null
     fi
 }
 

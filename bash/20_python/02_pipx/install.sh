@@ -10,7 +10,7 @@ __rayrc_install() {
 
     ## install pipx itself via uv tool (no hand-rolled venv)
     if [[ ! -x "${__rayrc_bin_dir}/pipx" ]]; then
-        "${__rayrc_bin_dir}/uv" tool install --python 3.13 pipx >&/dev/null
+        "${__rayrc_bin_dir}/uv" tool install --force --python 3.13 pipx >&/dev/null
     fi
 }
 

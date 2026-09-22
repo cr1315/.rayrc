@@ -9,11 +9,11 @@ __rayrc_install() {
         if [[ "${__rayrc_package_manager}" == "apk" ]]; then
             {
                 apk add --no-cache --virtual .build-deps build-base python3-dev libffi-dev \
-                && "${__rayrc_bin_dir}/uv" tool install --python 3.13 glances \
+                && "${__rayrc_bin_dir}/uv" tool install --force --python 3.13 "glances[cloud,containers,ip]" \
                 && apk del .build-deps
             } >&/dev/null
         else
-            "${__rayrc_bin_dir}/uv" tool install --python 3.13 "glances[cloud,containers,ip]" >&/dev/null
+            "${__rayrc_bin_dir}/uv" tool install --force --python 3.13 "glances[cloud,containers,ip]" >&/dev/null
         fi
     fi
 }
