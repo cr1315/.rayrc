@@ -12,6 +12,7 @@
 ## where to store your encryption key, default is your system data directory
 ## linux/mac: ~/.local/share/atuin/key
 ## windows: %USERPROFILE%/.local/share/atuin/key
+# key_path = "~/.key"
 key_path = "~/.ssh/atuin.key"
 
 ## date format used, either "us" or "uk"
@@ -21,10 +22,10 @@ key_path = "~/.ssh/atuin.key"
 ## either "l", "local" to use the system's current local timezone, or an offset
 ## from UTC in the format of "<+|->H[H][:M[M][:S[S]]]"
 ## for example: "+9", "-05", "+03:30", "-01:23:45", etc.
-timezone = "local"
+# timezone = "local"
 
 ## enable or disable automatic sync
-auto_sync = true
+# auto_sync = true
 
 ## enable or disable automatic update checks
 # update_check = true
@@ -34,6 +35,7 @@ auto_sync = true
 # update_channel = "stable"
 
 ## address of the sync server
+# sync_address = "https://api.atuin.sh"
 sync_address = "https://atuin.cr1315.com"
 
 ## how often to sync history. note that this is only triggered when a command
@@ -43,21 +45,23 @@ sync_address = "https://atuin.cr1315.com"
 
 ## which search mode to use for interactive search
 ## possible values: prefix, fulltext, fuzzy, daemon-fuzzy
-search_mode = "fuzzy"
+# search_mode = "fuzzy"
 
 ## which search mode to use when atuin is invoked from a shell up-key binding
 ## the accepted values are identical to those of "search_mode"
 ## leave unspecified to use same mode set in "search_mode"
-search_mode_shell_up_key_binding = "fuzzy"
+# search_mode_shell_up_key_binding = "fuzzy"
 
 ## which filter mode to use for interactive search
 ## possible values: "global", "host", "session", "session-preload", "directory", "workspace"
 ## consider using search.filters to customize the enablement and order of filter modes
+# filter_mode = "global"
 filter_mode = "host"
 
 ## which filter mode to use when atuin is invoked from a shell up-key binding
 ## the accepted values are identical to those of "filter_mode"
 ## leave unspecified to use same mode set in "filter_mode"
+# filter_mode_shell_up_key_binding = "global"
 filter_mode_shell_up_key_binding = "workspace"
 
 ## With workspace filtering enabled, Atuin will filter for commands executed
@@ -66,14 +70,17 @@ filter_mode_shell_up_key_binding = "workspace"
 ## To use workspace mode by default when available, set this to true and
 ## set filter_mode to "workspace" or leave it unspecified and
 ## set search.filters to include "workspace" before other filter modes.
+# workspaces = false
 workspaces = true
 
 ## which display style to use
 ## possible values: auto, full, compact
+# style = "compact"
 style = "full"
 
 ## the maximum number of lines the interface should take up
 ## set it to 0 to always go full screen
+# inline_height = 40
 inline_height = 32
 
 ## the maximum number of lines the interface should take up
@@ -82,6 +89,7 @@ inline_height = 32
 # inline_height_shell_up_key_binding = 0
 
 ## Invert the UI - put the search bar at the top , Default to `false`
+# invert = false
 invert = true
 
 ## enable or disable showing a preview of the selected command
@@ -107,11 +115,11 @@ invert = true
 
 ## Show numeric shortcuts (1..9) beside list items in the TUI
 ## set to false to hide the moving numbers if you find them distracting
+# show_numeric_shortcuts = true
 show_numeric_shortcuts = false
 
 ## default history list format - can also be specified with the --format arg
 # history_format = "{time}\t{command}\t{duration}"
-# history_format = "{command}"
 
 ## Defaults to true. If enabled, strip trailing spaces and tabs from commands
 ## before saving them to history.
@@ -140,15 +148,17 @@ show_numeric_shortcuts = false
 ## Configure the maximum height of the preview to show.
 ## Useful when you have long scripts in your history that you want to distinguish
 ## by more than the first few lines.
+# max_preview_height = 4
 max_preview_height = 10
 
 ## Configure whether or not to show the help row, which includes the current Atuin
 ## version (and whether an update is available), a keymap hint, and the total
 ## amount of commands in your history.
+# show_help = true
 show_help = false
 
 ## Configure whether or not to show tabs for search and inspect
-# show_tabs = false
+# show_tabs = true
 
 ## Configure whether or not the tabs row may be auto-hidden, which includes the current Atuin
 ## tab, such as Search or Inspector, and other tabs you may wish to see. This will
@@ -172,6 +182,7 @@ show_help = false
 enter_accept = true
 
 ## Defaults to false. If enabled, when triggered after &&, || or |, Atuin will complete commands to chain rather than replace the current line.
+# command_chaining = false
 command_chaining = true
 
 ## This specifies the keymap on the startup of `atuin search`. If this is set
@@ -385,7 +396,6 @@ filters = ["host", "global", "workspace"]
 ##
 ## Minimal - more space for commands:
 # columns = ["duration", "command"]
-columns = ["command"]
 ##
 ## With wider directory column:
 # columns = ["duration", { type = "directory", width = 30 }, "command"]
@@ -401,4 +411,7 @@ columns = ["command"]
 
 ## Syntax highlight commands in the search results, using the theme's colors.
 ## Not available on all platforms (e.g. Windows).
+# syntax_highlight = true
+
+columns = ["command"]
 syntax_highlight = true
