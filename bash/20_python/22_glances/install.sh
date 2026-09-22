@@ -13,7 +13,7 @@ __rayrc_install() {
                 && apk del .build-deps
             } >&/dev/null
         else
-            "${__rayrc_bin_dir}/uv" tool install --python 3.13 "glances[cloud,containers]" >&/dev/null
+            "${__rayrc_bin_dir}/uv" tool install --python 3.13 "glances[cloud,containers,ip]" >&/dev/null
         fi
     fi
 }
