@@ -1,0 +1,5 @@
+## https://lusingander.github.io/stu/configurations/config-file-format.html
+
+## STU_ROOT_DIR is under rayrc libs; keep downloaded objects out of it.
+## `~` is NOT expanded by stu, use `$HOME` instead.
+download_dir = "$HOME/downloads/stu"
