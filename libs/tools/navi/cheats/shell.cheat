@@ -1,0 +1,11 @@
+% lf, fullpath
+
+; q を「選択(space)したファイル/ディレクトリのフルパスを書き出して終了」に差し替える
+; (この起動時だけ。lfrc は変更しない)。$ だと quit が先に走り書き出されないため % を使う
+# Print full paths of files/dirs selected (space) in lf on quit (q)
+tmp="$(mktemp)"; lf -command "cmd __print_selection %[ -z \"\$fs\" ] || printf '%s\n' \"\$fs\" > '$tmp'" -command 'map q :__print_selection; quit'; cat "$tmp"; rm -f "$tmp"
+
+% lf, fullpath
+
+# Print full paths of files/dirs selected by lf only version
+lf -print-selection
