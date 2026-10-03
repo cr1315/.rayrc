@@ -23,9 +23,17 @@ function y {
 }
 
 # Ctrl + O で yazi を起動する設定
-# AcceptLine で空行を確定させ、移動後のディレクトリでプロンプトを再描画する
+# 終了後、移動後のディレクトリでプロンプトをその場で再描画する
 Set-PSReadLineKeyHandler -Key "Ctrl+o" -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
     y
-    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+    # oh-my-posh の streaming モードは、自前の Enter ハンドラーを通らない限り
+    # キャッシュ済みの (移動前の) プロンプトを返す。AcceptLine を直接呼ぶと
+    # それを素通りするため、公式の再描画関数でキャッシュを捨てて描き直す
+    # https://ohmyposh.dev/docs/faq#repaint-the-prompt-on-demand
+    if (Get-Command Invoke-PoshPromptRepaint -ErrorAction SilentlyContinue) {
+        Invoke-PoshPromptRepaint
+    } else {
+        [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+    }
 }
