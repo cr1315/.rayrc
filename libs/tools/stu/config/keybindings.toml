@@ -1,0 +1,59 @@
+## https://lusingander.github.io/stu/keybindings/custom-keybindings.html
+## defaults: https://github.com/lusingander/stu/blob/master/assets/keybindings.toml
+##
+## lf-like browsing on top of the defaults.
+## Actions not listed here keep their default bindings.
+##
+## `q` is intentionally NOT bound to quit: stu handles quit before any screen,
+## so `q` would also exit while typing in the filter / download-as input.
+## Quit stays `ctrl-c`.
+
+[bucket_list]
+down = ["j", "down"]
+up = ["k", "up"]
+go_to_top = ["g", "home"]
+go_to_bottom = ["shift-g", "end"]
+page_down = ["ctrl-f", "ctrl-d", "pagedown"]
+page_up = ["ctrl-b", "ctrl-u", "pageup"]
+select = ["l", "right", "enter"]
+
+[object_list]
+down = ["j", "down"]
+up = ["k", "up"]
+go_to_top = ["g", "home"]
+go_to_bottom = ["shift-g", "end"]
+page_down = ["ctrl-f", "ctrl-d", "pagedown"]
+page_up = ["ctrl-b", "ctrl-u", "pageup"]
+select = ["l", "right", "enter"]
+back = ["h", "left", "backspace"]
+
+## h/l switch tabs here, so back is backspace/esc
+## (esc inside a dialog still closes only the dialog)
+[object_detail]
+down = ["j", "down"]
+up = ["k", "up"]
+right = ["l", "right"]
+left = ["h", "left"]
+go_to_top = ["g", "home"]
+go_to_bottom = ["shift-g", "end"]
+back = ["backspace", "esc"]
+
+## h/l scroll horizontally here, so back is backspace/esc
+## (esc inside a dialog still closes only the dialog)
+[object_preview]
+down = ["j", "down"]
+up = ["k", "up"]
+right = ["l", "right"]
+left = ["h", "left"]
+go_to_top = ["g", "home"]
+go_to_bottom = ["shift-g", "end"]
+page_down = ["ctrl-f", "ctrl-d", "pagedown"]
+page_up = ["ctrl-b", "ctrl-u", "pageup"]
+back = ["backspace", "esc"]
+
+## sort, copy, encoding, confirm
+[select_dialog]
+down = ["j", "down"]
+up = ["k", "up"]
+right = ["l", "right"]
+left = ["h", "left"]

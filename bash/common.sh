@@ -53,17 +53,83 @@ __rayrc_github_downloader() {
     return 0
 }
 
+
 __rayrc_module_common_setup() {
     # echo "__rayrc_module_common_setup: \${BASH_SOURCE[0]}: ${BASH_SOURCE[0]}"
 
-    __rayrc_ctl_dir="${__rayrc_main_dir}/${__rayrc_package}"
+    ## idempotency guard — 同一モジュールで2回呼ばれても二重に積み上がらない
+    if [[ "${__rayrc_ctl_dir}" == *"/${__rayrc_package}" ]]; then
+        return
+    fi
+
+    __rayrc_ctl_dir="${__rayrc_ctl_dir:-${__rayrc_main_dir}}/${__rayrc_package}"
     # echo "__rayrc_module_common_setup: \${__rayrc_ctl_dir}: ${__rayrc_ctl_dir}"
 
-    __rayrc_data_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
+    __rayrc_data_dir="${__rayrc_data_dir:-${__rayrc_libs_dir}}/${__rayrc_package:3}"
     # echo "__rayrc_module_common_setup: \${__rayrc_data_dir}: ${__rayrc_data_dir}"
     if [[ ! -d "${__rayrc_data_dir}" ]]; then
         mkdir -p "${__rayrc_data_dir}"
     fi
+}
+
+source "${BASH_SOURCE[0]%/*}/logger.sh"
+
+######################################################################
+#
+# Facade
+#
+######################################################################
+# __rayrc_source_facade <mode>
+#
+# mode: install | uninstall | main → sources <mode>.sh in each module
+#
+# スキャンディレクトリの決定:
+#   __rayrc_ctl_dir が設定済み → そのディレクトリ（モジュール内からの呼び出し）
+#   未設定 → __rayrc_main_dir（トップレベルからの呼び出し）
+#
+__rayrc_source_facade() {
+    local mode="$1"
+    local script_name="${mode}.sh"
+    local scan_dir="${__rayrc_ctl_dir:-${__rayrc_main_dir}}"
+
+    ## save caller state (bash dynamic scoping — 子関数は親の local を上書きできるため)
+    local saved_ctl_dir="${__rayrc_ctl_dir}"
+    local saved_data_dir="${__rayrc_data_dir}"
+    local saved_package="${__rayrc_package}"
+
+    local _pkg
+    for _pkg in $(ls -1 "${scan_dir}" 2>/dev/null); do
+        if [[ -d "${scan_dir}/${_pkg}" &&
+              -f "${scan_dir}/${_pkg}/${script_name}" &&
+              ! -f "${scan_dir}/${_pkg}/disabled" ]]; then
+
+            ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
+            __rayrc_ctl_dir="${saved_ctl_dir}"
+            __rayrc_data_dir="${saved_data_dir}"
+            __rayrc_package="${_pkg}"
+
+            local _saved_filter=("${__rayrc_install_filter[@]}")
+            if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
+                local _token="${__rayrc_install_filter[0]}"
+                if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
+                    continue
+                fi
+                __rayrc_install_filter=("${__rayrc_install_filter[@]:1}")
+            fi
+
+            if [[ "${mode}" == "install" ]]; then
+                __rayrc_log_info "setting up for ${_pkg:3}.."
+            fi
+
+            source "${scan_dir}/${_pkg}/${script_name}"
+            __rayrc_install_filter=("${_saved_filter[@]}")
+        fi
+    done
+
+    ## restore caller state（呼び出し元モジュールの変数を復元）
+    __rayrc_ctl_dir="${saved_ctl_dir}"
+    __rayrc_data_dir="${saved_data_dir}"
+    __rayrc_package="${saved_package}"
 }
 
 ######################################################################
@@ -71,144 +137,18 @@ __rayrc_module_common_setup() {
 # parameters
 #
 ######################################################################
-__rayrc_populate_arrays() {
+# Parses --filter a,b,c from __rayrc_prms and populates __rayrc_install_filter.
+# __rayrc_install_filter must be declared (local) in the caller's scope.
+__rayrc_parse_args() {
     local i
-    local j
-
-    local __rayrc_install_filters
-    declare -a __rayrc_install_filters
-    local __rayrc_enable_filters
-    declare -a __rayrc_enable_filters
-    local __rayrc_disable_filters
-    declare -a __rayrc_disable_filters
-
     for ((i = 0; i < "${#__rayrc_prms[@]}"; i++)); do
-        # echo "__rayrc_prms[$i]: ${__rayrc_prms[$i]}"
         case "${__rayrc_prms[$i]}" in
-        --install)
+        --filter)
             i=$((i + 1))
-            __rayrc_install_filters=(${__rayrc_prms[$i]//,/ })
-            # echo "\${__rayrc_install_filters[@]}: ${__rayrc_install_filters[@]}"
-            # for ((j = 0; j < "${#__rayrc_install_filters[@]}"; j++)); do
-            #     echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
-            # done
-            ;;
-        --enable)
-            i=$((i + 1))
-            __rayrc_enable_filters=(${__rayrc_prms[$i]//,/ })
-            ;;
-        --disable)
-            i=$((i + 1))
-            __rayrc_disable_filters=(${__rayrc_prms[$i]//,/ })
-            ;;
-        *)
-            __rayrc_print_help
+            __rayrc_install_filter=(${__rayrc_prms[$i]//,/ })
             ;;
         esac
     done
-
-    __rayrc_filter_packages
-    __rayrc_enable_packages
-    __rayrc_disable_packages
-}
-
-__rayrc_filter_packages() {
-    local filter_matched
-    # echo "\${__rayrc_install_filters[@]}: ${__rayrc_install_filters[@]}"
-    # echo "\${#__rayrc_install_filters[@]}: ${#__rayrc_install_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_install_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
-    # done
-    if [[ "${#__rayrc_install_filters[@]}" -gt 0 ]]; then
-        for ((i = 0; i < "${#__rayrc_all_packages[@]}"; i++)); do
-            __rayrc_package="${__rayrc_all_packages[$i]}"
-            # echo "\${__rayrc_package}: ${__rayrc_package}"
-            filter_matched=false
-
-            for ((j = 0; j < "${#__rayrc_install_filters[@]}"; j++)); do
-                # echo "\${__rayrc_install_filters[$j]}: ${__rayrc_install_filters[$j]}"
-                if [[ "${__rayrc_package}" == *"${__rayrc_install_filters[$j]}" ]]; then
-                    filter_matched=true
-                    break
-                fi
-            done
-
-            if [[ "${filter_matched}" == "true" ]]; then
-                __rayrc_packages_to_install+=("${__rayrc_package}")
-            fi
-        done
-    else
-        __rayrc_packages_to_install=("${__rayrc_all_packages[@]}")
-    fi
-}
-
-__rayrc_enable_packages() {
-    local filter_matched
-    # echo "\${__rayrc_enable_filters[@]}: ${__rayrc_enable_filters[@]}"
-    # echo "\${#__rayrc_enable_filters[@]}: ${#__rayrc_enable_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_enable_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_enable_filters[$j]}: ${__rayrc_enable_filters[$j]}"
-    # done
-    if [[ "${#__rayrc_enable_filters[@]}" -gt 0 ]]; then
-        for ((i = 0; i < "${#__rayrc_all_packages[@]}"; i++)); do
-            __rayrc_package="${__rayrc_all_packages[$i]}"
-            # echo "\${__rayrc_package}: ${__rayrc_package}"
-            filter_matched=false
-
-            for ((j = 0; j < "${#__rayrc_enable_filters[@]}"; j++)); do
-                # echo "\${__rayrc_enable_filters[$j]}: ${__rayrc_enable_filters[$j]}"
-                if [[ "${__rayrc_package}" == *"${__rayrc_enable_filters[$j]}" ]]; then
-                    filter_matched=true
-                    break
-                fi
-            done
-
-            if [[ "${filter_matched}" == "true" && -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
-                rm -f "${__rayrc_main_dir}/${__rayrc_package}/disabled"
-            fi
-        done
-    fi
-}
-
-__rayrc_disable_packages() {
-    local filter_matched
-    # echo "\${__rayrc_disable_filters[@]}: ${__rayrc_disable_filters[@]}"
-    # echo "\${#__rayrc_disable_filters[@]}: ${#__rayrc_disable_filters[@]}"
-    # for ((j = 0; j < "${#__rayrc_disable_filters[@]}"; j++)); do
-    #     echo "\${__rayrc_disable_filters[$j]}: ${__rayrc_disable_filters[$j]}"
-    # done
-    if [[ "${#__rayrc_disable_filters[@]}" -gt 0 ]]; then
-        for ((i = 0; i < "${#__rayrc_all_packages[@]}"; i++)); do
-            __rayrc_package="${__rayrc_all_packages[$i]}"
-            # echo "\${__rayrc_package}: ${__rayrc_package}"
-            filter_matched=false
-
-            for ((j = 0; j < "${#__rayrc_disable_filters[@]}"; j++)); do
-                # echo "\${__rayrc_disable_filters[$j]}: ${__rayrc_disable_filters[$j]}"
-                if [[ "${__rayrc_package}" == *"${__rayrc_disable_filters[$j]}" ]]; then
-                    filter_matched=true
-                    break
-                fi
-            done
-
-            if [[ "${filter_matched}" == "true" && ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
-                touch "${__rayrc_main_dir}/${__rayrc_package}/disabled"
-            fi
-        done
-    fi
-}
-
-__rayrc_print_help() {
-    echo "If you don't want to bother, just run this line:"
-    echo "  ~/.rayrc/install"
-    echo ""
-    echo "However, by default, we don't install eza (a cool tool that can replace \`ls'),"
-    echo "if you want to include it, you can do like this:"
-    echo "  ~/.rayrc/install --enable eza"
-    echo ""
-    echo "If you've already installed and is using .rayrc now, and you want to separately"
-    echo "install a package, maybe eza?"
-    echo "  ~/.rayrc/install --enable eza --install eza"
 }
 
 ######################################################################
@@ -232,7 +172,7 @@ __rayrc_determine_os_type() {
     ## TODO: add logic for openWrt, etc..
     else
         echo ""
-        echo ".rayrc: could not determine OS type..."
+        __rayrc_log_warn "could not determine OS type..."
         echo ""
         return 8
     fi
@@ -296,18 +236,18 @@ __rayrc_determin_os_distribution() {
                 __rayrc_pm_update_repo="opkg update -y"
             else
                 echo ""
-                echo ".rayrc: could not determine OS distribution.."
+                __rayrc_log_warn "could not determine OS distribution.."
                 echo ""
                 return 8
             fi
         else
             echo ""
-            echo ".rayrc: could not determine OS distribution.."
+            __rayrc_log_warn "could not determine OS distribution.."
             echo ""
         fi
     else
         echo ""
-        echo ".rayrc: not supported OS type for bash.."
+        __rayrc_log_warn "not supported OS type for bash.."
         echo ""
     fi
 }

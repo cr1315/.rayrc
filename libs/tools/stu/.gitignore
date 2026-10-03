@@ -1,0 +1,2 @@
+# runtime data written into STU_ROOT_DIR: error.log, debug.log
+config/*.log

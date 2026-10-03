@@ -12,6 +12,8 @@ __rayrc_main() {
         alias dp="docker-compose"
     fi
     alias dm="docker-machine"
+
+    source "${__rayrc_ctl_dir}/functions.sh"
 }
 
 __rayrc_main

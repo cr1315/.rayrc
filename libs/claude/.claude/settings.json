@@ -1,0 +1,28 @@
+{
+  "respectGitignore": false,
+  "env": {
+    "CLAUDE_CODE_USE_BEDROCK": "1"
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "global.anthropic.claude-opus-5-5[1m]",
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "tui": "fullscreen",
+  "autoDreamEnabled": true,
+  "remoteControlAtStartup": false
+}

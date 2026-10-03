@@ -1,0 +1,9 @@
+% docker, image
+
+; 1列目(削除に使う参照)は repo:tag。タグのない dangling イメージは repo:tag で
+; rmi できないため ID にする。navi は $ 行中の <word> を変数と解釈するので
+; awk の正規表現は閉じ括弧を含めず /<none/ とする
+# Remove selected docker images (multi-select with tab)
+docker rmi <docker_images>
+
+$ docker_images: docker images --format '{{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}\t{{.CreatedSince}}' | awk -F'\t' -v OFS='\t' '{ print ($1 ~ /<none/ ? $2 : $1), $2, $3, $4 }' --- --delimiter '\t' --column 1 --multi --expand

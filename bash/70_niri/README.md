@@ -25,3 +25,23 @@
 ```
 
 - use a nerd font
+
+### /etc/wsl.conf
+
+```sh
+ray@C11-09CZ0B9XAMT ~/.config/niri
+:) "cat" /etc/wsl.conf
+[boot]
+systemd=true
+
+[user]
+default=ray
+```
+
+### /etc/pacman.conf: IgnorePkgでmesaをignoreしていた
+
+```sh
+
+IgnorePkg = mesa lib32-mesa
+
+```

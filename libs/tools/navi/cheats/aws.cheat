@@ -1,0 +1,14 @@
+% aws, ec2
+
+# Start EC2 instances by Name tag
+aws ec2 start-instances --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Name,Values=<ec2_name>" --query 'Reservations[].Instances[].InstanceId' --output text)
+
+$ ec2_name: aws ec2 describe-instances --query 'Reservations[].Instances[].Tags[?Key==`Name`].Value[]' --output text | tr '\t' '\n' | sort -u
+
+% aws, ecs
+
+# Exec into an ECS task with /bin/bash
+aws ecs execute-command --interactive --cluster "<ecs_cluster>" --command "/bin/bash" --task "<ecs_task>"
+
+$ ecs_cluster: aws ecs list-clusters --query 'clusterArns[]' --output text | tr '\t' '\n' | awk -F/ '{print $NF}' | sort
+$ ecs_task: aws ecs list-tasks --cluster "<ecs_cluster>" --query 'taskArns[]' --output text | tr '\t' '\n' --- --preview 'echo {}' --preview-window down:40%:wrap

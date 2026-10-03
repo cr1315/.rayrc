@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "postEdit": [
+      {
+        "match": "*.sh",
+        "command": "shellcheck $CLAUDE_FILE_PATH || true"
+      },
+      {
+        "match": "*.py",
+        "command": "poetry run ruff check $CLAUDE_FILE_PATH || true"
+      }
+    ]
+  }
+}
