@@ -1,0 +1,6 @@
+root = true
+
+## Windows PowerShell 5.1 reads BOM-less files as the system ANSI codepage (CP932 on ja-JP),
+## which mangles UTF-8 text and can swallow line breaks. BOM makes both 5.1 and 7 read UTF-8.
+[*.{ps1,psm1,psd1}]
+charset = utf-8-bom

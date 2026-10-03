@@ -1,4 +1,4 @@
-# oh-my-posh は Scoop で管理する（既に入っていれば Scoop が警告を出すだけで何もしない）
+﻿# oh-my-posh は Scoop で管理する（既に入っていれば Scoop が警告を出すだけで何もしない）
 scoop install oh-my-posh
 
 # # テーマは shell 非依存なので libs/ohmyposh/config で管理する

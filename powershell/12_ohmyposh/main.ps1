@@ -1,4 +1,4 @@
-# repo 管理のテーマを直接指定する（$env:POSH_THEMES_PATH には依存しない）
+﻿# repo 管理のテーマを直接指定する（$env:POSH_THEMES_PATH には依存しない）
 $ompConfig = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\ohmyposh\config\catppuccin.omp.json")
 
 # install より先にプロファイルが読まれても、エラーにせず素のプロンプトのまま進む

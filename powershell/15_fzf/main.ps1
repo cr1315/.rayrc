@@ -1,4 +1,4 @@
-# 1. コンソールI/Oのエンコーディング定義（グローバルスコープで一度だけ実行）
+﻿# 1. コンソールI/Oのエンコーディング定義（グローバルスコープで一度だけ実行）
 $env:LESSCHARSET = "utf-8"
 [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [System.Console]::InputEncoding = [System.Text.Encoding]::UTF8

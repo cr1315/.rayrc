@@ -1,4 +1,4 @@
-# Niri Silent Launcher
+﻿# Niri Silent Launcher
 function Start-Niri {
     [CmdletBinding()]
     param (
