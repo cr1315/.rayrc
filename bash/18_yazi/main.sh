@@ -31,7 +31,7 @@ y() {
 
 ## lf (05_tools/06_lf) と同じ C-o を上書きする。yazi が入っていなければ
 ## 冒頭の guard で return するので lfcd のまま残る。
-if [[ $- == *i* ]]; then
-    ## bind -x leaks `;16;113;0;32;1_` (see 06_lf/main.sh)
-    bind '"\C-o":"y\C-m"'
-fi
+# if [[ $- == *i* ]]; then
+#     ## bind -x leaks `;16;113;0;32;1_` (see 06_lf/main.sh)
+#     bind '"\C-o":"y\C-m"'
+# fi
