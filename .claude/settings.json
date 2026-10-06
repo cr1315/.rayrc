@@ -11,6 +11,9 @@
       "WebSearch",
       "WebFetch(domain:archlinux.org)",
       "WebFetch(domain:github.com)"
+    ],
+    "deny": [
+      "Bash(git push *)"
     ]
   }
 }
