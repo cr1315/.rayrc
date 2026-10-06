@@ -47,7 +47,8 @@ function gitstatus_prompt_update() {
   GITSTATUS_PROMPT=""
 
   # history -a
-  history -a && history -c && history -r
+  # history -a && history -c && history -r
+  history -a && history -n
 
   gitstatus_query "$@" || return 1                  # error
   [[ "$VCS_STATUS_RESULT" == ok-sync ]] || return 0 # not a git repo
