@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-command -v claude >/dev/null 2>&1 || { return; }
-
 ## temporary workaround: the Claude Code VSCode extension's webview CSP lacks `font-src data:`,
 ## so the icons in the edited-file view don't render. Patch the latest installed extension once.
 ## Remove once fixed upstream.
@@ -30,11 +28,12 @@ __rayrc_patch_vscode_claude_csp() {
         fi
     done
 }
+__rayrc_patch_vscode_claude_csp
+
+command -v claude >/dev/null 2>&1 || { return; }
 
 __rayrc_main() {
     __rayrc_module_common_setup
-
-    __rayrc_patch_vscode_claude_csp
 
     if command -v aws >&/dev/null && \
        aws bedrock list-foundation-models --region ap-northeast-1 >&/dev/null; then
