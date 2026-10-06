@@ -29,9 +29,11 @@ y() {
     rm -f -- "$tmp"
 }
 
-## lf (05_tools/06_lf) と同じ C-o を上書きする。yazi が入っていなければ
-## 冒頭の guard で return するので lfcd のまま残る。
+## lf (48_lf) と同じ C-o を使う。今は lf を勝たせるので、下の bind はコメントアウトしてあり、
+## 戻しても後から読み込まれる 48_lf が上書きする（.claude/rules/bash.md の C5）。
+## yazi を勝たせるときは、lf を 40 より小さい番号に移すか無効にしてから戻す。
+## yazi が入っていなければ冒頭の guard で return するので lfcd のまま残る。
 # if [[ $- == *i* ]]; then
-#     ## bind -x leaks `;16;113;0;32;1_` (see 06_lf/main.sh)
+#     ## bind -x leaks `;16;113;0;32;1_` (see 48_lf/main.sh)
 #     bind '"\C-o":"y\C-m"'
 # fi

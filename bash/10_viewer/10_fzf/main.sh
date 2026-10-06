@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# should come before git and vim
+# key-bindings.bash binds Ctrl-R; 30_atuin loads later and takes it over
+# (C4 in .claude/rules/bash.md)
 command -v fzf >/dev/null 2>&1 || { return 8; }
 
 __rayrc_main() {

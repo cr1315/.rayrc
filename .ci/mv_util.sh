@@ -2,9 +2,9 @@
 #
 # bash/ 配下のモジュールを移動し、対応する libs/ 側（data plane）も合わせて移動する。
 #
-#   mv_util.sh --from 05_tools/01_eget --to 02_net/10_eget
-#     bash/05_tools/01_eget → bash/02_net/10_eget
-#     libs/tools/eget       → libs/net/eget
+#   mv_util.sh --from 04_text/10_bat --to 06_filesearch/10_bat
+#     bash/04_text/10_bat → bash/06_filesearch/10_bat
+#     libs/text/bat       → libs/filesearch/bat
 #
 # - libs/ 側のパスは __rayrc_package:3 と同じく、各階層の番号プレフィックス（先頭 3 文字）を外して求める
 # - 移動先の親グループがなければ作成し、delegate 用の install.sh / main.sh を置く
@@ -214,7 +214,7 @@ warn_broken_symlinks() {
 
 
 ## 移動前のパスを直接書いている箇所を知らせる（docs/ は経緯の記録なので除く）
-## powershell/ は libs\yazi\config のように \ 区切りで data plane を参照している
+## powershell/ は libs\viewer\yazi\config のように \ 区切りで data plane を参照している
 warn_stale_references() {
     local hits
     hits="$(git grep -n -I -F -e "${from}" -e "${FROM_DATA}" -e "${FROM_DATA//\//\\}" -- . ':!docs/' 2>/dev/null)"
@@ -253,11 +253,11 @@ die() {
 
 print_usage() {
     echo "Usage: ${0##*/} --from <module> --to <module>"
-    echo "       <module> は bash/ からの相対パス（例: --from 05_tools/01_eget --to 02_net/10_eget）"
+    echo "       <module> は bash/ からの相対パス（例: --from 04_text/10_bat --to 06_filesearch/10_bat）"
 }
 
 
-## グループ用の delegate（bash/05_tools/{install,main}.sh と同じ内容）
+## グループ用の delegate（既存グループ、例えば bash/04_text/{install,main}.sh と同じ内容）
 write_delegate() {
     local phase="$1"
 
@@ -275,7 +275,7 @@ EOF
 }
 
 
-## 05_tools/01_eget → tools/eget（__rayrc_package:3 と同じく、各階層の先頭 3 文字を外す）
+## 04_text/10_bat → text/bat（__rayrc_package:3 と同じく、各階層の先頭 3 文字を外す）
 to_data_path() {
     local parts part
     local result=""

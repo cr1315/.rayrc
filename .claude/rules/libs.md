@@ -13,10 +13,10 @@ paths:
 
 | パターン | 用途 | 例 |
 |---------|------|-----|
-| A. ディレクトリ名を列挙して無視 | 取得物が入る配下ディレクトリを名前指定で除外 | `libs/.gitignore`, `libs/git/.gitignore`, `libs/fzf/.gitignore`, `libs/vim/vimfiles/.gitignore`, `libs/tools/lf/.gitignore` |
+| A. ディレクトリ名を列挙して無視 | 取得物が入る配下ディレクトリを名前指定で除外 | `libs/.gitignore`, `libs/viewer/git/.gitignore`, `libs/viewer/fzf/.gitignore`, `libs/text/vim/vimfiles/.gitignore`, `libs/viewer/lf/.gitignore` |
 | B. `*` で全無視 | ディレクトリごとランタイム専用。中身も `.gitignore` 自身も追跡しない | `libs/python/uv/**/.gitignore` |
 | C. 全無視 + `!` で許可 | 大半はランタイム管理だが一部ファイルだけ版管理したい | `libs/claude/.gitignore` |
-| D. 第三者リポジトリ由来 | クローン元が持つ `.gitignore`。**我々は編集しない** | `libs/blesh/.gitignore`, `libs/fzf/fzf/.gitignore`, `libs/git/gitstatus/.gitignore`, `libs/vim/vimfiles/plugged/*/.gitignore` |
+| D. 第三者リポジトリ由来 | クローン元が持つ `.gitignore`。**我々は編集しない** | `libs/blesh/.gitignore`, `libs/viewer/fzf/fzf/.gitignore`, `libs/viewer/git/gitstatus/.gitignore`, `libs/text/vim/vimfiles/plugged/*/.gitignore` |
 
 ## A. ディレクトリ名を列挙して無視（最も基本）
 
@@ -32,17 +32,17 @@ pipx
 ```
 
 ```gitignore
-# libs/git/.gitignore … クローンした第三者リポジトリのディレクトリ名
+# libs/viewer/git/.gitignore … クローンした第三者リポジトリのディレクトリ名
 gitstatus
 ```
 
 ```gitignore
-# libs/fzf/.gitignore
+# libs/viewer/fzf/.gitignore
 fzf
 ```
 
 ```gitignore
-# libs/vim/vimfiles/.gitignore … プラグインマネージャの生成物・実行時状態
+# libs/text/vim/vimfiles/.gitignore … プラグインマネージャの生成物・実行時状態
 autoload
 plugged
 viminfo
@@ -50,7 +50,7 @@ viminfo
 ```
 
 ```gitignore
-# libs/tools/lf/.gitignore … 実行時データディレクトリだけを無視（config/ は追跡）
+# libs/viewer/lf/.gitignore … 実行時データディレクトリだけを無視（config/ は追跡）
 data
 ```
 
@@ -95,7 +95,7 @@ data
 
 ## D. 第三者リポジトリ由来（編集対象外）
 
-`libs/blesh/`, `libs/fzf/fzf/`, `libs/git/gitstatus/`, `libs/vim/vimfiles/plugged/*/` などにある `.gitignore` は、クローン元リポジトリが同梱しているもの。**我々の管理対象ではないので編集しない**。これらは親モジュールのパターン A（ディレクトリ名指定）によって丸ごと無視されているため、そもそもリポジトリには追跡されない。
+`libs/blesh/`, `libs/viewer/fzf/fzf/`, `libs/viewer/git/gitstatus/`, `libs/text/vim/vimfiles/plugged/*/` などにある `.gitignore` は、クローン元リポジトリが同梱しているもの。**我々の管理対象ではないので編集しない**。これらは親モジュールのパターン A（ディレクトリ名指定）によって丸ごと無視されているため、そもそもリポジトリには追跡されない。
 
 ## 追加・変更時のチェックリスト
 

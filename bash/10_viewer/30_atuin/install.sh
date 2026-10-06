@@ -3,9 +3,9 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    ## Keep atuin fully self-contained under libs/atuin (mirrors the uv module):
-    ## - config.toml lives in libs/atuin/config
-    ## - history.db / records.db / key / session etc. live in libs/atuin/data
+    ## Keep atuin fully self-contained under libs/viewer/atuin (mirrors the uv module):
+    ## - config.toml lives in libs/viewer/atuin/config
+    ## - history.db / records.db / key / session etc. live in libs/viewer/atuin/data
     export ATUIN_CONFIG_DIR="${__rayrc_data_dir}/config"
     export ATUIN_DATA_DIR="${__rayrc_data_dir}/data"
 

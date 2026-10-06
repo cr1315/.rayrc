@@ -6,7 +6,7 @@ __rayrc_main() {
     __rayrc_module_common_setup
 
     ## Same self-contained dirs as install.sh so atuin reads config + history
-    ## from libs/atuin at runtime.
+    ## from libs/viewer/atuin at runtime.
     export ATUIN_CONFIG_DIR="${__rayrc_data_dir}/config"
     export ATUIN_DATA_DIR="${__rayrc_data_dir}/data"
 
