@@ -18,7 +18,7 @@ Modules are directories under `bash/` with a numbered prefix that controls load 
 | `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_bash` (common, sudo) |
 | `10_` | Interactive UI: fuzzy finder, prompt, history, file manager, multiplexer (group) | `10_viewer` (fzf, git, atuin, yazi, lf, tmux) |
 | `20_`+ | Language/platform tools | `20_python` |
-| `40_`–`63_` | Infrastructure tools | `40_docker`, `60_aws`, `62_kubectl` |
+| `40_`–`63_` | Infrastructure tools | `40_docker`, `60_iac` |
 | `80_`–`90_` | Misc/specialized | `80_hulft`, `90_misc` |
 
 Odd numbers (`01`, `03`, `05`, `07`, `09`) and `11`–`19` are left free for future groups. Group names must not collide under `--filter` substring matching with any other top-level name.
@@ -67,7 +67,7 @@ Core principle: every tool's binary — or a symlink to it — lives in rayrc's 
 
 When adding a module, pick the acquisition method in this order of preference:
 
-1. **Official install script (highest priority)** — if the tool ships its own installer, read its source first. If it robustly auto-detects OS/arch (glibc vs musl, macOS, etc.), pipe it and point its output at `libs/bin/` instead of hand-rolling a GitHub download. The uv module is the reference implementation (`bash/20_python/20_uv/install.sh`):
+1. **Official install script (highest priority)** — if the tool ships its own installer, read its source first. If it robustly auto-detects OS/arch (glibc vs musl, macOS, etc.), pipe it and point its output at `libs/bin/` instead of hand-rolling a GitHub download. The uv module is the reference implementation (`bash/20_python/01_uv/install.sh`):
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh \
        | env UV_INSTALL_DIR="${__rayrc_bin_dir}" UV_NO_MODIFY_PATH=1 sh

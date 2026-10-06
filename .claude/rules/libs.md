@@ -16,7 +16,7 @@ paths:
 | A. ディレクトリ名を列挙して無視 | 取得物が入る配下ディレクトリを名前指定で除外 | `libs/.gitignore`, `libs/viewer/git/.gitignore`, `libs/viewer/fzf/.gitignore`, `libs/text/vim/vimfiles/.gitignore`, `libs/viewer/lf/.gitignore` |
 | B. `*` で全無視 | ディレクトリごとランタイム専用。中身も `.gitignore` 自身も追跡しない | `libs/python/uv/**/.gitignore` |
 | C. 全無視 + `!` で許可 | 大半はランタイム管理だが一部ファイルだけ版管理したい | `libs/claude/.gitignore` |
-| D. 第三者リポジトリ由来 | クローン元が持つ `.gitignore`。**我々は編集しない** | `libs/blesh/.gitignore`, `libs/viewer/fzf/fzf/.gitignore`, `libs/viewer/git/gitstatus/.gitignore`, `libs/text/vim/vimfiles/plugged/*/.gitignore` |
+| D. 第三者リポジトリ由来 | クローン元が持つ `.gitignore`。**我々は編集しない** | `libs/viewer/fzf/fzf/.gitignore`, `libs/viewer/git/gitstatus/.gitignore`, `libs/text/vim/vimfiles/plugged/*/.gitignore` |
 
 ## A. ディレクトリ名を列挙して無視（最も基本）
 
@@ -25,10 +25,6 @@ paths:
 ```gitignore
 # libs/.gitignore … トップ階層で取得物ディレクトリをまとめて無視
 bin
-blesh
-gdu
-jq
-pipx
 ```
 
 ```gitignore
@@ -95,7 +91,7 @@ data
 
 ## D. 第三者リポジトリ由来（編集対象外）
 
-`libs/blesh/`, `libs/viewer/fzf/fzf/`, `libs/viewer/git/gitstatus/`, `libs/text/vim/vimfiles/plugged/*/` などにある `.gitignore` は、クローン元リポジトリが同梱しているもの。**我々の管理対象ではないので編集しない**。これらは親モジュールのパターン A（ディレクトリ名指定）によって丸ごと無視されているため、そもそもリポジトリには追跡されない。
+`libs/viewer/fzf/fzf/`, `libs/viewer/git/gitstatus/`, `libs/text/vim/vimfiles/plugged/*/` などにある `.gitignore` は、クローン元リポジトリが同梱しているもの。**我々の管理対象ではないので編集しない**。これらは親モジュールのパターン A（ディレクトリ名指定）によって丸ごと無視されているため、そもそもリポジトリには追跡されない。
 
 ## 追加・変更時のチェックリスト
 
