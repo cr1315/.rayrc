@@ -41,8 +41,8 @@ fi
 ## disable perl warning message for some docker envs
 export PERL_BADLANG=0
 
-export HISTSIZE=100000
-export HISTFILESIZE=100000
+export HISTSIZE=10000
+export HISTFILESIZE=10000
 export HISTCONTROL=ignoredups:erasedups
 shopt -u histappend
 
