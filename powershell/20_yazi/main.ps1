@@ -1,5 +1,5 @@
-﻿# bash (bash/18_yazi/main.sh) と同じ libs/yazi/config を参照する
-$env:YAZI_CONFIG_HOME = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\yazi\config")
+﻿# bash (bash/10_viewer/40_yazi/main.sh) と同じ libs/viewer/yazi/config を参照する
+$env:YAZI_CONFIG_HOME = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\viewer\yazi\config")
 
 # file.exe は Git for Windows 同梱（PATH 外の usr\bin にある）
 # git --exec-path は shim 経由でも実体の場所を返すので、そこから逆算する

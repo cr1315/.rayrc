@@ -1,0 +1,20 @@
+% docker, image
+
+; 1列目(削除に使う参照)は repo:tag。タグのない dangling イメージは repo:tag で
+; rmi できないため ID にする。navi は $ 行中の <word> を変数と解釈するので
+; awk の正規表現は閉じ括弧を含めず /<none/ とする
+# Remove selected docker images (multi-select with tab)
+docker rmi <docker_images>
+
+$ docker_images: docker images --format '{{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}\t{{.CreatedSince}}' | awk -F'\t' -v OFS='\t' '{ print ($1 ~ /<none/ ? $2 : $1), $2, $3, $4 }' --- --delimiter '\t' --column 1 --multi --expand
+
+% docker, compose
+
+; 旧 bash/40_docker/functions.sh の d.roots。compose 外のコンテナは
+; <Standalone / Non-Compose> と表示する（空白を含むので navi の変数にはならない）
+; 先頭の (all) のまま Enter で全コンテナ、tab で選べばそのコンテナだけ。
+; (all) は括弧を含み、コンテナ名としては使えないので名前と衝突しない
+# Show the compose working dir of running containers (pick with tab, or (all))
+set -- <running_containers>; case " $* " in *" (all) "*) set -- $(docker ps -q) ;; esac; if [ $# -eq 0 ]; then echo "No running containers."; else { echo "CONTAINER NAME|COMPOSE WORKING DIR"; echo "--------------|-------------------"; docker inspect --format '{{ slice .Name 1 }}|{{ if index .Config.Labels "com.docker.compose.project.working_dir" }}{{ index .Config.Labels "com.docker.compose.project.working_dir" }}{{ else }}<Standalone / Non-Compose>{{ end }}' "$@"; } | column -t -s '|'; fi
+
+$ running_containers: { echo '(all)'; docker ps --format '{{.Names}}\t{{.Image}}\t{{.Status}}'; } --- --delimiter '\t' --column 1 --multi --expand

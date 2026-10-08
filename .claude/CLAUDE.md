@@ -13,13 +13,8 @@ A "pluggable terminal rc platform" — a portable dotfiles framework that automa
 source ./install
 
 # Install specific packages only
-source ./install --install bat,fzf
-
-# Enable a disabled package and install it
-source ./install --enable eza --install eza
-
-# Disable a package
-source ./install --disable eza
+# one comma-separated token per hierarchy level, substring match ("*" matches any)
+source ./install --filter text,bat
 
 # Uninstall
 source ./uninstall
