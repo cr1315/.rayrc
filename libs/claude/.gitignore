@@ -12,3 +12,6 @@
 
 ## __rayrc personal memories
 !.claude/personal-memories/
+
+## per-host marker created by install.sh when Bedrock is accessible
+use_bedrock
