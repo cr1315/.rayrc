@@ -92,4 +92,4 @@ Unfortunately, I'm not good at bragging, although I'm working in a consulting co
 
 Whatever, I think you can understand the concept/intention as soon as you see this folder structure image:
 
-![folder structure image](./docs/images/rayrc_architecture.png)
+![folder structure image](./docs/images/rayrc_architecture_chatgpt.png)
