@@ -4,10 +4,15 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-$(uname -m)" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
-                "arm" "musl"
+                "aarch64" "musl"
+            ;;
+        linux-arm*)
+            __rayrc_github_downloader \
+                "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
+                "arm-unknown" "musl"
             ;;
         linux-*64*)
             __rayrc_github_downloader \
@@ -17,7 +22,7 @@ __rayrc_install() {
         linux-*86*)
             __rayrc_github_downloader \
                 "sharkdp/bat" "${__rayrc_data_dir}/bat.tar.gz" \
-                "musl" "i686"
+                "musl" "i686" "tar.gz"
             ;;
         macos-*86* | macos-*ia64*)
             __rayrc_github_downloader \

@@ -54,6 +54,26 @@ __rayrc_github_downloader() {
     return 0
 }
 
+## __rayrc_sed_inplace <file> <sed args...>
+##
+## `sed -i` that works the same with GNU and BSD (macOS) sed, which disagree on
+## the backup-suffix argument (BSD takes `sed -i -e ...` as suffix "-e").
+## Writing back through `cat >` also keeps a symlinked file (dotfile managers) intact.
+__rayrc_sed_inplace() {
+    local file="$1"
+    shift
+
+    local tmp
+    tmp="$(mktemp)" || return 8
+
+    if ! sed "$@" "${file}" >"${tmp}"; then
+        rm -f "${tmp}"
+        return 8
+    fi
+    cat "${tmp}" >"${file}"
+    rm -f "${tmp}"
+}
+
 __rayrc_module_common_setup() {
     ## idempotency guard — 同一モジュールで2回呼ばれても二重に積み上がらない
     if [[ "${__rayrc_ctl_dir}" == *"/${__rayrc_package}" ]]; then

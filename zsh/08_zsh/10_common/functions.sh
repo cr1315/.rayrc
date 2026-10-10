@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 showpath() {
-    echo $PATH | sed -e 's/:/\n/g'
+    ## BSD sed (macOS) does not turn `\n` in the replacement into a newline; use zsh's $path array
+    print -rl -- $path
 }

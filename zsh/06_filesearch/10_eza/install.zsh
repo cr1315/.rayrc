@@ -3,14 +3,19 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    ## eza ships no macOS binaries (use brew there)
+    ## eza ships no macOS / 32-bit x86 binaries (use brew on macOS)
     case "${__rayrc_facts_os_type}-$(uname -m)" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
-                "aarch64" "linux" "tar.gz"
+                "aarch64" "gnu\.tar\.gz"
             ;;
-        linux-*86* | linux-*ia64*)
+        linux-arm*)
+            __rayrc_github_downloader \
+                "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
+                "arm-unknown" "gnueabihf\.tar\.gz"
+            ;;
+        linux-x86_64)
             __rayrc_github_downloader \
                 "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
                 "musl" "x86_64" "tar.gz"

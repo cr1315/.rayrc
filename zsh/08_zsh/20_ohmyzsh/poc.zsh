@@ -9,7 +9,7 @@ __rayrc_install() {
         curl -fsSL -o "${__rayrc_data_dir}/omz_install.sh" https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
         ZSH="${__rayrc_data_dir}/oh-my-zsh" sh "${__rayrc_data_dir}/omz_install.sh"
 
-        sed -i -e 's:^ZSH_THEME=.*:ZSH_THEME="powerlevel10k/powerlevel10k":' $HOME/.zshrc
+        __rayrc_sed_inplace "$HOME/.zshrc" -e 's:^ZSH_THEME=.*:ZSH_THEME="powerlevel10k/powerlevel10k":'
 
         #
         # TODO: setup .zshrc

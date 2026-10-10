@@ -19,7 +19,7 @@ __rayrc_bootstrap_rc() {
     if [[ -f "$HOME/.zshrc" ]]; then
         if grep -q '.rayrc' "$HOME/.zshrc"; then
             # we assume sed installed..
-            sed -i -e '/\.rayrc.*main\.zsh/ d' "$HOME/.zshrc"
+            __rayrc_sed_inplace "$HOME/.zshrc" -e '/\.rayrc.*main\.zsh/ d'
         fi
 
         # use here document to add two lines
@@ -99,6 +99,7 @@ __rayrc_delegate_entry "${0:A:h}" "$@"
 unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
 unset -f __rayrc_parse_args
+unset -f __rayrc_sed_inplace
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install
 unset -f __rayrc_delegate_entry

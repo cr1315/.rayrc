@@ -12,7 +12,7 @@ __rayrc_install() {
         linux-arm* | linux-aarch*)
             __rayrc_github_downloader \
                 "gokcehan/lf" "${__rayrc_data_dir}/lf.tar.gz" \
-                "linux" "arm"
+                "linux" "arm\.tar"
             ;;
         linux-*64*)
             __rayrc_github_downloader \

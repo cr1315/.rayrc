@@ -12,8 +12,8 @@ __rayrc_main() {
 
     # set aliases
     alias bat="bat --color always"
-    alias cat="bat"
-
+    ## no more alias cat to bat, since it breaks some scripts that expect cat to behave like cat
+    # alias cat="bat"
 }
 
 __rayrc_main
