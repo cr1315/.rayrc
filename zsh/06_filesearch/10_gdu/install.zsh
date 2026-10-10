@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    case "${__rayrc_facts_os_type}-`uname -m`" in
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "dundee/gdu" "${__rayrc_data_dir}/gdu.tar.gz" \
@@ -45,19 +45,20 @@ __rayrc_install() {
         return 8
     fi
 
+    ## the tarball holds a single binary named gdu_<os>_<arch>; it is renamed on copy
+    ## (bash uses GNU tar --transform, which macOS bsdtar lacks)
+    mkdir -p "${__rayrc_data_dir}/gdu-release"
     case "${__rayrc_facts_os_type}" in
         linux)
-            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}" \
-                --warning=no-unknown-keyword \
-                --transform 's:^[^/]*:gdu:'
+            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}/gdu-release" \
+                --warning=no-unknown-keyword
             ;;
         *)
-            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}" \
-                --transform 's:^[^/]*:gdu:'
+            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}/gdu-release"
             ;;
     esac
 
-    cp -f "${__rayrc_data_dir}/gdu" "${__rayrc_bin_dir}"
+    cp -f "${__rayrc_data_dir}/gdu-release/"gdu_* "${__rayrc_bin_dir}/gdu"
 
     rm -rf "${__rayrc_data_dir}/gdu"*
 }

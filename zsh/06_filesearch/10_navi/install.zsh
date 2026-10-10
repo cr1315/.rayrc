@@ -1,9 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    case "${__rayrc_facts_os_type}-`uname -m`" in
+    ## navi ships no macOS / 32-bit x86 binaries (use brew on macOS)
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "denisidoro/navi" "${__rayrc_data_dir}/navi.tar.gz" \
@@ -30,6 +31,7 @@ __rayrc_install() {
         return 8
     fi
 
+    ## the tarball holds only ./navi at its top level
     tar xf "${__rayrc_data_dir}/navi.tar.gz" -C "${__rayrc_data_dir}"
 
     cp -f "${__rayrc_data_dir}/navi" "${__rayrc_bin_dir}"

@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    case "${__rayrc_facts_os_type}-`uname -m`" in
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "jqlang/jq" "${__rayrc_data_dir}/jq" \
@@ -45,11 +45,9 @@ __rayrc_install() {
         return 8
     fi
 
-    if [[ -f "${__rayrc_data_dir}/jq" ]]; then
-        mv -f "${__rayrc_data_dir}/jq" "${__rayrc_bin_dir}"
-        chmod -R 755 "${__rayrc_bin_dir}"
-        rm -rf "${__rayrc_data_dir}/jq"*
-    fi
+    ## the asset is the binary itself
+    chmod 755 "${__rayrc_data_dir}/jq"
+    mv -f "${__rayrc_data_dir}/jq" "${__rayrc_bin_dir}"
 }
 
 __rayrc_install

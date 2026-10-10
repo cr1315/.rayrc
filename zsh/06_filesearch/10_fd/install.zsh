@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    case "${__rayrc_facts_os_type}-`uname -m`" in
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "sharkdp/fd" "${__rayrc_data_dir}/fd.tar.gz" \
@@ -45,7 +45,9 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/fd.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:fd:'
+    ## --transform is GNU tar only; --strip-components works with macOS bsdtar too
+    mkdir -p "${__rayrc_data_dir}/fd"
+    tar xf "${__rayrc_data_dir}/fd.tar.gz" -C "${__rayrc_data_dir}/fd" --strip-components 1
 
     cp -f "${__rayrc_data_dir}/fd/fd" "${__rayrc_bin_dir}"
 

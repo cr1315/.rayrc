@@ -1,9 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    case "${__rayrc_facts_os_type}-`uname -m`" in
+    ## delta ships no x86_64 macOS binaries
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "dandavison/delta" "${__rayrc_data_dir}/delta.tar.gz" \
@@ -40,23 +41,14 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/delta.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:delta:'
+    ## --transform is GNU tar only; --strip-components works with macOS bsdtar too
+    mkdir -p "${__rayrc_data_dir}/delta"
+    tar xf "${__rayrc_data_dir}/delta.tar.gz" -C "${__rayrc_data_dir}/delta" --strip-components 1
 
     ## this will cause idempotent upgrade
     cp -f "${__rayrc_data_dir}/delta/delta" "${__rayrc_bin_dir}"
 
     rm -rf "${__rayrc_data_dir}/delta"*
-
-    # git aliases
-    # if git config --global --list 2>&1 | grep 'pull.rebase=' >/dev/null 2>&1; then
-    #     true
-    # else
-    #     git config --global core.pager delta
-    #     git config --global interactive.diffFilter 'delta --color-only'
-    #     git config --global delta.navigate true
-    #     git config --global delta.dark true
-    #     git config --global merge.conflictStyle zdiff3
-    # fi
 }
 
 __rayrc_install
