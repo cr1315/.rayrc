@@ -6,7 +6,7 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     # git aliases
-    git config --global --list | grep 'alias.co=checkout' >/dev/null 2>&1
+    git config --global --list 2>&1 | grep 'alias.co=checkout' >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
         git config --global alias.st status
         git config --global alias.co checkout

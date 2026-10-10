@@ -6,20 +6,8 @@
 #
 ######################################################################
 __rayrc_delegate_install() {
-    ### auto setup
     echo ""
-    for __rayrc_package in "${__rayrc_packages_to_install[@]}"; do
-
-        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" &&
-            -f "${__rayrc_main_dir}/${__rayrc_package}/install.zsh" &&
-            ! -f "${__rayrc_main_dir}/${__rayrc_package}/disabled" ]]; then
-
-            echo "  .rayrc: setting up for ${__rayrc_package:3}.."
-            source "${__rayrc_main_dir}/${__rayrc_package}/install.zsh"
-        fi
-    done
-
+    __rayrc_source_facade install
     __rayrc_bootstrap_rc
 }
 
@@ -41,8 +29,8 @@ __rayrc_bootstrap_rc() {
 
         # "cat" $HOME/.zshrc
         echo ""
-        echo ".rayrc: all done!"
-        echo ".rayrc: please logout & login to enjoy your new shell environment!"
+        __rayrc_log_info "all done!"
+        __rayrc_log_info "please logout & login to enjoy your new shell environment!"
     fi
 }
 
@@ -72,7 +60,7 @@ __rayrc_delegate_entry() {
 
     local __rayrc_bin_dir
     __rayrc_bin_dir="${__rayrc_libs_dir}/bin"
-    echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
+    # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"
     if [[ ! -d "${__rayrc_bin_dir}" ]]; then
         mkdir -p "${__rayrc_bin_dir}"
     fi
@@ -83,38 +71,10 @@ __rayrc_delegate_entry() {
     ## for packages
     local __rayrc_package
 
-    local __rayrc_all_packages
-    local __rayrc_packages_to_install
-    declare -a __rayrc_all_packages
-    declare -a __rayrc_packages_to_install
-
-    ## populate __rayrc_all_packages
-    for __rayrc_package in $(ls -1 "${__rayrc_main_dir}"); do
-
-        # echo "\${__rayrc_main_dir}/\${__rayrc_package}: ${__rayrc_main_dir}/${__rayrc_package}"
-        if [[ -d "${__rayrc_main_dir}/${__rayrc_package}" && -f "${__rayrc_main_dir}/${__rayrc_package}/install.zsh" ]]; then
-            # echo "  .rayrc: package name to be added '${__rayrc_package}'.."
-            __rayrc_all_packages+=("${__rayrc_package}")
-        fi
-    done
-    # echo "\${__rayrc_all_packages[@]}: ${__rayrc_all_packages[@]}"
-    # echo "\${#__rayrc_all_packages[@]}: ${#__rayrc_all_packages[@]}"
-    # for j in {1..${#__rayrc_all_packages[@]}..1}; do
-    #     echo "\${__rayrc_all_packages[$j]}: ${__rayrc_all_packages[$j]}"
-    # done
-
     source "${__rayrc_main_dir}/common.zsh"
-    __rayrc_populate_arrays
-    unset -f __rayrc_filter_packages
-    unset -f __rayrc_enable_packages
-    unset -f __rayrc_disable_packages
-    unset -f __rayrc_populate_arrays
-    unset -f __rayrc_print_help
-    # echo "\${__rayrc_packages_to_install[@]}: ${__rayrc_packages_to_install[@]}"
-    # echo "\${#__rayrc_packages_to_install[@]}: ${#__rayrc_packages_to_install[@]}"
-    # for j in {1..${#__rayrc_packages_to_install[@]}..1}; do
-    #     echo "\${__rayrc_packages_to_install[$j]}: ${__rayrc_packages_to_install[$j]}"
-    # done
+
+    local -a __rayrc_install_filter
+    __rayrc_parse_args
 
     ## __rayrc_facts
     local __rayrc_facts_os_type
@@ -137,6 +97,8 @@ __rayrc_delegate_entry() {
 __rayrc_delegate_entry "${0:A:h}" "$@"
 
 unset -f __rayrc_module_common_setup
+unset -f __rayrc_source_facade
+unset -f __rayrc_parse_args
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install
 unset -f __rayrc_delegate_entry

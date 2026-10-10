@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+command -v vim >/dev/null 2>&1 || { return; }
+
 __rayrc_install() {
     __rayrc_module_common_setup
 
@@ -20,10 +22,10 @@ __rayrc_install() {
     fi
 
     ### download plug.vim
-    curl -fLo "${__rayrc_data_dir}/vimfiles/autoload/plug.vim" --create-dirs \
+    curl -fsLo "${__rayrc_data_dir}/vimfiles/autoload/plug.vim" --create-dirs \
         "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
-    # determine & ln -snF
+    ### ln our vimfiles to ~/.vim
     ln -snf "${__rayrc_data_dir}/vimfiles" ~/.vim
 
     vim -u "${__rayrc_data_dir}/vimfiles/plugins.vim" +PlugInstall +qa >&/dev/null
