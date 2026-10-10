@@ -3,7 +3,7 @@
 __rayrc_main() {
     __rayrc_module_common_setup
 
-    export GITSTATUS_CACHE_DIR="${__rayrc_bin_dir}"
+    # export GITSTATUS_CACHE_DIR="${__rayrc_bin_dir}"
 
     if [ -f /.dockerenv ]; then
         export __rayrc_inside_docker=$'\033[1m(docker)\033[00m'
