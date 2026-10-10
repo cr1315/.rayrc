@@ -16,36 +16,62 @@ __rayrc_main() {
     ## callers (ssh(), navi, fzf.vim) stay inline.
     local __rayrc_fzf_tmux_opts="--tmux=center,90%"
 
-    if command -v shfmt &>/dev/null; then
-        export FZF_CTRL_R_OPTS="${__rayrc_fzf_tmux_opts} --preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
-    else
-        export FZF_CTRL_R_OPTS="${__rayrc_fzf_tmux_opts} --preview 'echo {2..} | bat --color=always --wrap=never --theme Dracula -p -P -l sh' --preview-window down:40%:wrap --tabstop=1 --bind 'ctrl-/:toggle-preview'"
-    fi
-
-    ## default options for fzf
-    # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
-    export FZF_DEFAULT_OPTS="--ansi --height 80% --border --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
-    export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-    --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff
-    --color=marker:#87ff00,spinner:#af5fff,header:#87afaf'
-
+    ## directories every fd listing below skips
+    local __rayrc_fzf_fd_excludes="--exclude .git --exclude node_modules --exclude .venv"
 
     # set env variables for fzf
-    export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git'
+    export FZF_DEFAULT_COMMAND="fd --type f --follow ${__rayrc_fzf_fd_excludes}"
+    ## default options for every fzf call, shortcuts included (their *_OPTS come after
+    ## and override). --preview is left to each shortcut, since not every input is a file.
+    # export FZF_DEFAULT_OPTS='--height 70% --layout=reverse --border'
+    export FZF_DEFAULT_OPTS="--ansi --layout reverse --border \
+        --height 80% --margin=1,4 \
+        --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff \
+        --color=marker:#87ff00,spinner:#af5fff,header:#87afaf"
+
+    if command -v shfmt &>/dev/null; then
+        export FZF_CTRL_R_OPTS="${__rayrc_fzf_tmux_opts} \
+            --preview 'echo {2..} | shfmt | bat --color=always --wrap=never --theme Dracula -p -P -l sh' \
+            --preview-window down:40%:wrap --tabstop=1 \
+            --bind 'ctrl-/:toggle-preview'"
+    else
+        export FZF_CTRL_R_OPTS="${__rayrc_fzf_tmux_opts} \
+            --preview 'echo {2..} | bat --color=always --wrap=never --theme Dracula -p -P -l sh' \
+            --preview-window down:40%:wrap --tabstop=1 \
+            --bind 'ctrl-/:toggle-preview'"
+    fi
+
+    ## CTRL+T to list files: shows relative paths, inserts absolute paths.
+    ## columns: <relative path>\t<absolute path>
+    if command -v awk &>/dev/null; then
+        ## fd drops colors with --format, so awk appends the absolute path column instead
+        local __rayrc_fzf_append_abs_path='{ print $0 "\t" ENVIRON["PWD"] "/" $0 }'
+        export FZF_CTRL_T_COMMAND="fd --type f --color always --hidden --follow ${__rayrc_fzf_fd_excludes} \
+            | awk '${__rayrc_fzf_append_abs_path}'"
+    else
+        ## same columns via fd --format, without colors
+        export FZF_CTRL_T_COMMAND="fd --type f --hidden --follow ${__rayrc_fzf_fd_excludes} \
+            --format \$'{}\t'\"\$PWD/{}\""
+    fi
+    export FZF_CTRL_T_OPTS="${__rayrc_fzf_tmux_opts} \
+        --height 70% --margin 0,0 \
+        --delimiter '\t' --with-nth 1 --accept-nth 2 \
+        --preview-window 'right:40%' \
+        --preview 'bat --color=always --style=numbers,grid --line-range :200 {2}'"
 
 
-    ## CTRL+T to list files
-    export FZF_CTRL_T_COMMAND='fd --type f --color always --hidden --follow --exclude .git'
-    export FZF_CTRL_T_OPTS="${__rayrc_fzf_tmux_opts} --ansi --layout=reverse --height 70% --border --margin 0,0 --preview-window 'right:60%' --preview 'bat --color=always --style=numbers,grid --line-range :200 {}'"
+    ## ALT+C to quick change directory, also via files.
+    ## columns: <cd target>\t<shown path>; a file cds into its parent directory.
+    export FZF_ALT_C_COMMAND="fd --type d --hidden --follow ${__rayrc_fzf_fd_excludes} --format \$'{}\t{}'; \
+        fd --type f --hidden --follow ${__rayrc_fzf_fd_excludes} --format \$'{//}\t{}'"
+    export FZF_ALT_C_OPTS="${__rayrc_fzf_tmux_opts} \
+        --delimiter '\t' --with-nth 2 --accept-nth 1"
 
 
-    ## ALT+C to quick change directory
-    # export FZF_ALT_C_COMMAND=''
-    export FZF_ALT_C_OPTS="${__rayrc_fzf_tmux_opts} --no-preview"
-
-
-    ## ** + TAB completion
+    ## ** + TAB completion; only path completion previews files
     export FZF_COMPLETION_OPTS="${__rayrc_fzf_tmux_opts}"
+    export FZF_COMPLETION_PATH_OPTS="--preview-window 'right:60%' \
+        --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
 
     source "${__rayrc_ctl_dir}/functions.sh"
 }
