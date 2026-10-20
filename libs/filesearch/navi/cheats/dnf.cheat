@@ -1,0 +1,13 @@
+% dnf, amazon linux 2023
+
+# Upgrade Amazon Linux 2023 to the latest release
+sudo dnf upgrade --releasever=latest -y
+
+% dnf, amazon linux 2023
+
+; check-update の WARNING に出る "dnf upgrade --releasever=<ver>" を全部拾い、新しい順に並べて選ばせる。
+; 新しいリリースが無いと選択肢が空になるので、その場合は upgrade を実行しない
+# Upgrade Amazon Linux 2023 to a release selected from check-update
+v="<al2023_releasever>"; if [ -n "$v" ]; then sudo dnf upgrade --releasever="$v" -y; else echo "No newer Amazon Linux release"; fi
+
+$ al2023_releasever: sudo dnf check-update 2>&1 | grep -oP 'dnf upgrade --releasever=\K\S+' | sort -Vru
