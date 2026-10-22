@@ -26,6 +26,14 @@ __rayrc_install() {
         ln -snf "${__rayrc_data_dir}/.claude" "${HOME}/.claude"
     fi
 
+    ## probe Bedrock access only here, once per install; main.sh just checks the marker
+    ## (probing on every shell startup piles up AccessDenied events in CloudTrail)
+    if command -v aws >&/dev/null && \
+       aws bedrock list-foundation-models --region ap-northeast-1 >&/dev/null; then
+        touch "${__rayrc_data_dir}/use_bedrock"
+    else
+        rm -f "${__rayrc_data_dir}/use_bedrock"
+    fi
 }
 
 __rayrc_install

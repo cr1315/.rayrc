@@ -1,0 +1,55 @@
+#!/usr/bin/env zsh
+
+__rayrc_install() {
+    __rayrc_module_common_setup
+
+    ## the trailing `"` matches the end of the href, so the .tar.gz assets are skipped
+    case "${__rayrc_facts_os_type}-$(uname -m)" in
+        linux-arm*64* | linux-aarch*64*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'linux_arm64"'
+            ;;
+        linux-arm* | linux-aarch*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'linux_arm"'
+            ;;
+        linux-*64*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'linux_amd64"'
+            ;;
+        linux-*86*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'linux_386"'
+            ;;
+        macos-arm* | macos-aarch*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'darwin_arm64"'
+            ;;
+        macos-*86* | macos-*ia64*)
+            __rayrc_github_downloader \
+                "mikefarah/yq" "${__rayrc_data_dir}/yq" \
+                'darwin_amd64"'
+            ;;
+        *)
+            __rayrc_log_warn "could not retrieve binary for ${__rayrc_package:3}.."
+            return 8
+            ;;
+    esac
+
+    if [[ $? -ne 0 ]]; then
+        __rayrc_log_warn "failed to setup ${__rayrc_package:3}"
+        return 8
+    fi
+
+    ## the asset is the binary itself
+    chmod 755 "${__rayrc_data_dir}/yq"
+    mv -f "${__rayrc_data_dir}/yq" "${__rayrc_bin_dir}"
+}
+
+__rayrc_install
+unset -f __rayrc_install

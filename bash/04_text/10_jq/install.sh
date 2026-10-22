@@ -4,29 +4,34 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-`uname -m`" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
-                "stedolan/jq" "${__rayrc_data_dir}/jq" \
-                "linux" "arm64"
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
+                "linux-arm64"
+            ;;
+        linux-arm*)
+            __rayrc_github_downloader \
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
+                "linux-armhf"
             ;;
         linux-*64*)
             __rayrc_github_downloader \
-                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
                 "linux64"
             ;;
         linux-*86*)
             __rayrc_github_downloader \
-                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
                 "linux" "i386"
             ;;
         macos-arm* | macos-aarch*)
             __rayrc_github_downloader \
-                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
                 "macos" "arm64"
             ;;
         macos-*86* | macos-*ia64*)
             __rayrc_github_downloader \
-                "stedolan/jq" "${__rayrc_data_dir}/jq" \
+                "jqlang/jq" "${__rayrc_data_dir}/jq" \
                 "osx"
             ;;
         *)

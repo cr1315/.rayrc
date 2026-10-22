@@ -4,10 +4,15 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-`uname -m`" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "dundee/gdu" "${__rayrc_data_dir}/gdu.tar.gz" \
                 "arm64.tgz" "linux"
+            ;;
+        linux-arm*)
+            __rayrc_github_downloader \
+                "dundee/gdu" "${__rayrc_data_dir}/gdu.tar.gz" \
+                "linux_arm\.tgz"
             ;;
         linux-*64*)
             __rayrc_github_downloader \

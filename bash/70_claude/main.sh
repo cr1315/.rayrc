@@ -35,10 +35,9 @@ command -v claude >/dev/null 2>&1 || { return; }
 __rayrc_main() {
     __rayrc_module_common_setup
 
-    if command -v aws >&/dev/null && \
-       aws bedrock list-foundation-models --region ap-northeast-1 >&/dev/null; then
+    ## use_bedrock is created by install.sh; ~/.use_bedrock is a manual override
+    if [[ -e "${__rayrc_data_dir}/use_bedrock" || -e "${HOME}/.use_bedrock" ]]; then
         export CLAUDE_CODE_USE_BEDROCK=1
-        export AWS_REGION=ap-northeast-1
     fi
 
 }

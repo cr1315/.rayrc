@@ -4,10 +4,15 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-`uname -m`" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "dandavison/delta" "${__rayrc_data_dir}/delta.tar.gz" \
                 "aarch64" "linux"
+            ;;
+        linux-arm*)
+            __rayrc_github_downloader \
+                "dandavison/delta" "${__rayrc_data_dir}/delta.tar.gz" \
+                "arm-unknown" "gnueabihf"
             ;;
         linux-*64*)
             __rayrc_github_downloader \

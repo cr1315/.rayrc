@@ -4,30 +4,31 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-`uname -m`" in
-        linux-arm* | linux-aarch*)
+        ## ripgrep ships no 32-bit x86 binaries
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "arm" 'linux-musleabihf.tar.gz"'
+                "aarch64" 'linux-musl.tar.gz"'
             ;;
-        linux-*64*)
+        linux-arm*)
+            __rayrc_github_downloader \
+                "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
+                "armv7" 'linux-musleabihf.tar.gz"'
+            ;;
+        linux-x86_64)
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
                 "x86_64" 'musl.tar.gz"'
             ;;
-        linux-*86*)
-            __rayrc_github_downloader \
-                "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "86" 'linux-gnu.tar.gz"'
-            ;;
         macos-arm* | macos-aarch*)
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "linux" "aarch"
+                "aarch64" 'apple-darwin.tar.gz"'
             ;;
         macos-*86* | macos-*ia64*)
             __rayrc_github_downloader \
                 "BurntSushi/ripgrep" "${__rayrc_data_dir}/rg.tar.gz" \
-                "darwin" "x86"
+                "x86_64" 'apple-darwin.tar.gz"'
             ;;
         *)
             __rayrc_log_warn "could not retrieve binary for ${__rayrc_package:3}.."

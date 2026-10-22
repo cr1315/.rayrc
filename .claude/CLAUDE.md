@@ -41,6 +41,8 @@ The top-level `install` and `uninstall` scripts detect whether bash or zsh is ru
 
 Module system details, key internal functions, and bash conventions are in `.claude/rules/bash.md` (auto-loaded when editing `bash/**`).
 
+`zsh/` mirrors the same group layout, facade (`zsh/common.zsh`, `zsh/logger.zsh`), `--filter` syntax and `libs/` data plane, with `<phase>.zsh` instead of `<phase>.sh`. Keep the two trees in sync when moving or renumbering a module (`.ci/mv_util.sh` only handles `bash/`). zsh is currently used on macOS, where tools usually also come from brew.
+
 ### OS Support
 
 Linux (Ubuntu, Amazon Linux, RHEL, Debian, CentOS, Photon, Arch, Alpine, OpenWrt, Synology) and macOS. Windows support is in-progress via `powershell/`.

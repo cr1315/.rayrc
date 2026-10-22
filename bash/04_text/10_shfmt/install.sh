@@ -4,10 +4,15 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     case "${__rayrc_facts_os_type}-`uname -m`" in
-        linux-arm* | linux-aarch*)
+        linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
                 "mvdan/sh" "${__rayrc_data_dir}/shfmt" \
                 "linux" "arm64"
+            ;;
+        linux-arm*)
+            __rayrc_github_downloader \
+                "mvdan/sh" "${__rayrc_data_dir}/shfmt" \
+                'linux_arm"'
             ;;
         linux-*64*)
             __rayrc_github_downloader \
