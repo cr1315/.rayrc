@@ -6,10 +6,13 @@ __rayrc_main() {
     __rayrc_module_common_setup
 
     alias d="docker"
-    if docker compose --version &>/dev/null; then
+    ## `docker compose version`が正解でした
+    if docker compose version &>/dev/null; then
         alias dp="docker compose"
-    else
+    elif command -v docker-compose &>/dev/null; then
         alias dp="docker-compose"
+    else
+        echo "docker compose is not installed" >&2
     fi
     alias dm="docker-machine"
 }
