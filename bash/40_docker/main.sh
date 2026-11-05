@@ -12,7 +12,7 @@ __rayrc_main() {
     elif command -v docker-compose &>/dev/null; then
         alias dp="docker-compose"
     else
-        echo "docker compose is not installed" >&2
+        true
     fi
     alias dm="docker-machine"
 }
