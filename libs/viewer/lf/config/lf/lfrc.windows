@@ -1,0 +1,54 @@
+###
+# lfrc for Windows (PowerShell)
+#
+#   powershell/21_lf/main.ps1 の lf 関数から -config で読み込まれる。
+#   隣の lfrc (bash 用) は set shell bash 前提で共有できないため別ファイルにしている。
+#   colors / icons は LF_CONFIG_HOME 経由で bash 側と共有。
+#   previewer は絶対パスが必要なので main.ps1 側で -command により設定する。
+#
+#   参考: ../templates/lfrc.ps1.example
+###
+
+######################################################################
+#
+# set
+#
+######################################################################
+## interpreter for shell commands
+##   -NoProfile: プロファイル (= .rayrc 全体) を毎回読むと遅く、末尾の cls で画面も消える
+set shell pwsh
+set shellopts '-NoProfile:-NoLogo'
+set shellflag '-Command'
+
+## bash 用 lfrc と揃える
+set icons true
+set dirfirst false
+## Windows の ctime は「作成日時」(Unix は inode 変更日時) なので意味が少し異なる
+set sortby ctime
+set reverse true
+set scrolloff 10
+set preview true
+set tabstop 4
+
+
+######################################################################
+#
+# cmd / map
+#
+#   既定の open / e / i / w / help 等は cmd 構文 (%f% 等) で定義されていて
+#   pwsh では動かないので、すべて上書きする
+#
+######################################################################
+cmd open &Invoke-Item -LiteralPath $env:f
+
+## EDITOR / PAGER 未設定時は lf が notepad / more を入れてくれる
+map e $& $env:EDITOR $env:f
+map i $& $env:PAGER $env:f
+map w $pwsh -NoLogo
+
+cmd help $& $env:lf -doc | & $env:PAGER
+cmd maps $& $env:lf -remote "query $env:id maps" | & $env:PAGER
+cmd nmaps $& $env:lf -remote "query $env:id nmaps" | & $env:PAGER
+cmd vmaps $& $env:lf -remote "query $env:id vmaps" | & $env:PAGER
+cmd cmaps $& $env:lf -remote "query $env:id cmaps" | & $env:PAGER
+cmd cmds $& $env:lf -remote "query $env:id cmds" | & $env:PAGER
