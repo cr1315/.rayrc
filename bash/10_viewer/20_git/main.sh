@@ -23,6 +23,10 @@ __rayrc_main() {
         source "${__rayrc_ctl_dir}/functions.sh"
     fi
 
+    ## __rayrc_ctl_dir は読み込み中だけの一時変数なので、exported 関数 git-bundle-pick から
+    ## 参照できるよう別名で export しておく
+    export __RAYRC_GIT_CTL_DIR="${__rayrc_ctl_dir}"
+
     # only for places without network..
     # [[ ! -f "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64" ]] && cp -fp "`which gitstatusd-linux-x86_64`" "$HOME/.cache/gitstatus/gitstatusd-linux-x86_64"
 
@@ -30,3 +34,11 @@ __rayrc_main() {
 
 __rayrc_main
 unset -f __rayrc_main
+
+## lf で選んだリポジトリを git bundle にする（本体は rayrc-git-bundle。Windows の scp-git からは
+## フルパスで直接呼ばれる）。gitstatus の有無に関係なく、git があれば使える。
+## 子プロセス(bash -c, navi 等)からも呼べるよう export -f する
+git-bundle-pick() {
+    "${__RAYRC_GIT_CTL_DIR}/rayrc-git-bundle" "$@"
+}
+export -f git-bundle-pick

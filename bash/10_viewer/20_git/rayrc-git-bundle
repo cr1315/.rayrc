@@ -1,0 +1,302 @@
+#!/usr/bin/env bash
+######################################################################
+##
+## rayrc-git-bundle
+##   lf で選んだもの（または引数のパス）からリポジトリを割り出し、それぞれを
+##   `git bundle create --all` → `git bundle verify` して 1 つのフォルダにまとめる。
+##   Windows の scp-git（powershell/15_fzf/scp-git.ps1）から `ssh -t` 越しに呼ばれる本体。
+##   対話シェルからは git-bundle-pick（同じフォルダの main.sh で登録）で呼べる。
+##
+## usage: rayrc-git-bundle [-o 出力フォルダ] [-s lf の開始フォルダ] [パス ...]
+##   -o  バンドルの出力先。省略時は /tmp/scp-git-<ユーザー名>-<日時>-<乱数> を作る
+##       （親フォルダを他のユーザーと共有しないよう、/tmp の直下に 1 回ごとに作る。
+##         Windows の scp-git は /tmp/scp-git-<ID> を渡してくる）
+##   -s  lf の開始フォルダ。省略時はカレントディレクトリ
+##   パスを渡したときは lf を起動しない
+##
+## 終了コード:
+##   0  1 つ以上のバンドルを作成・検証できた
+##   2  何も選ばずに抜けた（中止）
+##   3  バンドルにできるリポジトリが 1 つもなかった
+##   1  それ以外のエラー
+##
+######################################################################
+
+set -euo pipefail
+
+__rayrc_usage() {
+    cat <<'EOF'
+usage: rayrc-git-bundle [-o 出力フォルダ] [-s lf の開始フォルダ] [パス ...]
+  -o  バンドルの出力先（省略時は /tmp/scp-git-<ユーザー名>-<日時>-<乱数>）
+  -s  lf の開始フォルダ（省略時はカレントディレクトリ）
+  パスを渡したときは lf を起動しない
+EOF
+}
+
+## バイト数を 12.3MB のような表記にする
+__rayrc_human_size() {
+    awk -v b="$1" 'BEGIN {
+        split("B KB MB GB TB", u, " ")
+        i = 1
+        while (b >= 1024 && i < 5) { b /= 1024; i++ }
+        if (i == 1) printf "%dB", b; else printf "%.1f%s", b, u[i]
+    }'
+}
+
+## lf を開き、スペースで選んだパスを $3 に書き出す（何も選ばずに q なら何も書かない）
+## 画面は lf の描画に使うので、結果は標準出力ではなくファイルで受け取る
+__rayrc_pick_with_lf() {
+    local libs_dir="$1" start_dir="$2" sel="$3" lf_bin
+
+    ## 非対話の ssh では PATH もエイリアス・関数も効かないので直接呼ぶ
+    lf_bin="${libs_dir}/bin/lf"
+    if [[ ! -x "$lf_bin" ]]; then
+        lf_bin="$(type -P lf || true)"
+    fi
+    if [[ -z "$lf_bin" ]]; then
+        echo "lf が見つからない" >&2
+        return 1
+    fi
+    if [[ ! -t 0 || ! -t 1 ]]; then
+        echo "端末がないので lf を開けない（ssh には -t を付けてください）" >&2
+        return 1
+    fi
+
+    ## 環境変数は lf のモジュールの関数（bash/10_viewer/48_lf/main.sh）と同じ値にする
+    ## TCELL_KEYBOARD_PROTOCOL=legacy: q で抜けたときのキー離上報告が ssh の遅延で
+    ## lf 終了後に届き、生のエスケープ列として漏れるのを防ぐ（詳細は 48_lf/main.sh）
+    ## q の差し替えはこの起動のときだけ。lfrc は変更しない。
+    ## $ だと quit が先に走って書き出されないため % を使う（navi の shell.cheat と同じ方式）
+    XDG_CONFIG_HOME="${libs_dir}/viewer/lf/config" \
+        XDG_DATA_HOME="${libs_dir}/viewer/lf/data" \
+        TCELL_KEYBOARD_PROTOCOL=legacy \
+        "$lf_bin" \
+        -command "cmd __rayrc_print_selection %[ -z \"\$fs\" ] || printf '%s\n' \"\$fs\" > '${sel}'" \
+        -command 'map q :__rayrc_print_selection; quit' \
+        "${start_dir}"
+}
+
+## パスからリポジトリの最上位を割り出して表示する。リポジトリでなければ 1 を返す
+__rayrc_resolve_repo() {
+    local p="$1" d top
+
+    ## 直下に .git がある（worktree やサブモジュールの .git ファイルも含む）
+    if [[ -d "$p" && -e "$p/.git" ]]; then
+        (cd -P -- "$p" && pwd -P)
+        return
+    fi
+
+    if [[ -d "$p" ]]; then
+        d="$p"
+    elif [[ -e "$p" ]]; then
+        d="$(dirname -- "$p")"
+    else
+        return 1
+    fi
+
+    top="$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" || return 1
+    [[ -n "$top" ]] || return 1
+    (cd -P -- "$top" && pwd -P)
+}
+
+## 1 つのリポジトリをバンドルにする。成功したら「ファイル<TAB>ブランチ」を $3 に追記する
+__rayrc_bundle_one() {
+    local repo="$1" out_dir="$2" result="$3" err="$4"
+    local base parent branch status_out count shown line name file i size refs
+
+    base="$(basename -- "$repo")"
+    parent="$(basename -- "$(dirname -- "$repo")")"
+
+    echo "== ${base}（${repo}）"
+
+    branch="$(git -C "$repo" branch --show-current 2>/dev/null || true)"
+    if [[ -z "$branch" ]]; then
+        ## detached HEAD
+        branch="$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || echo '（不明）')"
+    fi
+    echo "  ブランチ：${branch}"
+
+    status_out="$(git -C "$repo" -c core.quotepath=false status --short 2>/dev/null || true)"
+    if [[ -n "$status_out" ]]; then
+        count=0
+        while IFS= read -r line; do
+            count=$((count + 1))
+        done <<<"$status_out"
+        echo "  未コミットの変更：${count} 件（バンドルには含まれない）"
+        shown=0
+        while IFS= read -r line; do
+            if ((shown >= 5)); then
+                echo "    ..."
+                break
+            fi
+            echo "    ${line}"
+            shown=$((shown + 1))
+        done <<<"$status_out"
+    fi
+
+    ## 同じ名前がすでにあれば <親フォルダ名>_<フォルダ名>.bundle にする
+    ## （それでも重なるときだけ、後ろに番号を付ける）
+    name="${base}.bundle"
+    if [[ -e "${out_dir}/${name}" ]]; then
+        name="${parent}_${base}.bundle"
+        i=2
+        while [[ -e "${out_dir}/${name}" ]]; do
+            name="${parent}_${base}_${i}.bundle"
+            i=$((i + 1))
+        done
+    fi
+    file="${out_dir}/${name}"
+
+    ## コミットが 1 つもないリポジトリは、空のバンドルを作れないのでここで失敗する
+    if ! git -C "$repo" bundle create "$file" --all >/dev/null 2>"$err"; then
+        rm -f -- "$file"
+        echo "  bundle：作成に失敗したので飛ばします" >&2
+        while IFS= read -r line; do
+            echo "    ${line}" >&2
+        done <"$err"
+        return 1
+    fi
+
+    size="$(__rayrc_human_size "$(($(wc -c <"$file")))")"
+    refs="$(($(git bundle list-heads "$file" | wc -l)))"
+    printf '  bundle：%s（%s、refs %s）… ' "$file" "$size" "$refs"
+
+    if ! git -C "$repo" bundle verify "$file" >/dev/null 2>"$err"; then
+        rm -f -- "$file"
+        echo "verify NG（ファイルを消して飛ばします）" >&2
+        while IFS= read -r line; do
+            echo "    ${line}" >&2
+        done <"$err"
+        return 1
+    fi
+    echo "verify OK"
+
+    printf '%s\t%s\n' "$file" "$branch" >>"$result"
+}
+
+__rayrc_git_bundle_main() {
+    local out_dir="" start_dir="" opt out_dir_auto=0
+    local self_dir libs_dir sel result err p repo r found ok
+    local -a paths=() repos=()
+
+    OPTIND=1
+    while getopts ':o:s:h' opt; do
+        case "$opt" in
+            o) out_dir="$OPTARG" ;;
+            s) start_dir="$OPTARG" ;;
+            h)
+                __rayrc_usage
+                return 0
+                ;;
+            :)
+                echo "-${OPTARG} には値が必要です" >&2
+                __rayrc_usage >&2
+                return 1
+                ;;
+            *)
+                echo "不明なオプション：-${OPTARG}" >&2
+                __rayrc_usage >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if ! command -v git >/dev/null 2>&1; then
+        echo "git が見つからない" >&2
+        return 1
+    fi
+
+    ## このスクリプトは bash/10_viewer/20_git/ にある。3 つ上が rayrc の最上位
+    self_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+    libs_dir="$(cd -P -- "${self_dir}/../../.." && pwd -P)/libs"
+
+    __rayrc_work="$(mktemp -d)"
+    trap 'rm -rf -- "${__rayrc_work}"' EXIT
+    sel="${__rayrc_work}/selection"
+    result="${__rayrc_work}/result"
+    err="${__rayrc_work}/err"
+    : >"$result"
+
+    ## 1. 対象のパスを集める
+    if (($# > 0)); then
+        paths=("$@")
+    else
+        start_dir="${start_dir:-$PWD}"
+        if [[ ! -d "$start_dir" ]]; then
+            echo "開始フォルダがない：${start_dir}" >&2
+            return 1
+        fi
+        __rayrc_pick_with_lf "$libs_dir" "$start_dir" "$sel" || return 1
+        if [[ ! -s "$sel" ]]; then
+            echo "何も選ばれなかったので終了します"
+            return 2
+        fi
+        while IFS= read -r p || [[ -n "$p" ]]; do
+            if [[ -n "$p" ]]; then
+                paths+=("$p")
+            fi
+        done <"$sel"
+    fi
+
+    ## 2. パスごとにリポジトリを割り出し、重複を除く（選んだ順を保つ）
+    for p in "${paths[@]}"; do
+        if ! repo="$(__rayrc_resolve_repo "$p")"; then
+            echo "リポジトリではないので無視：${p}"
+            continue
+        fi
+        found=0
+        for r in ${repos[@]+"${repos[@]}"}; do
+            if [[ "$r" == "$repo" ]]; then
+                found=1
+                break
+            fi
+        done
+        if ((found == 0)); then
+            repos+=("$repo")
+        fi
+    done
+
+    if ((${#repos[@]} == 0)); then
+        echo "バンドルにできるリポジトリがないので終了します"
+        return 3
+    fi
+
+    ## 3. リポジトリごとにバンドルを作る（失敗したものは飛ばして次へ）
+    if [[ -z "$out_dir" ]]; then
+        out_dir="/tmp/scp-git-${USER:-$(id -un)}-$(date +%Y%m%d-%H%M%S)-$(printf '%04d' $((RANDOM % 10000)))"
+        out_dir_auto=1
+    fi
+    mkdir -p -m 700 -- "$out_dir"
+    out_dir="$(cd -P -- "$out_dir" && pwd -P)"
+
+    for repo in "${repos[@]}"; do
+        __rayrc_bundle_one "$repo" "$out_dir" "$result" "$err" || true
+    done
+
+    if [[ ! -s "$result" ]]; then
+        echo "バンドルを 1 つも作れなかったので終了します"
+        if ((out_dir_auto == 1)); then
+            rmdir -- "$out_dir" 2>/dev/null || true
+        fi
+        return 3
+    fi
+
+    ## 4. まとめ
+    ok=0
+    while IFS= read -r p; do
+        ok=$((ok + 1))
+    done <"$result"
+    echo ""
+    echo "== 作成したバンドル（${ok} 件）"
+    while IFS=$'\t' read -r p r; do
+        printf '  %s  %s  %s\n' "$p" "$(__rayrc_human_size "$(($(wc -c <"$p")))")" "$r"
+    done <"$result"
+    echo "出力フォルダ：${out_dir}"
+    if ((out_dir_auto == 1)); then
+        echo "Windows から取るとき："
+        echo "  scp.exe <host>:${out_dir}/*.bundle ."
+    fi
+}
+
+__rayrc_git_bundle_main "$@"
