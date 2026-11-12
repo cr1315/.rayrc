@@ -134,6 +134,13 @@ __rayrc_bundle_one() {
         done <<<"$status_out"
     fi
 
+    ## ファイル名では先頭の . を外す（.rayrc → rayrc.bundle）。
+    ## scp.exe の <host>:<dir>/*.bundle の * は、. で始まる名前に一致しないため
+    base="${base#"${base%%[!.]*}"}"
+    parent="${parent#"${parent%%[!.]*}"}"
+    [[ -n "$base" ]] || base="repo"
+    [[ -n "$parent" && "$parent" != "/" ]] || parent="root"
+
     ## 同じ名前がすでにあれば <親フォルダ名>_<フォルダ名>.bundle にする
     ## （それでも重なるときだけ、後ろに番号を付ける）
     name="${base}.bundle"

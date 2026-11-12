@@ -62,6 +62,8 @@ __rayrc_test_main() {
     __rayrc_t_repo "${tmp}/r2"
     __rayrc_t_repo "${tmp}/p1/same"
     __rayrc_t_repo "${tmp}/p2/same"
+    __rayrc_t_repo "${tmp}/.q1/.dotrepo"
+    __rayrc_t_repo "${tmp}/.q2/dotrepo"
     mkdir -p "${tmp}/plain"
     echo x >"${tmp}/plain/x.txt"
     mkdir -p "${tmp}/empty"
@@ -95,6 +97,10 @@ __rayrc_test_main() {
     __rayrc_t_run samename "${tmp}/p1/same" "${tmp}/p2/same"
     __rayrc_t_check "同じフォルダ名 2 つ → 2 つ目は <親>_<名前>.bundle" \
         eval '[[ $code -eq 0 && -f "$out/same.bundle" && -f "$out/p2_same.bundle" ]]'
+
+    __rayrc_t_run dotname "${tmp}/.q1/.dotrepo" "${tmp}/.q2/dotrepo"
+    __rayrc_t_check ". で始まるフォルダ名 → 先頭の . を外す（*.bundle で拾える）" \
+        eval '[[ $code -eq 0 && -f "$out/dotrepo.bundle" && -f "$out/q2_dotrepo.bundle" && $(__rayrc_t_count "$out") -eq 2 ]] && ! ls -A "$out" | grep -q "^\."'
 
     __rayrc_t_run emptyonly "${tmp}/empty"
     __rayrc_t_check "コミットのないリポジトリだけ → 飛ばして 3" \
