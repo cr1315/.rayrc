@@ -17,7 +17,7 @@ Modules are directories under `bash/` with a numbered prefix that controls load 
 | `06_` | File search tools: find, list, disk usage (group) | `06_filesearch` (eza, fd, gdu, navi, rg) |
 | `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_bash` (common, sudo) |
 | `10_` | Interactive UI: fuzzy finder, prompt, history, file manager, multiplexer (group) | `10_viewer` (fzf, git, atuin, yazi, lf, tmux) |
-| `20_`+ | Language/platform tools | `20_python` |
+| `20_`+ | Language/platform tools | `20_python`, `20_nodejs` |
 | `40_`–`63_` | Infrastructure tools | `40_docker`, `60_iac` |
 | `80_`–`90_` | Misc/specialized | `80_hulft`, `90_misc` |
 

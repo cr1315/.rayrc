@@ -9,9 +9,7 @@
     "command": "bash $HOME/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "claude-md-management@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true
   },
   "effortLevel": "high",
   "modelSettings": {

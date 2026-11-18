@@ -10,6 +10,10 @@
 # !.claude/plugins/installed_plugins.json
 # !.claude/plugins/blocklist.json
 
+## user-level skills
+!.claude/skills/
+
+
 ## __rayrc personal memories
 !.claude/personal-memories/
 

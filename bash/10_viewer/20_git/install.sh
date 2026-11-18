@@ -31,6 +31,10 @@ __rayrc_install() {
         git config --global pull.rebase false
 
         git config --global credential.helper store
+
+        ## リモートのブランチから作ったとき、名前が同じ場合だけ追跡先を自動で付けるようになります。
+        git config --global branch.autoSetupMerge simple
+
     fi
 
     # echo ""

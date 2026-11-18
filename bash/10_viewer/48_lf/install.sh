@@ -56,7 +56,8 @@ __rayrc_install() {
     if [[ ! -d "${HOME}/.cache/lf" ]]; then
         mkdir -p "${HOME}/.cache/lf"
     fi
-    cp -f "${__rayrc_data_dir}/config/lf/"*preview* "${__rayrc_bin_dir}"
+    ## lf-previewer.cmd (Windows 用) を拾わないよう、名前で限定する
+    cp -f "${__rayrc_data_dir}/config/lf/lf-previewer" "${__rayrc_bin_dir}"
 
 }
 

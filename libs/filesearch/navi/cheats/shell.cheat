@@ -9,3 +9,10 @@ tmp="$(mktemp)"; lf -command "cmd __print_selection %[ -z \"\$fs\" ] || printf '
 
 # Print full paths of files/dirs selected by lf only version
 lf -print-selection
+
+% git, bundle
+
+; lf で選んだ(space)もの → リポジトリごとに git bundle create --all + verify → /tmp/scp-git-<ユーザー名>-<日時>-<乱数>/
+; パスを引数で渡すと lf を開かない。何も選ばずに q なら何もしない
+# Pick repos in lf (space, then q) and make verified git bundles of them
+git-bundle-pick
