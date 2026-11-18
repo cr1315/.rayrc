@@ -37,8 +37,29 @@ Set-PSReadLineKeyHandler -Chord Ctrl+r -ScriptBlock {
   # Get-Contentの重厚なオブジェクト生成を捨て、.NETの低水準I/Oで最速ロード
   $lines = [System.IO.File]::ReadAllLines($historyPath)
 
+  # 重複を除去し、frecency（頻度＋最近度）スコアの高い順に並べる
+  #   score = Σ 0.5^(何件前の実行か / 半減期)
+  #   新しい実行ほど重く数えるので「最近よく使う」コマンドが上に来る
+  $halfLife = 500.0
+  $decay = [Math]::Pow(0.5, 1.0 / $halfLife)
+  $scores = [System.Collections.Generic.Dictionary[string, double]]::new()
+  $weight = 1.0
+  for ($i = $lines.Length - 1; $i -ge 0; $i--) {
+    $line = $lines[$i].Trim()
+    if ($line.Length -gt 0) {
+      $score = 0.0
+      [void]$scores.TryGetValue($line, [ref]$score)
+      $scores[$line] = $score + $weight
+    }
+    $weight *= $decay
+  }
+  $sorted = $scores.GetEnumerator() |
+    Sort-Object -Property Value -Descending |
+    ForEach-Object { $_.Key }
+
   # 本物のfzfバイナリに純粋な配列として流し込む
-  $command = $lines | fzf-real --tac --no-sort
+  #   --no-sort: 絞り込み中もスコア順を維持（--layout reverse なので先頭が一番上）
+  $command = $sorted | fzf-real --no-sort
 
   # キャンセル（Esc）時のNullチェックを追加し、エラーを握り潰す
   if (-not [string]::IsNullOrWhiteSpace($command)) {
