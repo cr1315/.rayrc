@@ -25,11 +25,11 @@ CI runs on push/PR via `.github/workflows/successful-install-on-every-platform.y
 ### Docker Testing (clean environment)
 
 ```bash
-docker build --no-cache -t rayrc-test .
+docker build --no-cache -t rayrc-test -f .claude/skills/rayrc-docker-test/Dockerfile .
 docker run --rm rayrc-test bash -c "cd && git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.rayrc.git && source .rayrc/install"
 ```
 
-Dockerfile is at project root. Clones from remote (dev_docker branch), so commit & push before building.
+Dockerfile lives in `.claude/skills/rayrc-docker-test/`. Clones from remote (dev_docker branch), so commit & push before building.
 Note: Consecutive builds may hit GitHub API rate limits (eget uses GitHub API).
 Tip: use `/rayrc-docker-test` skill to run the above two commands automatically.
 

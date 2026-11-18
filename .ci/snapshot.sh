@@ -18,7 +18,7 @@
 #     同一コミットで 2 回取得した差分から特定したもの:
 #       HOSTNAME（コンテナ ID）/ ATUIN_SESSION（乱数）/ fnm_multishells/<pid>_<ms>
 #
-# 前提: docker build -t rayrc-test .（リポジトリ直下の Dockerfile）
+# 前提: docker build -t rayrc-test -f .claude/skills/rayrc-docker-test/Dockerfile .
 #
 
 set -u

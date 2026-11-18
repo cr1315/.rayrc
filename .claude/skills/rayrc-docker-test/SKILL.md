@@ -19,7 +19,7 @@ pwd
 ## Step 2: Build the Docker image
 
 ```bash
-docker build --no-cache -t rayrc-test .
+docker build --no-cache -t rayrc-test -f .claude/skills/rayrc-docker-test/Dockerfile .
 ```
 
 ## Step 3: Run install in clean container
