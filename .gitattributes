@@ -1,0 +1,6 @@
+## files edited on Windows (*.ps1, *.cmd, ...) now share directories with the
+## Unix ones; keep every text file LF in the index and the work tree
+* text=auto eol=lf
+install   text eol=lf
+uninstall text eol=lf
+*.png binary
