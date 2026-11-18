@@ -21,7 +21,9 @@ $process.WaitForExit()
 
 
 ## show Encoding
+@"
 OutputEncoding: $OutputEncoding
 [Console]::OutputEncoding: $([Console]::OutputEncoding)
-[Console]::IutputEncoding: $([Console]::IutputEncoding)
+[Console]::InputEncoding: $([Console]::InputEncoding)
 [cultureinfo]::CurrentCulture.TextInfo.OEMCodePage: $([cultureinfo]::CurrentCulture.TextInfo.OEMCodePage)
+"@
