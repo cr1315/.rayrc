@@ -5,7 +5,7 @@
 ##           [-RayrcDir <string>] [-KeepRemote]
 ##
 ## 流れ（接続は 3 回。Windows の OpenSSH は ControlMaster が使えない）
-##   1. ssh.exe -t <host> '<rayrc>/bash/10_viewer/20_git/rayrc-git-bundle -o /tmp/scp-git-<ID> -s <開始フォルダ>'
+##   1. ssh.exe -t <host> '<rayrc>/src/10_viewer/20_git/rayrc-git-bundle -o /tmp/scp-git-<ID> -s <開始フォルダ>'
 ##      リモートで lf が開き、選んだリポジトリのバンドルが /tmp/scp-git-<ID> にできる
 ##   2. scp.exe <host>:/tmp/scp-git-<ID>/*.bundle <保存先>
 ##   3. ssh.exe <host> 'rm -rf /tmp/scp-git-<ID>'（失敗・中止でも必ず実行）
@@ -52,7 +52,7 @@ function scp-git {
     ## 2. ID とリモートの出力先
     $id = '{0}-{1:D4}' -f (Get-Date -Format 'yyyyMMdd-HHmmss'), (Get-Random -Minimum 0 -Maximum 10000)
     $remoteDir = "/tmp/scp-git-$id"
-    $remoteScript = "$RayrcDir/bash/10_viewer/20_git/rayrc-git-bundle"
+    $remoteScript = "$RayrcDir/src/10_viewer/20_git/rayrc-git-bundle"
     ## ~ はリモートのシェルに展開させる。変数で渡すので PowerShell 側では展開されない
     $remoteCmd = "$remoteScript -o $remoteDir -s $StartDir"
 

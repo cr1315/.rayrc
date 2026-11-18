@@ -1,4 +1,4 @@
-﻿# bash (bash/10_viewer/40_yazi/main.sh) と同じ libs/viewer/yazi/config を参照する
+﻿# bash (同じフォルダの main.sh) と同じ libs/viewer/yazi/config を参照する
 $env:YAZI_CONFIG_HOME = Join-Path $__rayrc_data_dir 'config'
 
 # file.exe は Git for Windows 同梱（PATH 外の usr\bin にある）

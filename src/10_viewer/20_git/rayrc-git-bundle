@@ -4,7 +4,7 @@
 ## rayrc-git-bundle
 ##   lf で選んだもの（または引数のパス）からリポジトリを割り出し、それぞれを
 ##   `git bundle create --all` → `git bundle verify` して 1 つのフォルダにまとめる。
-##   Windows の scp-git（powershell/10_viewer/10_fzf/scp-git.ps1）から `ssh -t` 越しに呼ばれる本体。
+##   Windows の scp-git（src/10_viewer/10_fzf/scp-git.ps1）から `ssh -t` 越しに呼ばれる本体。
 ##   対話シェルからは git-bundle-pick（同じフォルダの main.sh で登録）で呼べる。
 ##
 ## usage: rayrc-git-bundle [-o 出力フォルダ] [-s lf の開始フォルダ] [パス ...]
@@ -62,7 +62,7 @@ __rayrc_pick_with_lf() {
         return 1
     fi
 
-    ## 環境変数は lf のモジュールの関数（bash/10_viewer/48_lf/main.sh）と同じ値にする
+    ## 環境変数は lf のモジュールの関数（src/10_viewer/48_lf/main.sh）と同じ値にする
     ## TCELL_KEYBOARD_PROTOCOL=legacy: q で抜けたときのキー離上報告が ssh の遅延で
     ## lf 終了後に届き、生のエスケープ列として漏れるのを防ぐ（詳細は 48_lf/main.sh）
     ## q の差し替えはこの起動のときだけ。lfrc は変更しない。
@@ -214,7 +214,7 @@ __rayrc_git_bundle_main() {
         return 1
     fi
 
-    ## このスクリプトは bash/10_viewer/20_git/ にある。3 つ上が rayrc の最上位
+    ## このスクリプトは src/10_viewer/20_git/ にある。3 つ上が rayrc の最上位
     self_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
     libs_dir="$(cd -P -- "${self_dir}/../../.." && pwd -P)/libs"
 

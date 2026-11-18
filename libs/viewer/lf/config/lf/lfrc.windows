@@ -1,7 +1,7 @@
 ###
 # lfrc for Windows (PowerShell)
 #
-#   powershell/10_viewer/48_lf/main.ps1 の lf 関数から -config で読み込まれる。
+#   src/10_viewer/48_lf/main.ps1 の lf 関数から -config で読み込まれる。
 #   隣の lfrc (bash 用) は set shell bash 前提で共有できないため別ファイルにしている。
 #   colors / icons は LF_CONFIG_HOME 経由で bash 側と共有。
 #   previewer は絶対パスが必要なので main.ps1 側で -command により設定する。

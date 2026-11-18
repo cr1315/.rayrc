@@ -4,7 +4,7 @@ __rayrc_main() {
     __rayrc_module_common_setup
 
     #
-    # was defined in ROOT/bash/main.sh as if it is a GLOBAL variable.
+    # was defined in ROOT/src/main.sh as if it is a GLOBAL variable.
     # local __rayrc_bin_dir
     __rayrc_bin_dir="${__rayrc_libs_dir}/${__rayrc_package:3}"
     # echo "\${__rayrc_bin_dir}: ${__rayrc_bin_dir}"

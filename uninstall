@@ -8,11 +8,11 @@
 
 
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-    source "${0:A:h}/zsh/uninstall.zsh" "$@"
+    source "${0:A:h}/src/uninstall.zsh" "$@"
 elif [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
     # __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
     # echo "__rayrc_root_dir: ${__rayrc_root_dir}"
-    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/bash/uninstall.sh" "$@"
+    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/src/uninstall.sh" "$@"
 else
     echo ""
     echo ".rayrc: not supported SHELL for now.."

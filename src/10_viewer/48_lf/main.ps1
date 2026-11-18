@@ -1,4 +1,4 @@
-﻿# bash (bash/10_viewer/48_lf/main.sh) と同じ libs/viewer/lf を参照する
+﻿# bash (同じフォルダの main.sh) と同じ libs/viewer/lf を参照する
 #   - colors / icons : LF_CONFIG_HOME 経由で bash と共有
 #   - lfrc           : bash 用は set shell bash 前提なので、Windows 用の lfrc.windows を -config で差し替える
 #   - previewer      : lfrc では絶対パスを組み立てられないので -command で渡す

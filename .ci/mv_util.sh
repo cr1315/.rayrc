@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# bash/ 配下のモジュールを移動し、対応する libs/ 側（data plane）も合わせて移動する。
+# src/ 配下のモジュールを移動し、対応する libs/ 側（data plane）も合わせて移動する。
 #
 #   mv_util.sh --from 04_text/10_bat --to 06_filesearch/10_bat
-#     bash/04_text/10_bat → bash/06_filesearch/10_bat
+#     src/04_text/10_bat  → src/06_filesearch/10_bat
 #     libs/text/bat       → libs/filesearch/bat
 #
 # - libs/ 側のパスは __rayrc_package:3 と同じく、各階層の番号プレフィックス（先頭 3 文字）を外して求める
@@ -26,7 +26,7 @@ init_globals() {
     ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
     cd "${ROOT_DIR}" || exit 1
 
-    CTL_ROOT="bash"
+    CTL_ROOT="src"
     DATA_ROOT="libs"
 
     FROM_CTL="${CTL_ROOT}/${from}"
@@ -104,7 +104,7 @@ validate_parent_groups() {
 validate_nested_data() {
     is_ancestor "${FROM_DATA}" "${TO_DATA}" || return 0
 
-    ## FROM_DATA に対応する bash 側のグループを探す（例: libs/shell ↔ bash/08_shell）
+    ## FROM_DATA に対応する src 側のグループを探す（例: libs/shell ↔ src/08_shell）
     local group=""
     local dir
     for dir in $(ancestor_dirs "${to}"); do
@@ -214,7 +214,7 @@ warn_broken_symlinks() {
 
 
 ## 移動前のパスを直接書いている箇所を知らせる（docs/ は経緯の記録なので除く）
-## powershell/ は libs\viewer\yazi\config のように \ 区切りで data plane を参照している
+## *.ps1 は libs\viewer\yazi\config のように \ 区切りで data plane を参照していることがある
 warn_stale_references() {
     local hits
     hits="$(git grep -n -I -F -e "${from}" -e "${FROM_DATA}" -e "${FROM_DATA//\//\\}" -- . ':!docs/' 2>/dev/null)"
@@ -253,7 +253,7 @@ die() {
 
 print_usage() {
     echo "Usage: ${0##*/} --from <module> --to <module>"
-    echo "       <module> は bash/ からの相対パス（例: --from 04_text/10_bat --to 06_filesearch/10_bat）"
+    echo "       <module> は src/ からの相対パス（例: --from 04_text/10_bat --to 06_filesearch/10_bat）"
 }
 
 
@@ -369,16 +369,16 @@ validate_arguments() {
         exit 1
     fi
 
-    ## 補完で付きがちな先頭の bash/ と末尾の / は外す
-    from="${from#bash/}"
+    ## 補完で付きがちな先頭の src/ と末尾の / は外す
+    from="${from#src/}"
     from="${from%/}"
-    to="${to#bash/}"
+    to="${to#src/}"
     to="${to%/}"
 
     local path
     for path in "${from}" "${to}"; do
         if [[ ! "${path}" =~ ^([0-9]{2}_[A-Za-z0-9._-]+/)*[0-9]{2}_[A-Za-z0-9._-]+$ ]]; then
-            echo "Error: 各階層が 'NN_name' 形式の、bash/ からの相対パスを指定してください: ${path}" >&2
+            echo "Error: 各階層が 'NN_name' 形式の、src/ からの相対パスを指定してください: ${path}" >&2
             exit 1
         fi
     done

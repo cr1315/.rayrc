@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ######################################################################
 #
-# bash/10_viewer/20_git/rayrc-git-bundle のテスト
+# src/10_viewer/20_git/rayrc-git-bundle のテスト
 #   lf を使わず、パスを引数で渡して確認する
 #   usage: bash test/git_bundle/git_bundle.sh
 #
@@ -14,7 +14,7 @@ __rayrc_test_main() {
     local pass=0 fail=0
 
     root="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-    bin="${root}/bash/10_viewer/20_git/rayrc-git-bundle"
+    bin="${root}/src/10_viewer/20_git/rayrc-git-bundle"
     tmp="$(mktemp -d)"
     trap 'rm -rf -- "'"${tmp}"'"' RETURN
 
