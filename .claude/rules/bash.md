@@ -1,13 +1,15 @@
 ---
 paths:
-  - "bash/**"
+  - "src/**"
 ---
 
-# bash/ Module System
+# src/ Module System
+
+The control plane `src/` is shared by every dialect (`<phase>.sh` = bash, `<phase>.zsh` = zsh, `<phase>.ps1` = PowerShell; see I1–I8 in `.claude/CLAUDE.md`). This file describes the module system with bash as the reference dialect; zsh follows the same conventions with `.zsh`.
 
 ## Module System (Numbered Prefix Convention)
 
-Modules are directories under `bash/` with a numbered prefix that controls load order:
+Modules are directories under `src/` with a numbered prefix that controls load order:
 
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
@@ -46,17 +48,17 @@ Subdirectory `install.sh`/`main.sh` follow the same define-call-unset pattern. `
 
 ## Control Plane vs Data Plane (libs/)
 
-`bash/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
+`src/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
 
-Two-level hierarchy mirrors into `libs/` as well: `bash/04_text/10_bat/` → `libs/text/bat/`, `bash/08_shell/10_common/` → `libs/shell/common/`. When moving or renumbering a module, use `.ci/mv_util.sh --from <module> --to <module>`: it moves the control plane and data plane together (including ignored runtime data), creates missing groups with their delegates, and warns about broken symlinks and stale path references.
+Two-level hierarchy mirrors into `libs/` as well: `src/04_text/10_bat/` → `libs/text/bat/`, `src/08_shell/10_common/` → `libs/shell/common/`. When moving or renumbering a module, use `.ci/mv_util.sh --from <module> --to <module>`: it moves the control plane (every dialect) and data plane together (including ignored runtime data), creates missing groups with their `.sh` / `.zsh` delegates, and warns about broken symlinks and stale path references.
 
 Some `libs/` subdirs contain tracked config files (e.g. `libs/text/bat/config/`, `libs/viewer/lf/config/`). Do NOT add these directories wholesale to `.gitignore` — only ignore download artifacts (`.tar.gz` etc.) if needed.
 
-## Key Internal Functions (defined in `bash/common.sh`)
+## Key Internal Functions (defined in `src/common.sh`)
 
-- `__rayrc_log_info <message>` — depth-aware logger (defined in `bash/logger.sh`, sourced by `common.sh`); indents by 2 spaces per `__rayrc_source_facade` nesting level
+- `__rayrc_log_info <message>` — depth-aware logger (defined in `src/logger.sh`, sourced by `common.sh`); indents by 2 spaces per `__rayrc_source_facade` nesting level
 - `__rayrc_github_downloader <repo> <target> <filters...>` — (legacy) downloads latest GitHub release via HTML scraping
-- `__rayrc_eget_install <repo> <binary_name> [--asset filters...]` — downloads GitHub release binary via eget. **Deprecated as an acquisition method and currently unused**; defined in `bash/02_net/10_eget/install.sh`, which still installs the eget binary for manual use only
+- `__rayrc_eget_install <repo> <binary_name> [--asset filters...]` — downloads GitHub release binary via eget. **Deprecated as an acquisition method and currently unused**; defined in `src/02_net/10_eget/install.sh`, which still installs the eget binary for manual use only
 - `__rayrc_module_common_setup` — sets `__rayrc_ctl_dir` and `__rayrc_data_dir` for the current module
 - `__rayrc_source_facade <phase>` — scans `__rayrc_ctl_dir` subdirs and sources `<phase>.sh` in numeric order
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
@@ -67,7 +69,7 @@ Core principle: every tool's binary — or a symlink to it — lives in rayrc's 
 
 When adding a module, pick the acquisition method in this order of preference:
 
-1. **Official install script (highest priority)** — if the tool ships its own installer, read its source first. If it robustly auto-detects OS/arch (glibc vs musl, macOS, etc.), pipe it and point its output at `libs/bin/` instead of hand-rolling a GitHub download. The uv module is the reference implementation (`bash/20_python/01_uv/install.sh`):
+1. **Official install script (highest priority)** — if the tool ships its own installer, read its source first. If it robustly auto-detects OS/arch (glibc vs musl, macOS, etc.), pipe it and point its output at `libs/bin/` instead of hand-rolling a GitHub download. The uv module is the reference implementation (`src/20_python/01_uv/install.sh`):
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh \
        | env UV_INSTALL_DIR="${__rayrc_bin_dir}" UV_NO_MODIFY_PATH=1 sh
@@ -113,7 +115,7 @@ Current ①② constraints (there is no ① today):
    - `2x`+ — modules that touch shell state (②) or combine others. The later it must load, the larger the number; leave gaps
    - When two modules compete for a key, give the one that should win the larger number
    - **Never give the same number to modules with a ② "later wins" relation** — alphabetical order would decide (e.g. `20_atuin` < `20_git` would break C3)
-3. Create `bash/<group>/<NN>_<tool>/install.sh` following the define-call-unset pattern. Its data dir is `libs/<group without prefix>/<tool>/`
+3. Create `src/<group>/<NN>_<tool>/install.sh` following the define-call-unset pattern. Its data dir is `libs/<group without prefix>/<tool>/`
 4. Check GitHub releases for asset naming (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | grep '"name"'`)
 5. Post-download handling by asset type:
    - **Single binary** (jq): `mv` to `${__rayrc_bin_dir}`

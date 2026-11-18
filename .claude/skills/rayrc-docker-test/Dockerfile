@@ -11,8 +11,6 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 
 WORKDIR /root
 
-# COPY . /root/.rayrc
-# RUN bash -c "cd /root/ && source .rayrc/install"
-
-## ローカルのディレクトリ(.rayrc)をコンテナの /root/.rayrc にコピー
-# RUN bash -c "cd && git clone -b dev_docker --single-branch --depth 1 https://github.com/cr1315/.rayrc.git && source .rayrc/install"
+## rayrc itself is not baked in: mount the work tree at run time and copy it
+## (see SKILL.md / .ci/snapshot.sh)
+##   docker run --rm -v "$PWD":/work:ro rayrc-test bash -c "cp -a /work /root/.rayrc && cd /root && source .rayrc/install"

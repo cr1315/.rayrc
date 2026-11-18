@@ -1,3 +1,21 @@
+> [!IMPORTANT]
+> **Existing installs: re-run install after pulling.** The control plane moved from `bash/` `zsh/` `powershell/` into one `src/` tree.
+> Until install is re-run, the old line in your rc file points at a path that no longer exists and is silently skipped
+> (no error, but nothing is loaded).
+>
+> ```bash
+> # Unix (bash / zsh)
+> cd ~/.rayrc && git pull && source ./install
+> ```
+>
+> ```powershell
+> # Windows
+> cd $env:USERPROFILE\.rayrc; git pull; . .\install.ps1
+> ```
+>
+> Do **not** re-clone to migrate: that loses the ignored contents of `libs/claude/.claude` (credentials, history).
+> If the data plane ever has to be rebuilt, back up that one directory first.
+
 # Why
 
 Recently I found that I'm working on newly created linux workstations so often that time by time I'm annoyed with these repeating work:
