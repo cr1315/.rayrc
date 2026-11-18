@@ -74,5 +74,7 @@ __rayrc_delegate_entry "$@"
 
 unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
+unset -f __rayrc_sed_inplace
+unset -f __rayrc_rc_block
 unset -f __rayrc_delegate_main
 unset -f __rayrc_delegate_entry

@@ -74,6 +74,68 @@ __rayrc_sed_inplace() {
     rm -f "${tmp}"
 }
 
+## __rayrc_rc_block <rc file> [<line>]
+##
+## rc ファイルへの登録を、install.ps1 と同じくマーカーで囲んだ managed block で管理する:
+##   # >>> rayrc >>>
+##   <line>
+##   # <<< rayrc <<<
+##
+## <line> あり（登録）:
+##   - managed block があれば、その場で置き換える（複数あれば最初の 1 つに畳む）
+##   - 無ければ、旧形式の行（マーカー導入前の `.rayrc.../main.(sh|zsh)`）を消してから末尾に追記する
+## <line> なし（削除）:
+##   - managed block と旧形式の行の両方を消す
+## マーカーの数が合わない（手で壊された）ときは、何も書き換えずに 8 を返す。
+__rayrc_rc_block() {
+    local rc="$1"
+    local line="${2-}"
+    local begin='# >>> rayrc >>>'
+    local end='# <<< rayrc <<<'
+
+    local n_begin n_end
+    n_begin="$(grep -cxF "${begin}" "${rc}")"
+    n_end="$(grep -cxF "${end}" "${rc}")"
+    if [[ "${n_begin}" -ne "${n_end}" ]]; then
+        __rayrc_log_warn "unbalanced rayrc markers in ${rc}, please fix it by hand"
+        return 8
+    fi
+
+    if [[ "${n_begin}" -gt 0 ]]; then
+        ## sed の a/c/r は GNU と BSD で書式が違うので、行単位で組み立て直す
+        local tmp cur
+        local in_block=false
+        local replaced=false
+        tmp="$(mktemp)" || return 8
+        while IFS= read -r cur || [[ -n "${cur}" ]]; do
+            if ${in_block}; then
+                [[ "${cur}" == "${end}" ]] && in_block=false
+            elif [[ "${cur}" == "${begin}" ]]; then
+                in_block=true
+                if ! ${replaced} && [[ -n "${line}" ]]; then
+                    printf '%s\n%s\n%s\n' "${begin}" "${line}" "${end}"
+                fi
+                replaced=true
+            else
+                printf '%s\n' "${cur}"
+            fi
+        done <"${rc}" >"${tmp}"
+        cat "${tmp}" >"${rc}"
+        rm -f "${tmp}"
+
+        [[ -n "${line}" ]] && return 0
+    fi
+
+    __rayrc_sed_inplace "${rc}" -E -e '/\.rayrc.*\/main\.(sh|zsh)/ d' || return 8
+    [[ -z "${line}" ]] && return 0
+
+    ## 末尾に改行の無いファイルへ追記しても、最終行とつながらないようにする
+    if [[ -s "${rc}" && -n "$(tail -c 1 "${rc}")" ]]; then
+        printf '\n' >>"${rc}"
+    fi
+    printf '%s\n%s\n%s\n' "${begin}" "${line}" "${end}" >>"${rc}"
+}
+
 __rayrc_module_common_setup() {
     ## idempotency guard — 同一モジュールで2回呼ばれても二重に積み上がらない
     if [[ "${__rayrc_ctl_dir}" == *"/${__rayrc_package}" ]]; then

@@ -18,21 +18,14 @@ __rayrc_delegate_install() {
 # post main
 ######################################################################
 __rayrc_bootstrap_rc() {
-    ### after all installation completed, setup the .bashrc
-    if [[ -f "$HOME/.bashrc" ]]; then
-        if grep -q "${__rayrc_installed_name}" "$HOME/.bashrc"; then
-            # TODO: we assume that sed is installed..
-            sed -i -e '/'"${__rayrc_installed_name}"'.*main\.sh/ d' "$HOME/.bashrc"
-        fi
-
+    ### after all installation completed, register main.sh in the .bashrc (managed block)
+    [[ -f "$HOME/.bashrc" ]] || : >"$HOME/.bashrc"
+    if ! __rayrc_rc_block "$HOME/.bashrc" \
+        "[[ -f \"${__rayrc_main_dir}/main.sh\" ]] && source \"${__rayrc_main_dir}/main.sh\""; then
+        __rayrc_log_warn "failed to register .rayrc in $HOME/.bashrc"
+        return 8
     fi
 
-    # use here document to add two lines
-    "cat" <<-EOF >>"$HOME/.bashrc"
-		[[ -f "${__rayrc_main_dir}/main.sh" ]] && source "${__rayrc_main_dir}/main.sh"
-	EOF
-
-    # "cat" "$HOME/.bashrc"
     echo ""
     __rayrc_log_info "all done!"
     __rayrc_log_info "please logout & login again to enjoy your new shell environment!"
@@ -102,6 +95,8 @@ __rayrc_delegate_entry "$@"
 
 unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
+unset -f __rayrc_sed_inplace
+unset -f __rayrc_rc_block
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install
 unset -f __rayrc_delegate_entry

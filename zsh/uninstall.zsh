@@ -16,10 +16,8 @@ __rayrc_delegate_uninstall() {
 __rayrc_final_clear() {
     ### after all installation completed, setup the .zshrc
     if [[ -f "$HOME/.zshrc" ]]; then
-        if grep -q '.rayrc' "$HOME/.zshrc"; then
-            # we assume sed installed..
-            __rayrc_sed_inplace "$HOME/.zshrc" -e '/\.rayrc.*main\.zsh/ d'
-        fi
+        ## managed block and the legacy (pre-marker) lines
+        __rayrc_rc_block "$HOME/.zshrc"
 
         # use here document to add two lines
         rm -rf "${__rayrc_root_dir}"
@@ -100,4 +98,5 @@ unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
 unset -f __rayrc_parse_args
 unset -f __rayrc_sed_inplace
+unset -f __rayrc_rc_block
 unset -f __rayrc_delegate_entry

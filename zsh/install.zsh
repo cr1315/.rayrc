@@ -15,19 +15,15 @@ __rayrc_delegate_install() {
 # post main
 ######################################################################
 __rayrc_bootstrap_rc() {
-    ### after all installation completed, setup the .zshrc
+    ### after all installation completed, register main.zsh in the .zshrc (managed block)
+    ## TODO: nothing is registered when ~/.zshrc does not exist yet
     if [[ -f "$HOME/.zshrc" ]]; then
-        if grep -q '.rayrc' "$HOME/.zshrc"; then
-            # we assume sed installed..
-            __rayrc_sed_inplace "$HOME/.zshrc" -e '/\.rayrc.*main\.zsh/ d'
+        if ! __rayrc_rc_block "$HOME/.zshrc" \
+            "[[ -f \"${__rayrc_main_dir}/main.zsh\" ]] && source \"${__rayrc_main_dir}/main.zsh\""; then
+            __rayrc_log_warn "failed to register .rayrc in $HOME/.zshrc"
+            return 8
         fi
 
-        # use here document to add two lines
-        "cat" <<-EOF >>$HOME/.zshrc
-			[[ -f "${__rayrc_main_dir}/main.zsh" ]] && source "${__rayrc_main_dir}/main.zsh"
-		EOF
-
-        # "cat" $HOME/.zshrc
         echo ""
         __rayrc_log_info "all done!"
         __rayrc_log_info "please logout & login to enjoy your new shell environment!"
@@ -100,6 +96,7 @@ unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
 unset -f __rayrc_parse_args
 unset -f __rayrc_sed_inplace
+unset -f __rayrc_rc_block
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install
 unset -f __rayrc_delegate_entry
