@@ -10,7 +10,7 @@ __rayrc_main() {
     export YAZI_CONFIG_HOME="${__rayrc_data_dir}/config"
 
     local __rayrc_yazi_completion
-    for __rayrc_yazi_completion in "${__rayrc_ctl_dir}/completions/"{yazi,ya}.bash; do
+    for __rayrc_yazi_completion in "${__rayrc_data_dir}/completions/"{yazi,ya}.bash; do
         [[ -f "${__rayrc_yazi_completion}" ]] && source "${__rayrc_yazi_completion}"
     done
 }

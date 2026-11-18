@@ -73,8 +73,8 @@ __rayrc_install() {
     fi
 
     ## neither binary can generate completions at runtime, so keep the bundled
-    ## ones next to main.sh (sourced on every shell startup, like main.sh)
-    if ! __rayrc_unzip_flat "${__rayrc_data_dir}/yazi.zip" "${__rayrc_ctl_dir}/completions" \
+    ## ones in the data plane (main.sh sources them on every shell startup)
+    if ! __rayrc_unzip_flat "${__rayrc_data_dir}/yazi.zip" "${__rayrc_data_dir}/completions" \
         yazi.bash ya.bash; then
         __rayrc_log_warn "failed to extract completions for ${__rayrc_package:3}"
     fi

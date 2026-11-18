@@ -52,9 +52,11 @@ __rayrc_install() {
     rm -rf "${__rayrc_data_dir}/fzf"*
 
     ## key bindings & completion: generate once here instead of running
-    ## `eval "$(fzf --bash)"` on every shell startup; main.sh sources it
-    if ! "${__rayrc_bin_dir}/fzf" --bash >"${__rayrc_ctl_dir}/shell/fzf.bash"; then
-        rm -f "${__rayrc_ctl_dir}/shell/fzf.bash"
+    ## `eval "$(fzf --bash)"` on every shell startup; main.sh sources it.
+    ## generated file -> data plane (the control plane holds tracked files only)
+    mkdir -p "${__rayrc_data_dir}/shell"
+    if ! "${__rayrc_bin_dir}/fzf" --bash >"${__rayrc_data_dir}/shell/fzf.bash"; then
+        rm -f "${__rayrc_data_dir}/shell/fzf.bash"
         __rayrc_log_warn "failed to generate shell integration for ${__rayrc_package:3}"
         return 8
     fi
