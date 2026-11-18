@@ -17,6 +17,7 @@
 #   - 実行ごとに変わる値を <X> に置換する（キーは残して存在を比較する）。
 #     同一コミットで 2 回取得した差分から特定したもの:
 #       HOSTNAME（コンテナ ID）/ ATUIN_SESSION（乱数）/ fnm_multishells/<pid>_<ms>
+#       GITSTATUS_DAEMON_PID（install 中に起動したプロセス数でずれる）
 #
 # 前提: docker build -t rayrc-test -f .claude/skills/rayrc-docker-test/Dockerfile .
 #
@@ -37,7 +38,7 @@ normalize() {
     sed -n "/^${marker}\$/,\$p" "${out}.raw" | tail -n +2 \
         | sed -E \
             -e 's#\.rayrc/(bash|zsh|powershell|src)\b#.rayrc/<CTL>#g' \
-            -e 's#^(HOSTNAME|ATUIN_SESSION)=.*#\1=<X>#' \
+            -e 's#^(HOSTNAME|ATUIN_SESSION|GITSTATUS_DAEMON_PID)=.*#\1=<X>#' \
             -e 's#fnm_multishells/[0-9]+_[0-9]+#fnm_multishells/<X>#g' \
         | grep -vE '^(PWD|SHLVL|_|OLDPWD)=' >"${out}.txt"
 }
