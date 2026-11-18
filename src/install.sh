@@ -15,6 +15,32 @@ __rayrc_delegate_install() {
 }
 
 ######################################################################
+# pre main
+######################################################################
+## TODO(remove after 2027-Q2): bash/ zsh/ powershell/ were merged into src/.
+## After `git pull` on an existing host, those dirs keep only untracked leftovers
+## (generated files, empty dirs). Remove one only when git says it has no tracked
+## files, and only when .rayrc itself is the repository (not a tarball, and not a
+## sub dir of some other repo such as a dotfiles repo, where ls-files is empty too).
+__rayrc_cleanup_legacy_ctl() {
+    command -v git >/dev/null 2>&1 || return 0
+
+    local toplevel
+    toplevel="$(git -C "${__rayrc_root_dir}" rev-parse --show-toplevel 2>/dev/null)" || return 0
+    [[ "$(cd -- "${toplevel}" && pwd -P)" == "${__rayrc_root_dir}" ]] || return 0
+
+    local old tracked
+    for old in bash zsh powershell; do
+        [[ -d "${__rayrc_root_dir}/${old}" ]] || continue
+        tracked="$(git -C "${__rayrc_root_dir}" ls-files -- "${old}")" || continue
+        [[ -z "${tracked}" ]] || continue
+
+        rm -rf "${__rayrc_root_dir:?}/${old}"
+        __rayrc_log_info "removed the old control plane dir ${old}/ (merged into src/)"
+    done
+}
+
+######################################################################
 # post main
 ######################################################################
 __rayrc_bootstrap_rc() {
@@ -70,6 +96,8 @@ __rayrc_delegate_entry() {
 
     source "${__rayrc_main_dir}/common.sh"
 
+    __rayrc_cleanup_legacy_ctl
+
     local __rayrc_install_filter=()
     __rayrc_parse_args
 
@@ -97,6 +125,7 @@ unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
 unset -f __rayrc_sed_inplace
 unset -f __rayrc_rc_block
+unset -f __rayrc_cleanup_legacy_ctl
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install
 unset -f __rayrc_delegate_entry
