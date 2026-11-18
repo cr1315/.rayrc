@@ -4,7 +4,9 @@ __rayrc_install() {
     __rayrc_module_common_setup
 
     if [[ -x "${__rayrc_bin_dir}/claude" ]]; then
-        claude update
+        "${__rayrc_bin_dir}/claude" update >&/dev/null || {
+            echo "  .rayrc: failed to update claude"
+        }
     fi
 
     ## bootstrap claude using its official installer
