@@ -7,7 +7,9 @@
 #     libs/text/bat       → libs/filesearch/bat
 #
 # - libs/ 側のパスは __rayrc_package:3 と同じく、各階層の番号プレフィックス（先頭 3 文字）を外して求める
-# - 移動先の親グループがなければ作成し、delegate 用の install.sh / main.sh を置く
+# - モジュールのディレクトリごと動かすので、.sh / .zsh / .ps1 の全方言が一緒に移る
+# - 移動先の親グループがなければ作成し、delegate 用の install / main を .sh と .zsh の両方で置く
+#   （.ps1 は暗黙再帰なので delegate は要らない）
 # - 追跡ファイルを含むディレクトリは git mv（ignore された実行時データもディレクトリごと移る）、
 #   追跡ファイルがなければ mv で移動する
 #
@@ -84,16 +86,19 @@ validate_paths() {
 
 
 ## 既存の親ディレクトリが delegate を持たない（末端のモジュールなど）と、移したモジュールが読み込まれない
+## bash（.sh）と zsh（.zsh）は明示 delegate なので両方を見る。.ps1 は暗黙再帰なので delegate は要らない
 validate_parent_groups() {
-    local dir phase
+    local dir phase ext
     for dir in $(ancestor_dirs "${to}"); do
         [[ -d "${CTL_ROOT}/${dir}" ]] || continue
 
         for phase in install main; do
-            if [[ -f "${FROM_CTL}/${phase}.sh" ]] &&
-               ! grep -q '__rayrc_source_facade' "${CTL_ROOT}/${dir}/${phase}.sh" 2>/dev/null; then
-                die "${CTL_ROOT}/${dir}/${phase}.sh が delegate ではないため、${phase}.sh が読み込まれなくなります。"
-            fi
+            for ext in sh zsh; do
+                if [[ -f "${FROM_CTL}/${phase}.${ext}" ]] &&
+                   ! grep -q '__rayrc_source_facade' "${CTL_ROOT}/${dir}/${phase}.${ext}" 2>/dev/null; then
+                    die "${CTL_ROOT}/${dir}/${phase}.${ext} が delegate ではないため、${phase}.${ext} が読み込まれなくなります。"
+                fi
+            done
         done
     done
 }
@@ -143,10 +148,11 @@ create_group() {
     mkdir -p "${dir}" || return 1
     for phase in install main; do
         write_delegate "${phase}" >"${dir}/${phase}.sh" || return 1
+        write_delegate_zsh "${phase}" >"${dir}/${phase}.zsh" || return 1
     done
-    git add "${dir}/install.sh" "${dir}/main.sh" || return 1
+    git add "${dir}/install.sh" "${dir}/main.sh" "${dir}/install.zsh" "${dir}/main.zsh" || return 1
 
-    log_info "グループを作成しました: ${dir}（delegate: install.sh, main.sh）"
+    log_info "グループを作成しました: ${dir}（delegate: install.sh, main.sh, install.zsh, main.zsh）"
 }
 
 
@@ -257,7 +263,7 @@ print_usage() {
 }
 
 
-## グループ用の delegate（既存グループ、例えば bash/04_text/{install,main}.sh と同じ内容）
+## グループ用の delegate（既存グループ、例えば src/04_text/{install,main}.sh と同じ内容）
 write_delegate() {
     local phase="$1"
 
@@ -271,6 +277,25 @@ __rayrc_${phase}() {
 
 __rayrc_${phase}
 unset -f __rayrc_${phase}
+EOF
+}
+
+
+## zsh 版（src/04_text/{install,main}.zsh と同じ内容）
+write_delegate_zsh() {
+    local phase="$1"
+
+    cat <<EOF
+#!/usr/bin/env zsh
+
+__rayrc_${phase}() {
+    __rayrc_module_common_setup
+    __rayrc_source_facade ${phase}
+}
+
+__rayrc_${phase}
+## sub modules define & unset the same name; unlike bash, zsh warns if it's already gone
+unset -f __rayrc_${phase} 2>/dev/null
 EOF
 }
 
