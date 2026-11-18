@@ -1,5 +1,5 @@
 ﻿# bash (bash/10_viewer/40_yazi/main.sh) と同じ libs/viewer/yazi/config を参照する
-$env:YAZI_CONFIG_HOME = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\viewer\yazi\config")
+$env:YAZI_CONFIG_HOME = Join-Path $__rayrc_data_dir 'config'
 
 # file.exe は Git for Windows 同梱（PATH 外の usr\bin にある）
 # git --exec-path は shim 経由でも実体の場所を返すので、そこから逆算する
@@ -22,4 +22,4 @@ function y {
     Remove-Item -Path $tmp
 }
 
-# Ctrl + O は 21_lf に移した (Windows では yazi の起動が遅く、Ctrl + O 用途に合わなかった)
+# Ctrl + O は 48_lf に移した (Windows では yazi の起動が遅く、Ctrl + O 用途に合わなかった)

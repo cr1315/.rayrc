@@ -17,7 +17,7 @@ if (-not $lfExe) {
     return
 }
 
-$lfDir         = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\viewer\lf")
+$lfDir         = $__rayrc_data_dir
 $lfConfigHome  = Join-Path $lfDir 'config'
 $lfDataHome    = Join-Path $lfDir 'data'
 $lfConfig      = Join-Path $lfConfigHome 'lf\lfrc.windows'
@@ -41,7 +41,7 @@ ${function:lf} = {
 
 Remove-Variable scoopRoot, lfExe, lfDir, lfConfigHome, lfDataHome, lfConfig, lfPreviewer
 
-# 3. lfcd: lf 終了時のディレクトリへ cd する（../../libs/viewer/lf/config/templates/lfcd.ps1 相当）
+# 3. lfcd: lf 終了時のディレクトリへ cd する（libs/viewer/lf/config/templates/lfcd.ps1 相当）
 function lfcd {
     $tmp = [System.IO.Path]::GetTempFileName()
     try {
@@ -58,7 +58,7 @@ function lfcd {
     }
 }
 
-# 4. Ctrl + O で lfcd を起動する（20_yazi から移した）
+# 4. Ctrl + O で lfcd を起動する（40_yazi から移した）
 #    終了後、移動後のディレクトリでプロンプトをその場で再描画する
 Set-PSReadLineKeyHandler -Chord Ctrl+o -BriefDescription lfcd -Description 'lf で移動し、終了時のディレクトリへ cd する' -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()

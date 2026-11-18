@@ -1,5 +1,5 @@
 @echo off
-rem lf previewer for Windows (set by powershell/21_lf/main.ps1)
+rem lf previewer for Windows (set by powershell/10_viewer/48_lf/main.ps1)
 rem
 rem   lf-previewer (sh) cannot run on Windows, so this is a minimal substitute.
 rem   Written in cmd on purpose: it is spawned on every cursor move, and

@@ -1,9 +1,9 @@
 ﻿# oh-my-posh は Scoop で管理する（既に入っていれば Scoop が警告を出すだけで何もしない）
 scoop install oh-my-posh
 
-# # テーマは shell 非依存なので libs/ohmyposh/config で管理する
+# # テーマは shell 非依存なので libs/viewer/ohmyposh/config で管理する
 # # repo にコミット済みのテーマ（手編集）を上書きしないよう、無い時だけコピーする
-# $ompConfigDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\libs\ohmyposh\config")
+# $ompConfigDir = Join-Path $__rayrc_data_dir 'config'
 # $ompTheme = Join-Path $ompConfigDir "catppuccin.omp.json"
 
 # # streaming: 常駐 serve プロセスで描画し、毎プロンプトのプロセス起動コストを除く（v29.22.0+）

@@ -4,7 +4,7 @@
 ## rayrc-git-bundle
 ##   lf で選んだもの（または引数のパス）からリポジトリを割り出し、それぞれを
 ##   `git bundle create --all` → `git bundle verify` して 1 つのフォルダにまとめる。
-##   Windows の scp-git（powershell/15_fzf/scp-git.ps1）から `ssh -t` 越しに呼ばれる本体。
+##   Windows の scp-git（powershell/10_viewer/10_fzf/scp-git.ps1）から `ssh -t` 越しに呼ばれる本体。
 ##   対話シェルからは git-bundle-pick（同じフォルダの main.sh で登録）で呼べる。
 ##
 ## usage: rayrc-git-bundle [-o 出力フォルダ] [-s lf の開始フォルダ] [パス ...]
