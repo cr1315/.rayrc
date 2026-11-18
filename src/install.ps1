@@ -27,14 +27,16 @@ $ProfilePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFrom
 $beginMarker = '## >>> rayrc bootstrap >>>'
 $endMarker   = '## <<< rayrc bootstrap <<<'
 
-## single-quoted on purpose: $env:USERPROFILE must be expanded at profile load time
+## the absolute path of main.ps1 is resolved now (install time), so the profile follows
+## wherever this checkout lives; written as a single-quoted literal (' doubled)
+$mainLiteral = "'" + (Join-Path $PSScriptRoot 'main.ps1').Replace("'", "''") + "'"
 $blockLines = @(
     $beginMarker
     '######################################################################'
-    '## BOOTSTRAP my .rayrc (managed by .rayrc/powershell/install.ps1)'
+    '## BOOTSTRAP my .rayrc (managed by .rayrc/src/install.ps1)'
     '######################################################################'
-    'if (Test-Path "$env:USERPROFILE/.rayrc/powershell/main.ps1") {'
-    '  . "$env:USERPROFILE/.rayrc/powershell/main.ps1"'
+    "if (Test-Path -LiteralPath $mainLiteral) {"
+    "  . $mainLiteral"
     '}'
     $endMarker
 )
