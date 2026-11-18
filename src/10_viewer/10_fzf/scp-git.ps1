@@ -53,8 +53,12 @@ function scp-git {
     $id = '{0}-{1:D4}' -f (Get-Date -Format 'yyyyMMdd-HHmmss'), (Get-Random -Minimum 0 -Maximum 10000)
     $remoteDir = "/tmp/scp-git-$id"
     $remoteScript = "$RayrcDir/src/10_viewer/20_git/rayrc-git-bundle"
+    ## まだ src/ へ移行していない（git pull していない）リモートでは bash/ 側を使う
+    ## TODO(remove after 2027-Q2): 旧レイアウトへのフォールバックを外し、$remoteScript を直接実行する
+    $legacyScript = "$RayrcDir/bash/10_viewer/20_git/rayrc-git-bundle"
     ## ~ はリモートのシェルに展開させる。変数で渡すので PowerShell 側では展開されない
-    $remoteCmd = "$remoteScript -o $remoteDir -s $StartDir"
+    ## （`$s はリモートのシェル変数。" を使わないのは冒頭の注意のとおり）
+    $remoteCmd = "s=$remoteScript; [ -x `$s ] || s=$legacyScript; `$s -o $remoteDir -s $StartDir"
 
     $fetched = @()
     try {
@@ -74,7 +78,7 @@ function scp-git {
                 return
             }
             { $_ -eq 126 -or $_ -eq 127 } {
-                Write-Error "リモートに $remoteScript が無いか、実行できません（終了コード $code）。リモートの rayrc を最新にしてください（git pull）"
+                Write-Error "リモートに $remoteScript（旧 $legacyScript）が無いか、実行できません（終了コード $code）。リモートの rayrc を最新にしてください（git pull）"
                 return
             }
             255 {
