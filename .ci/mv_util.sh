@@ -99,12 +99,12 @@ validate_parent_groups() {
 }
 
 
-## libs/bash → libs/bash/common のように自分自身の配下へ移すとき、
+## libs/shell → libs/shell/common のように自分自身の配下へ移すとき、
 ## 移動元にはグループ内の他モジュールの data が入っていてはいけない（一緒に移ってしまう）
 validate_nested_data() {
     is_ancestor "${FROM_DATA}" "${TO_DATA}" || return 0
 
-    ## FROM_DATA に対応する bash 側のグループを探す（例: libs/bash ↔ bash/08_bash）
+    ## FROM_DATA に対応する bash 側のグループを探す（例: libs/shell ↔ bash/08_shell）
     local group=""
     local dir
     for dir in $(ancestor_dirs "${to}"); do

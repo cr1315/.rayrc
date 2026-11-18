@@ -71,7 +71,7 @@ __rayrc_main() {
     export FZF_COMPLETION_PATH_OPTS="--preview-window 'right:60%' \
         --preview 'bat --color=always --style=header,grid --line-range :200 {}'"
 
-    source "${__rayrc_ctl_dir}/functions.sh"
+    source "${__rayrc_ctl_dir}/functions.zsh"
 }
 
 __rayrc_main

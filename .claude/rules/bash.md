@@ -15,7 +15,7 @@ Modules are directories under `bash/` with a numbered prefix that controls load 
 | `02_` | Network / transfer tools (group) | `02_net` (eget, httpie, stu) |
 | `04_` | Text tools: view, diff, process, format, edit (group) | `04_text` (bat, delta, jq, shfmt, yq, vim) |
 | `06_` | File search tools: find, list, disk usage (group) | `06_filesearch` (eza, fd, gdu, navi, rg) |
-| `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_bash` (common, sudo) |
+| `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_shell` (common, sudo) |
 | `10_` | Interactive UI: fuzzy finder, prompt, history, file manager, multiplexer (group) | `10_viewer` (fzf, git, atuin, yazi, lf, tmux) |
 | `20_`+ | Language/platform tools | `20_python`, `20_nodejs` |
 | `40_`–`63_` | Infrastructure tools | `40_docker`, `60_iac` |
@@ -48,7 +48,7 @@ Subdirectory `install.sh`/`main.sh` follow the same define-call-unset pattern. `
 
 `bash/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
 
-Two-level hierarchy mirrors into `libs/` as well: `bash/04_text/10_bat/` → `libs/text/bat/`, `bash/08_bash/10_common/` → `libs/bash/common/`. When moving or renumbering a module, use `.ci/mv_util.sh --from <module> --to <module>`: it moves the control plane and data plane together (including ignored runtime data), creates missing groups with their delegates, and warns about broken symlinks and stale path references.
+Two-level hierarchy mirrors into `libs/` as well: `bash/04_text/10_bat/` → `libs/text/bat/`, `bash/08_shell/10_common/` → `libs/shell/common/`. When moving or renumbering a module, use `.ci/mv_util.sh --from <module> --to <module>`: it moves the control plane and data plane together (including ignored runtime data), creates missing groups with their delegates, and warns about broken symlinks and stale path references.
 
 Some `libs/` subdirs contain tracked config files (e.g. `libs/text/bat/config/`, `libs/viewer/lf/config/`). Do NOT add these directories wholesale to `.gitignore` — only ignore download artifacts (`.tar.gz` etc.) if needed.
 
@@ -96,7 +96,7 @@ Current ①② constraints (there is no ① today):
 | # | Constraint | Reason |
 |---|------------|--------|
 | C1 | `00_bin` < everything | adds `libs/bin` to PATH; later `command -v` guards rely on it |
-| C2 | `08_bash/10_common` < `10_viewer/20_git` | gitstatus overwrites `PROMPT_COMMAND=smile_prompt` by assignment |
+| C2 | `08_shell/10_common` < `10_viewer/20_git` | gitstatus overwrites `PROMPT_COMMAND=smile_prompt` by assignment |
 | C3 | `10_viewer/20_git` < `10_viewer/30_atuin` | gitstatus assigns (not appends) `PROMPT_COMMAND`; if it ran after atuin, atuin's bash-preexec hook would be lost and history would stop being recorded |
 | C4 | `10_viewer/10_fzf` < `10_viewer/30_atuin` | both bind **Ctrl-R**; atuin must win |
 | C5 | `10_viewer/40_yazi` < `10_viewer/48_lf` | both want **Ctrl-O**; lf wins for now (yazi's bind is commented out) |
@@ -105,7 +105,7 @@ Current ①② constraints (there is no ① today):
 
 1. Pick the group:
    - `02_net` / `04_text` / `06_filesearch` — single-purpose CLIs whose `main.sh` only sets env vars or aliases (no ②)
-   - `08_bash` — the shell itself (prompt, aliases, env, sudo)
+   - `08_shell` — the shell itself (prompt, aliases, env, sudo)
    - `10_viewer` — interactive tools that bind keys or touch `PROMPT_COMMAND` (②), or that combine tools from the other groups
 2. Pick the number inside the group:
    - `0x` — base that other tools in the group need at install time (①). None today
