@@ -8,11 +8,11 @@
 ##
 
 if [[ $(ps -o args= -p "$$") == *"zsh"* ]]; then
-    source "${0:A:h}/zsh/install.zsh" "$@"
+    source "${0:A:h}/src/install.zsh" "$@"
 elif [[ $(ps -o args= -p "$$") == *"bash"* ]]; then
     # __rayrc_root_dir="$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)"
     # echo "__rayrc_root_dir: ${__rayrc_root_dir}"
-    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/bash/install.sh" "$@"
+    source "$(cd -- "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd -P)/src/install.sh" "$@"
 else
     echo ""
     echo ".rayrc: not supported SHELL for now.."
