@@ -2,7 +2,7 @@
 # <目的>の確認用。読み取りだけ。
 #
 # 使い方:
-#   bash <名前>.sh                 # 結果は ./<名前>-<日時>.txt
+#   bash <名前>.sh                 # 結果は ./<日時>_<名前>.txt（日時が先頭。名前の順が時刻の順になる。区切りはすべて _）
 #   OUT=xxx.txt bash <名前>.sh     # 結果のファイル名を指定する（PowerShell の断片から渡す）
 #   ENVS="stg" bash <名前>.sh      # 対象を絞る
 #   SKIP_KEYS=1 bash <名前>.sh     # 値に近い章（シークレットのキー名など）を飛ばす
@@ -12,7 +12,7 @@
 # ログの行は、メールアドレスを <email> に置き換え、長さを切って出す。
 set -u   # set -e は使わない（1 つの失敗で全体を止めず、エラーは結果に残す）
 
-OUT="${OUT:-./<名前>-$(date +%Y%m%d-%H%M%S).txt}"
+OUT="${OUT:-./$(date +%Y%m%d_%H%M%S)_<名前>.txt}"
 ENVS="${ENVS:-dev stg}"
 SHOW_VALUES='SPRING_PROFILES_ACTIVE'    # 値を出してよいものだけを並べる
 
