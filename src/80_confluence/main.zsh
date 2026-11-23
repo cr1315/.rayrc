@@ -65,9 +65,9 @@ usage: confluence-import <zip>... [-u <URL かページ ID> | -p <親の URL か
   zip（page.xhtml と図）の中身で、Confluence のページを更新する
   1. 本文が参照している図を添付に反映する。中身が同じ図は上げない（添付のコメントの sha256 で比べる）
   2. この関数が上げた図（コメントが sha256: で始まる）のうち、本文が参照しなくなったものを削除する（--no-prune で無効）
-  3. 本文を page.xhtml で丸ごと置き換える。最初の要素の <h1> はタイトルの場所なので、本文からは除く
+  3. 本文を page.xhtml で丸ごと置き換える。先頭の <title> はタイトルの場所なので、本文からは除く
   タイトル（上から順に、最初に見つかったもの）
-    -t → page.xhtml の最初の要素の <h1> → page.json の title
+    -t → page.xhtml の先頭の <title> → page.json の title
        → ページを更新するなら今のまま、親の下に入れるなら zip の名前（先頭の <数字>_ を除く）
   取り込む先
     -u も -p もなし  zip の名前の先頭の数字（<ページ ID>_<名前>.zip）のページ
@@ -176,7 +176,7 @@ confluence-export() {
 usage: confluence-export <URL かページ ID> [-o <出力フォルダ>] [-e <メールアドレス>] [-f] [-r]
   Confluence のページを zip に書き出す（page.xhtml・page.json・添付ファイル）
   zip の名前は「<ページ ID>_<タイトル>.zip」。そのまま confluence-import に渡せる
-  - page.xhtml：本文（ストレージ形式）。先頭に <h1>タイトル</h1> を足す（取り込むときにタイトルになる）
+  - page.xhtml：本文（ストレージ形式）。先頭に <title>タイトル</title> の 1 行を足す（取り込むときにタイトルになる）
   - page.json ：ID、タイトル、版、スペース、サイト、書き出した日時、添付の一覧（-r なら子の一覧も）
   - 添付ファイル：ページのすべての添付（今の版）
   -o を省略するとカレントディレクトリに書き出す。すでにあれば -f で上書きする

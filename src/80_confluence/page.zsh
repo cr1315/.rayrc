@@ -3,8 +3,10 @@
 ##
 ## ③ ページ：ページのフォルダと Confluence のページ 1 枚を行き来させる
 ##   ページのフォルダ（zip を展開したもの）
-##     page.xhtml  本文（ストレージ形式）。最初の要素の <h1> はタイトルの場所で、本文には入れない
-##                 （書き出すときは <h1>タイトル</h1> を先頭に足し、取り込むときは取り除く）
+##     page.xhtml  本文（ストレージ形式）。先頭の <title> はタイトルの場所で、本文には入れない
+##                 （書き出すときは <title>タイトル</title> の 1 行を先頭に足し、取り込むときは取り除く）
+##                 Confluence ではタイトルは本文の外の項目で、<h1> は本文の見出しとして使える。
+##                 <title> はストレージ形式では使わない要素なので、本文とぶつからない
 ##     page.json   id、title、version、space、site、exportedAt、attachments
 ##                 （children は ② 一括が足す）
 ##     <図>        本文が ri:attachment で参照するファイル
@@ -48,24 +50,24 @@ __rayrc_cf_html_decode() {
     REPLY="${out}${s}"
 }
 
-## __rayrc_cf_page_heading <page.xhtml> → reply=(<タイトル> <<h1> を除いた本文>)
-## 本文の最初の要素が <h1> なら、その文字（タグを除き、&amp; などを戻し、空白を詰めたもの）を返す。
-## 最初の要素が <h1> でないか、文字が空なら 1 を返す（途中の <h1> は見出しなので見ない）
-__rayrc_cf_page_heading() {
+## __rayrc_cf_page_title <page.xhtml> → reply=(<タイトル> <<title> を除いた本文>)
+## 本文の先頭（BOM と空白は飛ばす）が <title>…</title> なら、その文字（&amp; などを戻し、空白を詰めたもの）を返す。
+## 文字が空でも 0 を返す（<title> は本文から除く。タイトルに使うかどうかは呼ぶ側が決める）。
+## 先頭が <title> でなければ 1 を返す
+__rayrc_cf_page_title() {
     emulate -L zsh -o extended_glob
     local body n=65279
     body="$(<"$1")" || return 8
     body="${body#${(#)n}}"
-    [[ "${body}" == (#b)[[:space:]]#'<h1'(|[[:space:]][^\>]#)'>'(*) ]] || return 1
+    [[ "${body}" == (#b)[[:space:]]#'<title'(|[[:space:]][^\>]#)'>'(*) ]] || return 1
     local rest="${match[2]}"
-    [[ "${rest}" == *'</h1>'* ]] || return 1
-    local inner="${rest%%'</h1>'*}"
-    rest="${rest#*'</h1>'}"
+    [[ "${rest}" == *'</title>'* ]] || return 1
+    local inner="${rest%%'</title>'*}"
+    rest="${rest#*'</title>'}"
 
-    __rayrc_cf_html_decode "${inner//<[^>]#>/}"
+    __rayrc_cf_html_decode "${inner}"
     local text="${REPLY//[[:space:]]##/ }"
     text="${${text# }% }"
-    [[ -n "${text}" ]] || return 1
     reply=("${text}" "${rest##[[:space:]]#}")
 }
 
@@ -75,7 +77,7 @@ __rayrc_cf_page_info() {
 }
 
 ## __rayrc_cf_page_pull <認証> <サイト> <ページの JSON> <フォルダ> → REPLY=<添付の数>
-## ページを、空のフォルダに書き出す（page.xhtml・page.json・添付）。page.xhtml の先頭には <h1>タイトル</h1> を足す
+## ページを、空のフォルダに書き出す（page.xhtml・page.json・添付）。page.xhtml の先頭には <title>タイトル</title> の 1 行を足す
 __rayrc_cf_page_pull() {
     emulate -L zsh
     local auth="$1"
@@ -85,7 +87,7 @@ __rayrc_cf_page_pull() {
     local id
     id="$(jq -r '.id' <<<"${info}")" || return 8
 
-    jq -j '"<h1>" + (.title | @html) + "</h1>\n" + .body.storage.value' <<<"${info}" >"${dir}/page.xhtml" || return 8
+    jq -j '"<title>" + (.title | @html) + "</title>\n" + .body.storage.value' <<<"${info}" >"${dir}/page.xhtml" || return 8
 
     __rayrc_cf_list "${auth}" "${site}/wiki/rest/api/content/${id}/child/attachment?limit=100&expand=metadata" || return 8
     local atts="${REPLY}"
@@ -107,7 +109,7 @@ __rayrc_cf_page_pull() {
 ## __rayrc_cf_page_push <認証> <サイト> <フォルダ> <update|create> <ページ ID|親 ID> <タイトル> <版のメッセージ> <prune>
 ##   update：ページ ID のページの本文を置き換える。タイトルが空なら今のまま
 ##   create：親 ID の下にページを作る（タイトルは必ず要る）
-## 本文の最初の要素の <h1> は、タイトルの場所なので取り除いて送る（タイトルに使うかどうかは呼ぶ側が決める）。
+## 本文の先頭の <title> は、タイトルの場所なので取り除いて送る（タイトルに使うかどうかは呼ぶ側が決める）。
 ## どちらも、本文が参照する図を添付に反映する。
 ##   - 中身が同じ図は上げない（添付のコメントの sha256 で比べる）
 ##   - prune が true なら、この関数が上げた図（コメントが sha256: で始まる）のうち、本文が参照しなくなったものを消す
@@ -126,8 +128,8 @@ __rayrc_cf_page_push() {
     local body="${dir}/page.xhtml"
     local json="${dir}/.payload.json"
 
-    # 本文（最初の要素の <h1> を除く）
-    if __rayrc_cf_page_heading "${body}"; then
+    # 本文（先頭の <title> を除く）
+    if __rayrc_cf_page_title "${body}"; then
         print -rn -- "${reply[2]}" >"${dir}/.body.xhtml" || return 8
         body="${dir}/.body.xhtml"
     fi

@@ -23,7 +23,7 @@ __rayrc_cf_zip_id() {
 ## __rayrc_cf_decide_title <-t の値> <ページのフォルダ> <zip> <page|parent> → REPLY=<タイトル>
 ## 上から順に、最初に見つかったものを使う
 ##   1. -t
-##   2. page.xhtml の最初の要素の <h1>
+##   2. page.xhtml の先頭の <title>（空なら次へ）
 ##   3. page.json の title
 ##   4. ページを指定したとき：空（今のタイトルのまま）
 ##      親の下に入れるとき  ：zip の名前（先頭の <数字>_ を除く）
@@ -37,7 +37,7 @@ __rayrc_cf_decide_title() {
     REPLY="${override}"
     [[ -n "${REPLY}" ]] && return 0
 
-    if __rayrc_cf_page_heading "${dir}/page.xhtml"; then
+    if __rayrc_cf_page_title "${dir}/page.xhtml" && [[ -n "${reply[1]}" ]]; then
         REPLY="${reply[1]}"
         return 0
     fi

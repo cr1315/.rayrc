@@ -12,6 +12,7 @@ timeline
     一括 : 書き出し -r（子孫も、1 ページ 1 zip、子は同じ名前のフォルダ） : 取り込み -p（親の下に、同じタイトルがあれば更新、なければ作る）と -r
     タイトル : 本文の先頭の h1 をタイトルにしたい : -p でタイトルを変えると別のページができてしまう
     整理 : 層に分ける（この文書）
+    タイトルの場所 : 先頭の h1 は本文の見出しとぶつかる : 先頭の title に変える（4.1）
 ```
 
 一括の機能を足したところで、次のような判定が 1 ページ分の取り込みの関数の中に積み重なっていきました。
@@ -41,7 +42,7 @@ flowchart TB
     subgraph PAGE["③ ページ — page.zsh"]
         PP[page_push]
         PL[page_pull]
-        PH[page_heading]
+        PH[page_title]
     end
     subgraph API["④ 共通 — api.zsh"]
         A[auth / curl / list / children / resolve_page]
@@ -82,8 +83,8 @@ flowchart TB
 flowchart TD
     S([タイトルを決める]) --> T{"-t がある？"}
     T -- はい --> RT[/-t の値/]
-    T -- いいえ --> H{"page.xhtml の最初の要素が h1？"}
-    H -- はい --> RH[/h1 の文字/]
+    T -- いいえ --> H{"page.xhtml の先頭の title に文字がある？"}
+    H -- はい --> RH[/title の文字/]
     H -- いいえ --> J{"page.json に title がある？"}
     J -- はい --> RJ[/page.json の title/]
     J -- いいえ --> K{"取り込む先は？"}
@@ -91,8 +92,8 @@ flowchart TD
     K -- 親の下 --> RZ[/zip の名前から 先頭の 数字_ を除いたもの/]
 ```
 
-- 見るのは **最初の要素** の `<h1>` だけです。途中の `<h1>`（「概要」などの見出し）は見ません。
-- 最初の要素の `<h1>` は「タイトルの場所」です。タイトルに使ったかどうかに関係なく、**本文からは必ず取り除きます**（③ の決まり）。そのため、`-t` を付けても `<h1>` が本文に残ることはありません。
+- 見るのは **先頭** の `<title>` だけです（BOM と空白は飛ばします）。`<h1>` は、先頭にあっても本文の見出しとして扱います。
+- 先頭の `<title>` は「タイトルの場所」です。タイトルに使ったかどうか、文字が空かどうかに関係なく、**本文からは必ず取り除きます**（③ の決まり）。そのため、`-t` を付けても `<title>` が本文に残ることはありません。
 
 ### 3.2 入れ先（`decide_target`）
 
@@ -108,16 +109,16 @@ flowchart TD
 ```
 
 - ID で当てるのは、同じサイトで、しかも **その親の直下にある** ときだけです。別のサイトへ移すとき（ID に意味がない）や、ページが別の場所へ動かされたときは、タイトルで探します。
-- ID で当たるので、`<h1>` でタイトルを変えた zip を `-p` で取り込んでも、別のページはできません。同じページの名前が変わります。
+- ID で当たるので、`<title>` でタイトルを変えた zip を `-p` で取り込んでも、別のページはできません。同じページの名前が変わります。
 
 ### 3.3 どの組み合わせでどうなるか
 
 | コマンド | 入れ先 | タイトル |
 |---|---|---|
-| `confluence-import 123_a.zip` | 123 を更新 | `-t` → `<h1>` → `page.json` → 今のまま |
+| `confluence-import 123_a.zip` | 123 を更新 | `-t` → `<title>` → `page.json` → 今のまま |
 | `confluence-import -u X a.zip` | X を更新 | 同上 |
-| `confluence-import -p P a.zip b.zip` | P の直下（ID → タイトル → 作る） | `-t` → `<h1>` → `page.json` → zip の名前 |
-| 上のどれかに `-r` | zip を入れたページの直下に、`a/` の中の zip を入れる（`-p` と同じ決まり）。孫以下も同じ | `<h1>` → `page.json` → zip の名前 |
+| `confluence-import -p P a.zip b.zip` | P の直下（ID → タイトル → 作る） | `-t` → `<title>` → `page.json` → zip の名前 |
+| 上のどれかに `-r` | zip を入れたページの直下に、`a/` の中の zip を入れる（`-p` と同じ決まり）。孫以下も同じ | `<title>` → `page.json` → zip の名前 |
 
 `-u` と `-p` は、どちらも「zip の入れ先」を決めるので、一緒には使えません。`-u` と `-t` は zip が 1 つのときだけ使えます。
 
@@ -127,9 +128,22 @@ flowchart TD
 
 | ファイル | 中身 |
 |---|---|
-| `page.xhtml` | 本文（ストレージ形式）。最初の要素の `<h1>` はタイトルの場所。書き出しでは先頭に `<h1>タイトル</h1>` を足し、取り込みでは取り除く |
+| `page.xhtml` | 本文（ストレージ形式）。先頭の `<title>` はタイトルの場所。書き出しでは先頭に `<title>タイトル</title>` の 1 行を足し、取り込みでは取り除く |
 | `page.json` | `id`、`title`、`version`、`space`、`site`、`exportedAt`、`attachments`（`children` は ② が足す） |
 | 図 | 本文が `ri:attachment ri:filename="..."` で参照するファイル |
+
+```xml
+<title>ページのタイトル</title>
+<p>ここから下は、API の body.storage.value のまま</p>
+```
+
+**タイトルの場所を `<h1>` ではなく `<title>` にした理由**
+
+- Confluence では、タイトルは本文の外の項目です。REST API の JSON では `title` と `body.storage.value` が別々で、本文にはタイトルも `<h1>` も入りません。
+- `<h1>` は、本文の見出しとして普通に使えます。先頭の `<h1>` をタイトルの場所にすると、`<h1>` で始まる本文（手で書いたもの、別の道具で作ったもの）の見出しがタイトルになり、本文から消えます。
+- `<title>` はストレージ形式では使わない要素なので、本文とぶつかりません。HTML の `<head>` のタイトルと同じ考え方で、Confluence の HTML 書き出しも `<title>` にタイトルを入れます。
+- 別のファイル（`page.json` だけ）にタイトルを持たせると、本文を編集するついでにタイトルを直せません。そのため、1 つのファイルの中に置きます。
+- `<html><head>…<body>` では包みません。包むと、`<title>` の行より下がストレージ形式そのままではなくなり、差分を見るときも、本文をそのまま貼るときも扱いにくくなるからです。
 
 ### 4.2 zip の配置（② の決まり）
 
@@ -157,11 +171,11 @@ sequenceDiagram
     participant C as Confluence
     CLI->>B: bulk_import(a.zip, 親の下, P)
     B->>B: unzip → フォルダ
-    B->>B: decide_title（-t → h1 → page.json → zip の名前）
+    B->>B: decide_title（-t → title → page.json → zip の名前）
     B->>C: P の子の一覧
     B->>B: decide_target（ID → タイトル → 作る）
     B->>P: page_push(フォルダ, update ID / create P, タイトル)
-    P->>P: 先頭の h1 を本文から除く・図がそろっているか確かめる
+    P->>P: 先頭の title を本文から除く・図がそろっているか確かめる
     P->>C: 更新（PUT）か作成（POST）、図の反映
     P-->>B: ページ ID = A
     B->>B: フォルダを消す
@@ -174,8 +188,8 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    C[(Confluence)] -- "confluence-export -r" --> Z["zip<br/>先頭に h1 タイトル"]
-    Z -- "展開して編集<br/>（タイトルを変えるなら h1 を直す）" --> Z2[編集した zip]
+    C[(Confluence)] -- "confluence-export -r" --> Z["zip<br/>先頭に title タイトル"]
+    Z -- "展開して編集<br/>（タイトルを変えるなら title を直す）" --> Z2[編集した zip]
     Z2 -- "confluence-import -r（-u / -p）" --> C
 ```
 
@@ -187,13 +201,14 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 |---|---|
 | `refactor(confluence): split the zsh module into cli / bulk / page / api layers` | 層に分けた。動きは変えていない（「図が zip にありません」が「図がありません」になった程度） |
 | `feat(confluence): take the title from the leading <h1>, match -p children by id` | 3.1 と 3.2 の決まり、4.1 の `<h1>` の扱い。変えたのは `decide_title`・`decide_target` と ③ の形式だけ |
+| `feat(confluence): keep the title in a leading <title> instead of <h1>` | タイトルの場所を `<h1>` から `<title>` に変えた（4.1 の理由）。変えたのは ③ の形式と、`decide_title` が呼ぶ関数だけ |
 
 機能のコミットの差分が ② の 2 つの関数と ③ の形式に収まっていることが、層を分けた効果です。
 
 ## 7. 残っていること
 
-- **PowerShell 版（`main.ps1`）はこの整理に入っていません**。zip の形式（先頭の `<h1>`）、一括（`-r` / `-p`）、層の分け方のどれも、まだ zsh 版だけです。CLAUDE.md の I8（方言が違っても同じ決まりにする）に沿うには、PowerShell 版も合わせる必要があります。環境変数のマップ（`RAYRC_JIRA_*`）は、ブランチ `feat/confluence-ps-host-map` にあります。
-- **古い zip**：この変更より前に書き出した zip と PowerShell 版で書き出した zip は、先頭に `<h1>` タイトルがありません。本文が見出しの `<h1>` で始まっていると、それがタイトルになります。書き出し直すか、`-t` を付けて取り込みます（決まりを増やさないために、このままにしました）。
+- **PowerShell 版（`main.ps1`）はこの整理に入っていません**。zip の形式（先頭の `<title>`）、一括（`-r` / `-p`）、層の分け方のどれも、まだ zsh 版だけです。CLAUDE.md の I8（方言が違っても同じ決まりにする）に沿うには、PowerShell 版も合わせる必要があります。環境変数のマップ（`RAYRC_JIRA_*`）は、ブランチ `feat/confluence-ps-host-map` にあります。
+- **古い zip**：`<title>` に変える前の zsh 版で書き出した zip は、先頭に `<h1>タイトル</h1>` があります。今はこれを本文の見出しとして扱うので、そのまま取り込むと本文の先頭に見出しが増えます。書き出し直すか、`<h1>` の行を `<title>` に直してから取り込みます（決まりを増やさないために、`<h1>` は読まないことにしました）。PowerShell 版で書き出した zip には `<title>` がないので、タイトルは `page.json` から取ります。
 - **扱っていないこと**：ページの消去と移動（zip にない子は消さない。別の親の下にある同じページは動かさない）、ページ同士のリンクの付け替え、途中で失敗したときの巻き戻し（もう一度流せば、ID かタイトルで当たって更新になる）。
 - **再設計**：この整理は、今の動きのまま層を分けたものです。決まりそのものの見直しは、別のセッションで行う予定です。方向は「9. これから」を参照してください。
 
@@ -201,10 +216,10 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 
 `src/80_confluence/` の 4 つの zsh ファイルは、Alpine の zsh 5.9 で、ページの木・版・添付を持つ curl のモックに対して確かめました。確かめたことは次のとおりです。
 
-- 書き出しの木の形、子の並び順、`<h1>` の付け方（`&` などのエスケープを含む）
+- 書き出しの木の形、子の並び順、`<title>` の付け方（`&` などのエスケープを含む）
 - 新しい親の下への作成と、もう一度流したときの更新
 - `-r` なし、複数の zip、引数の誤り
-- `<h1>` によるタイトルの変更、`-t` の優先、途中の `<h1>` を見ないこと、`page.json` の title
+- `<title>` によるタイトルの変更、`-t` の優先、先頭の `<h1>` を本文に残すこと、空の `<title>` で `page.json` の title を使うこと
 - `-p` での ID による当て方（同じサイト・別のサイト・親の直下にない場合）
 
 本物の Confluence と macOS ではまだ確かめていません。
