@@ -247,13 +247,39 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 - Jira も同じ道具（か、同じ作りの道具）で扱えるか。
 - macOS・Linux・Windows 向けの 1 つのバイナリが GitHub のリリースにあるか（rayrc で管理できるか）。
 
-### 9.3 調べる候補
+### 9.3 調べた結果（2026-11-23）
 
-このセッションでは中身を確かめていません。名前だけ挙げておきます。
+各ツールの README・ドキュメント・リリースページで、9.2 の基準に照らして調べました。★の数とリリースは調べた日の値です。1 位と 2 位の最新リリースは、GitHub API でも確かめています。
 
-- `kovetskiy/mark`（Go）：Markdown のファイルを Confluence に上げる。ファイルの先頭のメタデータで、スペース・親・タイトルを決める。
-- `ankitpokhrel/jira-cli`（Go）：Jira のチケットを扱う CLI。
-- Atlassian 公式の CLI（`acli`）：Jira と Confluence に対応しているかを確かめる。
+**9.2 の基準をすべて満たすもの（本文をストレージ形式のまま持つ、ID で当てて何度流しても同じ結果になる、図をハッシュで比べる、Cloud に対応、3 つの OS 向けの 1 つのバイナリ）は見つかりませんでした。**
+
+| 順位 | ツール | 本文 | 木の形と同期 | 配布 | Jira | 主な差 |
+|---|---|---|---|---|---|---|
+| 1 | [YuriyEnshin/ConfluenceImportExport](https://github.com/YuriyEnshin/ConfluenceImportExport)（C#、MIT、★7、v2.20.1 2026-09） | ストレージ形式のまま（`index.html`）。図は同じフォルダ | 1 ページ 1 フォルダ。照合は ID（`--match-by-title` でタイトルも）。変わっていないページと図は送らない。`--dry-run`。両方で変わっていると衝突として止まる | 1 つのバイナリ：win-x64・linux-x64・osx-arm64 | なし | フォルダ名がタイトルなので、OS ごとに使えない文字の扱いが違う。変更の判定がファイルの更新時刻なので、zip や git と合わないおそれがある。並び順と図の消去は未確認。個人開発 |
+| 2 | [BjoernSchotte/atlcli](https://github.com/BjoernSchotte/atlcli)（TypeScript、Apache-2.0、★53、v2026.11.3 2026-11。[同期の説明](https://atlcli.sh/confluence/sync/)） | Markdown に変換。対応しないマクロは生の XML のブロックで残すが、変換で失われる例もドキュメントにある | `parent.md` と同じ名前の `parent/` フォルダ（4.2 と同じ考え方）。ID は front matter。タイトルは front matter か先頭の H1。3-way merge で衝突を扱う | 1 つのバイナリ：macOS・Linux（arm64/x64）・Windows x64。大きい（圧縮で 72〜86MB） | あり（issue、sprint、board） | Markdown 前提でストレージ形式のままは持てない。並び順と消去の扱いは未確認 |
+| 3 | [rvben/confluence-cli](https://github.com/rvben/confluence-cli)（Rust、MIT、★7、v0.1.41 2026-11） | Markdown。変換で失われる部分はストレージ形式の断片のまま残す | `pull → plan → apply`。`.confluence.json` に ID・版・ハッシュ。リモートの図の消去は `--delete-remote` のときだけ | macOS・Linux。**Windows なし** | なし | まだ初期の版。新しいページを作れるかと並び順は未確認 |
+
+**候補から外したもの**
+
+| ツール | 外した理由 |
+|---|---|
+| kovetskiy/mark（Go、★1.6k） | Markdown から上げるのが中心。ページはスペースとタイトルで決める。書き出しは試験的 |
+| Atlassian 公式の `acli` | Confluence のコマンドがない（Jira と管理だけ） |
+| ankitpokhrel/jira-cli（Go、★6k） | Jira だけ。Jira 側の候補にはなる |
+| open-cli-collective の cfl / jtk（Go） | 1 ページ単位の CRUD は `--body-format xhtml` でストレージ形式のまま扱え、Jira 版の jtk もあり、3 つの OS 向けに配布している。ただし木の同期はない。**今の zip の方式を残して、API の部分だけを置き換える候補になる** |
+| mazuninky/atl（Rust） | Confluence と Jira の CRUD、ストレージ形式の入出力、3 つの OS。ただし木の同期はない |
+| isukharev/atl（Go） | ストレージ形式のままで考え方は近いが、Server/DC だけで Cloud と Windows に対応しない |
+| pchuri/confluence-cli（Node） | 再帰の書き出しはできるが、木の取り込みがない |
+| text2confl、md2conf、markdown-confluence など | Markdown から Confluence への片方向だけ |
+| Confluence から Markdown への書き出しだけのツール | 取り込みがない |
+
+**次のセッションまでに確かめたいこと**
+
+1. 1 位：子の並び順を保つか。自分で上げた図のうち使われなくなったものを消すか。更新時刻での判定と、zip や git での運用が合うか。新しいエディタで作ったページが往復で崩れないか。
+2. 2 位：同じ点に加えて、手元で消したファイルがリモートで消えるか。`push` だけを試しに流せるか。
+3. 3 位：新しいフォルダから新しいページを作れるか。Windows 向けのビルドの予定があるか。
+4. どのツールでも：`ac:` / `ri:` のマクロが多いページを 1 枚選び、書き出す → 何も変えずに取り込む、を本物で流す。版が増えないことと、本文に差が出ないことを見るのがいちばん確かです。
+5. 組み合わせ：1 ページ 1 zip の方式は残し、API の部分だけを cfl/jtk（Go）に置き換える。Jira は jtk か jira-cli にする。
 
 ここまでで決めた「何が正か」（3 章）と「形式」（4 章）は、ツールを選ぶときの物差しとしても使えます。
 
