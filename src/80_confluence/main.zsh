@@ -21,7 +21,7 @@
 ##
 ## 使うコマンド：curl、jq、zip、unzip、sha256sum（なければ shasum）
 ##
-## 層（リファクタリング.md を参照）
+## 層（refactoring.md を参照）
 ##   ① main.zsh  CLI：オプションを読んで確かめ、② に渡す
 ##   ② bulk.zsh  一括：zip とフォルダの配置、入れ子、どのページに入れるか、タイトル
 ##   ③ page.zsh  ページ：ページのフォルダと Confluence のページ 1 枚を行き来させる
