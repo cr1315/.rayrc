@@ -5,7 +5,17 @@ $env:LESSCHARSET = "utf-8"
 
 # 2. UI/UX設定
 Set-PSReadlineOption -BellStyle None
-$env:FZF_DEFAULT_OPTS = "--border --preview-window 'right:60%' --layout reverse --margin=1,4"
+#    bash/zsh（同じフォルダの main.sh / main.zsh）と揃える。ただし --height は付けない（全画面のまま）
+#    --tmux は Windows では関係ないので持ってこない
+$env:FZF_DEFAULT_OPTS = "--ansi --layout reverse --border --margin=1,4 --preview-window 'right:60%' " +
+  "--color=info:#afaf87,prompt:#d7005f,pointer:#af5fff " +
+  "--color=marker:#87ff00,spinner:#af5fff,header:#87afaf"
+#    素の fzf の一覧は fd に任せる（fd は 06_filesearch/10_fd の install.ps1 で入る。無ければ fzf の既定のまま）
+if (Get-Command fd -CommandType Application -ErrorAction SilentlyContinue) {
+  $env:FZF_DEFAULT_COMMAND = 'fd --type f --follow --exclude .git --exclude node_modules --exclude .venv'
+}
+#    FZF_CTRL_R_OPTS / FZF_CTRL_T_* / FZF_ALT_C_* は bash/zsh の統合スクリプトが読むもので、
+#    fzf.exe 自身は読まない。Ctrl-R は下の自前のハンドラーにオプションを直接渡す
 
 # 3. fzfの実体パスを解決（Scoopのshimを経由せず直接起動する）
 #    既定パスを最優先し、見つからない場合のみ scoop which（重い）にフォールバック
@@ -31,41 +41,65 @@ else {
 Remove-Variable scoopRoot, fzfPath, which -ErrorAction SilentlyContinue
 
 # 4. 履歴検索 (Ctrl+r) の最適化
+#    fzf に渡すオプションは読み込み時に決めて、GetNewClosure でハンドラーに閉じ込める
+#    プレビューは bash/zsh の FZF_CTRL_R_OPTS と同じく bat（下 40%、ctrl-/ で表示を切り替え）。
+#    Windows の fzf はプレビューを cmd.exe で動かし、echo {} だと引用符まで出るので、
+#    項目を一時ファイルに書く {f} を bat に渡す。shfmt は sh 用なので使わない
+#    bat は 04_text/10_bat の install.ps1 で入る。無ければプレビューを付けない
+$fzfCtrlRArgs = @('--no-sort')
+if (Get-Command bat -CommandType Application -ErrorAction SilentlyContinue) {
+  $fzfCtrlRArgs += @(
+    '--preview', 'bat --color=always --wrap=never --theme Dracula -p -P -l ps1 {f}',
+    '--preview-window', 'down:40%:wrap', '--tabstop=1',
+    '--bind', 'ctrl-/:toggle-preview'
+  )
+}
 Set-PSReadLineKeyHandler -Chord Ctrl+r -ScriptBlock {
   $historyPath = (Get-PSReadlineOption).HistorySavePath
 
   # Get-Contentの重厚なオブジェクト生成を捨て、.NETの低水準I/Oで最速ロード
   $lines = [System.IO.File]::ReadAllLines($historyPath)
 
-  # 重複を除去し、frecency（頻度＋最近度）スコアの高い順に並べる
-  #   score = Σ 0.5^(何件前の実行か / 半減期)
-  #   新しい実行ほど重く数えるので「最近よく使う」コマンドが上に来る
-  $halfLife = 500.0
-  $decay = [Math]::Pow(0.5, 1.0 / $halfLife)
-  $scores = [System.Collections.Generic.Dictionary[string, double]]::new()
-  $weight = 1.0
+  # 重複を除去し、「最後に使った順」を基本に、回数の多いものを少しだけ繰り上げて並べる
+  #   key = rank - boost * ln(回数)   （小さいほど上）
+  #   rank: 最後に使ったのが、重複を除いて何番目に新しいか（0 = 直前）
+  #   boost = 6 なら 2 回で 4 件、5 回で 10 件、10 回で 14 件、100 回で 28 件ぶん繰り上がる
+  #   （例: 最後が 25 番目でも 5 回使っていれば 15 番目あたり、10 回なら 11 番目あたり）
+  #   最近度が主で、回数は対数なので、古いコマンドは何回使っていても上を占めない
+  $boost = 6.0
+  $rank = [System.Collections.Generic.Dictionary[string, int]]::new()
+  $count = [System.Collections.Generic.Dictionary[string, int]]::new()
+  $order = [System.Collections.Generic.List[string]]::new()
   for ($i = $lines.Length - 1; $i -ge 0; $i--) {
     $line = $lines[$i].Trim()
-    if ($line.Length -gt 0) {
-      $score = 0.0
-      [void]$scores.TryGetValue($line, [ref]$score)
-      $scores[$line] = $score + $weight
+    if ($line.Length -eq 0) { continue }
+    if ($rank.ContainsKey($line)) {
+      $count[$line]++
     }
-    $weight *= $decay
+    else {
+      $rank[$line] = $order.Count
+      $count[$line] = 1
+      $order.Add($line)
+    }
   }
-  $sorted = $scores.GetEnumerator() |
-    Sort-Object -Property Value -Descending |
-    ForEach-Object { $_.Key }
+  # 同じ key なら新しい方を上にするため、rank をごく小さく足して一意にする（Array.Sort は安定でない）
+  $keys = [double[]]::new($order.Count)
+  for ($j = 0; $j -lt $order.Count; $j++) {
+    $keys[$j] = $j - $boost * [Math]::Log($count[$order[$j]]) + $j * 1e-6
+  }
+  $sorted = $order.ToArray()
+  [Array]::Sort($keys, $sorted)
 
   # 本物のfzfバイナリに純粋な配列として流し込む
   #   --no-sort: 絞り込み中もスコア順を維持（--layout reverse なので先頭が一番上）
-  $command = $sorted | fzf-real --no-sort
+  $command = $sorted | fzf-real @fzfCtrlRArgs
 
   # キャンセル（Esc）時のNullチェックを追加し、エラーを握り潰す
   if (-not [string]::IsNullOrWhiteSpace($command)) {
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert($command)
   }
-}
+}.GetNewClosure()
+Remove-Variable fzfCtrlRArgs
 
 ######################################################################
 ## custom functions
