@@ -5,9 +5,15 @@
     Export-ConfluencePage 330137615                          # ページを zip に書き出す（URL でもよい）
 
   環境変数（なければ、そのつど入力を求める）
-    ACN_JIRA_BASE_URL  Atlassian のサイトの URL（例：https://xxxxxxxxx.atlassian.net）
-    ACN_JIRA_EMAIL     Atlassian のメールアドレス
-    ACN_JIRA_TOKEN     API トークン（https://id.atlassian.com/manage-profile/security/api-tokens）
+    RAYRC_JIRA_BASE_URL  ページ ID だけを渡したときのサイトの URL（例：https://xxxxxxxxx.atlassian.net）
+    RAYRC_JIRA_EMAIL     ホスト名ごとの Atlassian のメールアドレス
+    RAYRC_JIRA_TOKEN     ホスト名ごとの API トークン（https://id.atlassian.com/manage-profile/security/api-tokens）
+
+    RAYRC_JIRA_EMAIL と RAYRC_JIRA_TOKEN は「ホスト名=値」をカンマか空白（改行でもよい）で区切って並べる。
+    値は最初の = より後ろ全部（トークンが = を含んでもよい）。ホスト名の大文字・小文字は区別しない。
+      RAYRC_JIRA_EMAIL = 'xxx.atlassian.net=me@example.com,yyy.atlassian.net=me@example.org'
+      RAYRC_JIRA_TOKEN = 'xxx.atlassian.net=ATATT...,yyy.atlassian.net=ATATT...'
+    秘密情報なので、このリポジトリの外で設定すること。zsh 版（main.zsh）と同じ決まり。
 
   zip の決まり
     - 中に page.xhtml（ストレージ形式の本文）が 1 つあること。図などはその隣に置く
@@ -22,26 +28,39 @@ New-Module -Name Confluence -ScriptBlock {
     # ---- 共通 ----
 
     function Get-CfSite([string]$FromUrl) {
-        $site = if ($FromUrl) { $FromUrl } elseif ($env:ACN_JIRA_BASE_URL) { $env:ACN_JIRA_BASE_URL } else { Read-Host "Atlassian のサイトの URL（例：https://xxx.atlassian.net）" }
+        $site = if ($FromUrl) { $FromUrl } elseif ($env:RAYRC_JIRA_BASE_URL) { $env:RAYRC_JIRA_BASE_URL } else { Read-Host "Atlassian のサイトの URL（例：https://xxx.atlassian.net）" }
         if ($site.Trim() -notmatch '^(https://[^/]+)') { throw "サイトの URL の形が違います：$site" }
-        return $Matches[1]
+        return $Matches[1].ToLower()
     }
 
     # URL またはページ ID から、サイトとページ ID を取り出す
     function Resolve-CfPage([string]$Ref) {
         $Ref = $Ref.Trim().Trim('"')
         if ($Ref -match '^\d+$') { return @{ Site = (Get-CfSite); PageId = $Ref } }
-        if ($Ref -match '^(https://[^/]+)/wiki/.*?/pages/(?:[a-z0-9-]+/)*?(\d+)') { return @{ Site = $Matches[1]; PageId = $Matches[2] } }
-        if ($Ref -match '^(https://[^/]+)/wiki/.*[?&]pageId=(\d+)') { return @{ Site = $Matches[1]; PageId = $Matches[2] } }
+        if ($Ref -match '^(https://[^/]+)/wiki/.*?/pages/(?:[a-z0-9-]+/)*?(\d+)') { return @{ Site = $Matches[1].ToLower(); PageId = $Matches[2] } }
+        if ($Ref -match '^(https://[^/]+)/wiki/.*[?&]pageId=(\d+)') { return @{ Site = $Matches[1].ToLower(); PageId = $Matches[2] } }
         throw "ページの URL か ID を指定してください（/pages/<数字>/ か pageId=<数字> を含む URL。短縮 URL /wiki/x/... は不可）：$Ref"
     }
 
-    function Get-CfAuth([string]$Email) {
-        if (-not $Email) { $Email = $env:ACN_JIRA_EMAIL }
-        if (-not $Email) { $Email = Read-Host "Atlassian のメールアドレス" }
-        $token = $env:ACN_JIRA_TOKEN
+    # 「ホスト名=値」をカンマか空白で区切った環境変数から、ホスト名の値を引く（なければ $null）
+    function Get-CfMapValue([string]$Name, [string]$HostName) {
+        $raw = [Environment]::GetEnvironmentVariable($Name)
+        if (-not $raw) { return $null }
+        foreach ($entry in ($raw -split '[,\s]+')) {
+            if (-not $entry) { continue }
+            # 値は秘密情報なので、表示しない
+            if ($entry -notmatch '^([^=]+)=(.+)$') { Write-Warning "$Name に「ホスト名=値」の形でないものがあるので無視します"; continue }
+            if ($Matches[1] -eq $HostName) { return $Matches[2] }   # -eq は大文字・小文字を区別しない
+        }
+        return $null
+    }
+
+    function Get-CfAuth([string]$HostName, [string]$Email) {
+        if (-not $Email) { $Email = Get-CfMapValue 'RAYRC_JIRA_EMAIL' $HostName }
+        if (-not $Email) { $Email = Read-Host "Atlassian のメールアドレス（$HostName）" }
+        $token = Get-CfMapValue 'RAYRC_JIRA_TOKEN' $HostName
         if (-not $token) {
-            $secure = Read-Host "API トークン" -AsSecureString
+            $secure = Read-Host "API トークン（$HostName）" -AsSecureString
             $token = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
         }
         return "${Email}:${token}"
@@ -105,7 +124,7 @@ New-Module -Name Confluence -ScriptBlock {
         }
         $page = Resolve-CfPage $Url
         $api = "$($page.Site)/wiki/rest/api"; $id = $page.PageId
-        $auth = Get-CfAuth $Email
+        $auth = Get-CfAuth ($page.Site -replace '^https://', '') $Email
 
         $work = Join-Path $env:TEMP ("confluence-import_" + [guid]::NewGuid().ToString('N').Substring(0, 8))
         try {
@@ -185,7 +204,7 @@ New-Module -Name Confluence -ScriptBlock {
         $ErrorActionPreference = 'Stop'
         $p = Resolve-CfPage $Page
         $api = "$($p.Site)/wiki/rest/api"; $id = $p.PageId
-        $auth = Get-CfAuth $Email
+        $auth = Get-CfAuth ($p.Site -replace '^https://', '') $Email
 
         $info = Get-CfJson $auth "$api/content/${id}?expand=body.storage,version,space"
         $safe = ($info.title -replace '[\\/:*?"<>|\s]+', '_').Trim('_')
