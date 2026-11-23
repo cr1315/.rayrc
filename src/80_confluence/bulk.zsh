@@ -23,8 +23,9 @@ __rayrc_cf_zip_id() {
 ## __rayrc_cf_decide_title <-t の値> <ページのフォルダ> <zip> <page|parent> → REPLY=<タイトル>
 ## 上から順に、最初に見つかったものを使う
 ##   1. -t
-##   2. page.json の title（親の下に入れるときだけ）
-##   3. ページを指定したとき：空（今のタイトルのまま）
+##   2. page.xhtml の最初の要素の <h1>
+##   3. page.json の title
+##   4. ページを指定したとき：空（今のタイトルのまま）
 ##      親の下に入れるとき  ：zip の名前（先頭の <数字>_ を除く）
 __rayrc_cf_decide_title() {
     emulate -L zsh -o extended_glob
@@ -35,19 +36,29 @@ __rayrc_cf_decide_title() {
 
     REPLY="${override}"
     [[ -n "${REPLY}" ]] && return 0
-    [[ "${kind}" == page ]] && return 0
+
+    if __rayrc_cf_page_heading "${dir}/page.xhtml"; then
+        REPLY="${reply[1]}"
+        return 0
+    fi
 
     if [[ -f "${dir}/page.json" ]]; then
         REPLY="$(jq -r '.title // empty' "${dir}/page.json")" || return 8
         [[ -n "${REPLY}" ]] && return 0
     fi
+
+    REPLY=''
+    [[ "${kind}" == page ]] && return 0
     REPLY="${${zip:t:r}#[0-9]##_}"
 }
 
 ## __rayrc_cf_decide_target <認証> <サイト> <page|parent> <ページ ID|親 ID> <ページのフォルダ> <タイトル>
 ##   → reply=(update <ページ ID>) か reply=(create <親 ID>)
 ## ページを指定したとき：そのページを更新する
-## 親の下に入れるとき  ：親の直下に同じタイトルのページがあれば更新し、なければ作る
+## 親の下に入れるとき  ：上から順に
+##   1. page.json の site が同じで、その id のページが親の直下にあれば、それを更新する（タイトルを変えても同じページ）
+##   2. 親の直下に同じタイトルのページがあれば、それを更新する
+##   3. どちらもなければ、親の下に作る
 __rayrc_cf_decide_target() {
     emulate -L zsh
     local auth="$1"
@@ -63,8 +74,16 @@ __rayrc_cf_decide_target() {
     fi
 
     __rayrc_cf_children "${auth}" "${site}" "${ref}" || return 8
-    local hit
-    hit="$(jq -r --arg t "${title}" 'first(.[] | select(.title == $t) | .id) // empty' <<<"${REPLY}")" || return 8
+    local kids="${REPLY}"
+    local hit=''
+    if [[ -f "${dir}/page.json" ]]; then
+        hit="$(jq -r --arg site "${site}" --argjson kids "${kids}" '
+            select((.site // "" | ascii_downcase) == $site) | .id as $id
+            | first($kids[] | select(.id == $id) | .id) // empty' "${dir}/page.json")" || return 8
+    fi
+    if [[ -z "${hit}" ]]; then
+        hit="$(jq -r --arg t "${title}" 'first(.[] | select(.title == $t) | .id) // empty' <<<"${kids}")" || return 8
+    fi
     if [[ -n "${hit}" ]]; then
         reply=(update "${hit}")
     else
