@@ -144,6 +144,8 @@ __lfscp_pack() {
         echo "LFSCP_SESSION がセッションフォルダ（out/ と meta/work/ がある）を指していない：${LFSCP_SESSION:-（未設定）}" >&2
         return 1
     fi
+    ## 形式によっては元の親フォルダへ cd して作るので、絶対パスにしておく
+    LFSCP_SESSION="$(cd -P -- "$LFSCP_SESSION" && pwd -P)"
 
     ## 1. 形式ハンドラー
     if [[ ! "$fmt" =~ ^[a-z0-9-]+$ || ! -f "${__lfscp_ctl_dir}/formats/${fmt}.sh" ]]; then

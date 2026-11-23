@@ -181,6 +181,120 @@ __rayrc_test_main() {
     __rayrc_t_check "名前：先頭の . を外す（親も）" \
         eval '[[ $code -eq 0 && -f "$sess/out/dotrepo.bundle" && -f "$sess/out/q2_dotrepo.bundle" && $(__rayrc_t_count "$sess/out") -eq 2 ]]'
 
+    ## ---------- git-archive ----------
+    local sha
+    sha="$(git -C "${tmp}/r1" rev-parse --short HEAD)"
+    echo untracked >"${tmp}/r1/untracked.txt"
+    __rayrc_t_pack archive git-archive "${tmp}/r1" "${tmp}/r1/sub" "${tmp}/r1/sub/b.txt"
+    __rayrc_t_check "git-archive：リポジトリ・サブフォルダ・ファイル → リポジトリ全体の 1 件、gzip -t が通る、work は空" \
+        eval '[[ $code -eq 0 && $(__rayrc_t_count "$sess/out") -eq 1 && -f "$sess/out/r1-${sha}.tar.gz" ]] && __rayrc_t_clean && gzip -t "$sess/out/r1-${sha}.tar.gz"'
+    __rayrc_t_check "git-archive：中身は <repo>-<sha>/ の下に追跡ファイルだけ（.git も未追跡も無い）" \
+        eval 'diff <(printf "%s\n" "r1-${sha}/" "r1-${sha}/a.txt" "r1-${sha}/sub/" "r1-${sha}/sub/b.txt") <(tar -tzf "$sess/out/r1-${sha}.tar.gz" | sort) >/dev/null'
+    __rayrc_t_check "git-archive：未コミットがあると警告" \
+        eval 'grep -q "未コミットの変更：1 件（アーカイブには含まれない）" "$log"'
+    rm -f -- "${tmp}/r1/untracked.txt"
+
+    echo more >>"${tmp}/r1/a.txt"
+    git -C "${tmp}/r1" commit -qam more
+    __rayrc_t_pack_again git-archive "${tmp}/r1/a.txt"
+    __rayrc_t_check "git-archive：コミットを足して押し直す → 古い sha が消え、新しい 1 件だけ" \
+        eval '[[ $code -eq 0 && $(__rayrc_t_count "$sess/out") -eq 1 && -f "$sess/out/r1-$(git -C "${tmp}/r1" rev-parse --short HEAD).tar.gz" && ! -e "$sess/out/r1-${sha}.tar.gz" ]] && grep -q "（置き換え）" "$log"'
+
+    __rayrc_t_pack archnorepo git-archive "${tmp}/plain" "${tmp}/empty"
+    __rayrc_t_check "git-archive：リポジトリでない・コミットが無い → 飛ばして 1" \
+        eval '[[ $code -eq 1 && $(__rayrc_t_count "$sess/out") -eq 0 ]] && grep -q "（リポジトリではない）" "$log" && grep -q "（コミットが無い）" "$log"'
+
+    __rayrc_t_repo "${tmp}/lfsrepo"
+    printf '*.bin filter=lfs diff=lfs merge=lfs -text\n' >"${tmp}/lfsrepo/.gitattributes"
+    printf '[submodule "x"]\n\tpath = x\n\turl = ../x\n' >"${tmp}/lfsrepo/.gitmodules"
+    echo big >"${tmp}/lfsrepo/big.bin"
+    git -C "${tmp}/lfsrepo" -c filter.lfs.clean=cat -c filter.lfs.smudge=cat add -A
+    git -C "${tmp}/lfsrepo" commit -qm lfs
+    __rayrc_t_pack archlfs git-archive "${tmp}/lfsrepo"
+    __rayrc_t_check "git-archive：サブモジュールと LFS があれば警告" \
+        eval '[[ $code -eq 0 ]] && grep -q "サブモジュールの中身は入らない" "$log" && grep -q "filter=lfs が 1 件" "$log"'
+
+    __rayrc_t_pack archdot git-archive "${tmp}/.q1/.dotrepo"
+    __rayrc_t_check "git-archive：先頭の . を外した名前と --prefix" \
+        eval '[[ $code -eq 0 ]] && f=("$sess/out/"dotrepo-*.tar.gz) && [[ -f "${f[0]}" ]] && tar -tzf "${f[0]}" | grep -q "^$(basename "${f[0]}" .tar.gz)/a.txt$"'
+
+    ## ---------- tar / zip ----------
+    mkdir -p "${tmp}/files/sp ace" "${tmp}/files/sp ace2" "${tmp}/files/.hidden" "${tmp}/files/-dash"
+    echo 1 >"${tmp}/files/sp ace/f1"
+    echo 2 >"${tmp}/files/sp ace2/f2"
+    echo h >"${tmp}/files/.hidden/h"
+    echo d >"${tmp}/files/-dash/d"
+    echo e >"${tmp}/files/.env"
+    echo t >"${tmp}/files/single.txt"
+    ln -s single.txt "${tmp}/files/link.txt"
+
+    local fmt ext ok
+    for fmt in tar-gz tar-bz2 tar-xz zip; do
+        case "$fmt" in
+            tar-gz) ext=.tar.gz ;;
+            tar-bz2) ext=.tar.bz2 ;;
+            tar-xz) ext=.tar.xz ;;
+            zip) ext=.zip ;;
+        esac
+        __rayrc_t_pack "$fmt" "$fmt" "${tmp}/files/sp ace" "${tmp}/files/sp ace2" "${tmp}/files/single.txt" "${tmp}/files/.hidden" "${tmp}/files/-dash"
+        if [[ "$fmt" == zip ]]; then
+            ok='unzip -Z1 "$sess/out/sp ace.zip" | grep -qx "sp ace/f1" && unzip -Z1 "$sess/out/hidden.zip" | grep -qx ".hidden/h"'
+        else
+            ok='tar -tf "$sess/out/sp ace${ext}" | grep -qx "sp ace/f1" && tar -tf "$sess/out/hidden${ext}" | grep -qx ".hidden/h"'
+        fi
+        __rayrc_t_check "${fmt}：空白入り 2 つ・ファイル・隠しフォルダ・- で始まる名前 → 5 件、中身は <base>/ の下、. は名前から外れる、work は空" \
+            eval '[[ $code -eq 0 && $(__rayrc_t_count "$sess/out") -eq 5 && -f "$sess/out/sp ace${ext}" && -f "$sess/out/sp ace2${ext}" && -f "$sess/out/single.txt${ext}" && -f "$sess/out/hidden${ext}" && -f "$sess/out/-dash${ext}" ]] && __rayrc_t_clean && '"$ok"
+    done
+
+    __rayrc_t_pack zipagain zip "${tmp}/files/sp ace"
+    echo 3 >"${tmp}/files/sp ace/f3"
+    __rayrc_t_pack_again zip "${tmp}/files/sp ace"
+    rm -f -- "${tmp}/files/sp ace/f3"
+    __rayrc_t_pack_again zip "${tmp}/files/sp ace"
+    __rayrc_t_check "zip：3 回作っても項目数が増えない（追記されない）" \
+        eval '[[ $code -eq 0 && $(unzip -Z1 "$sess/out/sp ace.zip" | wc -l) -eq 2 ]]'
+
+    __rayrc_t_session zippy
+    __rayrc_t_fakebin "${tmp}/bin_nozip" zip
+    log="${sess}/log"
+    PATH="${tmp}/bin_nozip" LFSCP_SESSION="$sess" "${tmp}/bin_nozip/bash" "$bin" pack zip "${tmp}/files/sp ace" >"$log" 2>&1
+    code=$?
+    __rayrc_t_check "zip：zip が無い → python3 -m zipfile に退避" \
+        eval '[[ $code -eq 0 && -f "$sess/out/sp ace.zip" ]] && unzip -Z1 "$sess/out/sp ace.zip" | grep -q "sp ace/f1"'
+
+    __rayrc_t_session nobzip2
+    __rayrc_t_fakebin "${tmp}/bin_nobzip2" bzip2
+    log="${sess}/log"
+    PATH="${tmp}/bin_nobzip2" LFSCP_SESSION="$sess" "${tmp}/bin_nobzip2/bash" "$bin" pack tar-bz2 "${tmp}/files/sp ace" >"$log" 2>&1
+    code=$?
+    __rayrc_t_check "必要なコマンドが無い（bzip2）→ 1、名前を表示、out/ は無傷" \
+        eval '[[ $code -eq 1 && $(__rayrc_t_count "$sess/out") -eq 0 && $(__rayrc_t_count "$sess/meta/work") -eq 0 ]] && grep -q "必要なコマンドがない：bzip2" "$log"'
+
+    mkdir -p "${tmp}/files/locked"
+    echo 1 >"${tmp}/files/locked/ok"
+    echo 2 >"${tmp}/files/locked/secret"
+    __rayrc_t_pack keepold tar-gz "${tmp}/files/locked"
+    chmod 000 "${tmp}/files/locked/secret"
+    __rayrc_t_pack_again tar-gz "${tmp}/files/locked"
+    chmod 644 "${tmp}/files/locked/secret"
+    __rayrc_t_check "置き換え：2 回目の作成が失敗 → 1、1 回目の完成品が残る、work は空" \
+        eval '[[ $code -eq 1 && $(__rayrc_t_count "$sess/out") -eq 1 ]] && tar -tzf "$sess/out/locked.tar.gz" | grep -qx "locked/secret" && __rayrc_t_clean && grep -q "作成に失敗したので飛ばします" "$log"'
+
+    __rayrc_t_pack tarmissing tar-gz "${tmp}/files/nonexistent" /
+    __rayrc_t_check "tar-gz：存在しないパスと / → 飛ばして 1" \
+        eval '[[ $code -eq 1 && $(__rayrc_t_count "$sess/out") -eq 0 ]] && grep -q "（存在しない）" "$log" && grep -q "（/ は対象にできない）" "$log"'
+
+    ## ---------- raw ----------
+    __rayrc_t_pack raw raw "${tmp}/files/single.txt" "${tmp}/files/.env" "${tmp}/files/link.txt" "${tmp}/files/sp ace"
+    __rayrc_t_check "raw：ファイルはそのまま（cmp 一致）、.env も名前そのまま、リンクは実体、フォルダは理由を出して飛ばす" \
+        eval '[[ $code -eq 1 && $(__rayrc_t_count "$sess/out") -eq 3 ]] && cmp -s "$sess/out/single.txt" "${tmp}/files/single.txt" && cmp -s "$sess/out/.env" "${tmp}/files/.env" && [[ -f "$sess/out/link.txt" && ! -L "$sess/out/link.txt" ]] && grep -q "フォルダは tt で取れない" "$log" && __rayrc_t_clean'
+    mkdir -p "${tmp}/other"
+    echo o >"${tmp}/other/single.txt"
+    echo o >"${tmp}/other/.env"
+    __rayrc_t_pack_again raw "${tmp}/other/single.txt" "${tmp}/other/.env"
+    __rayrc_t_check "raw：別の元で同じ名前 → <親>_<名前>（拡張子はそのまま、. も残す）" \
+        eval '[[ $code -eq 0 && -f "$sess/out/other_single.txt" && -f "$sess/out/other_.env" ]]'
+
     ## ---------- 起動モード ----------
     ## 偽の lf：受け取った引数と環境を書き出し、FAKE_LF_PACK があればそれをかごに入れる
     cat >"${tmp}/fake-lf" <<'EOF'
