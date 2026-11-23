@@ -1,0 +1,354 @@
+#!/usr/bin/env bash
+######################################################################
+##
+## lfscp
+##   lf の中で選んだものをその場でアーカイブ等にして「かご」（セッションの out/）に入れる。
+##   Windows の lfscp（同じフォルダの main.ps1）は、lf を抜けた後に out/ を運ぶだけ。
+##   形式の知識はこのスクリプトと formats/ の中に閉じる。
+##
+## usage:
+##   lfscp [-o <セッションフォルダ>] [-s <lf の開始フォルダ>]   起動モード（lf を開く）
+##   lfscp pack <形式> <パス>...                               かごに入れる（lf のキーから呼ばれる）
+##   lfscp help                                                 キーの一覧
+##
+## 起動モード
+##   -o  セッションフォルダ。/tmp/lfscp-<英数字 . _ ->。既にあれば失敗する
+##       （Windows が丸ごと決めて渡す。省略時はここで同じ形の名前を作る）
+##   -s  lf の開始フォルダ（省略時はカレントディレクトリ）
+##   終了コード：0 = out/ に 1 件以上ある、2 = 何も作らずに抜けた、1 = エラー
+##
+## セッションフォルダ（700）
+##   out/    運ぶもの。完成品だけが入る
+##   meta/   manifest.tsv と作業中の work/
+##
+## 環境変数
+##   LFSCP_SESSION  セッションフォルダ（起動モードが export する。pack はこれを見る）
+##   LFSCP_SELF     このスクリプトの実体のフルパス（session.lfrc から呼ぶため）
+##   LFSCP_LF       lf の実行ファイルを差し替える（自動テスト用。普段は設定しない）
+##
+######################################################################
+
+set -euo pipefail
+
+## libs/bin のリンク経由でも呼ばれるので、実体に解いてから数える
+## （cd -P はフォルダのリンクしか解かない）。実体は src/10_viewer/48_lfscp/ にあり、3 つ上が rayrc の最上位
+__lfscp_self="$(readlink -f -- "${BASH_SOURCE[0]}")"
+__lfscp_ctl_dir="$(dirname -- "$__lfscp_self")"
+__lfscp_libs_dir="$(cd -P -- "${__lfscp_ctl_dir}/../../.." && pwd -P)/libs"
+
+# shellcheck source=lib.sh
+source "${__lfscp_ctl_dir}/lib.sh"
+
+__lfscp_usage() {
+    cat <<'EOF'
+usage:
+  lfscp [-o <セッションフォルダ>] [-s <lf の開始フォルダ>]   lf を開く（キーは lfscp help）
+  lfscp pack <形式> <パス>...                               かごに入れる
+  lfscp help                                                 キーの一覧
+EOF
+}
+
+__lfscp_help() {
+    cat <<'EOF'
+lfscp のキー（選択があればそれ、無ければカーソルの 1 件）
+  ta  git-archive  HEAD のツリー（追跡ファイルのみ）→ <repo>-<sha>.tar.gz
+  tb  git-bundle   全 ref の履歴 → <repo>.bundle
+  tg  tar-gz       ディスク上の現物 → .tar.gz
+  tj  tar-bz2      同上 → .tar.bz2
+  tx  tar-xz       同上 → .tar.xz
+  tz  zip          同上 → .zip
+  tt  raw          ファイルそのまま（フォルダは不可）
+  t?  このヘルプ
+  go  かご（out/）へ移動。要らないものは :delete で消し、'' で元の場所へ戻る
+  q   終了（かごの中身が手元へ運ばれる）
+EOF
+}
+
+######################################################################
+## pack
+######################################################################
+
+## 1 件をかごに入れる。成功なら 0
+__lfscp_pack_one() {
+    local fmt="$1" src="$2"
+    local out="${LFSCP_SESSION}/out" work_dir="${LFSCP_SESSION}/meta/work"
+    local name_ext stem ext parent old final work
+
+    echo "== ${src}"
+
+    ## 4. 名前を決める
+    name_ext="$(__lfscp_fmt_name "$src")"
+    stem="${name_ext%%$'\t'*}"
+    ext="${name_ext#*$'\t'}"
+    parent="$(basename -- "$(dirname -- "$src")")"
+    if [[ "$fmt" != "raw" ]]; then
+        ## 展開したフォルダが隠しフォルダにならないよう、先頭の . を外す
+        stem="$(__lfscp_strip_dots "$stem")"
+    fi
+    parent="$(__lfscp_strip_dots "$parent")"
+    [[ -n "$stem" ]] || stem="noname"
+    [[ -n "$parent" && "$parent" != "/" ]] || parent="root"
+
+    old="$(__lfscp_manifest_lookup "$fmt" "$src")"
+    final="$(__lfscp_pick_name "$stem" "$ext" "$parent" "$old")"
+
+    ## 5. 情報
+    if declare -F __lfscp_fmt_info >/dev/null; then
+        __lfscp_fmt_info "$src" || true
+    fi
+
+    ## 6. 作る（zip は既存ファイルに追記するので、必ず先に消す）
+    work="${work_dir}/${final}"
+    rm -rf -- "$work"
+    if ! __lfscp_fmt_create "$src" "$work"; then
+        rm -rf -- "$work"
+        echo "  作成に失敗したので飛ばします" >&2
+        return 1
+    fi
+
+    ## 7. 検証
+    if declare -F __lfscp_fmt_verify >/dev/null; then
+        if ! __lfscp_fmt_verify "$work" "$src"; then
+            rm -rf -- "$work"
+            echo "  検証 NG（ファイルを消して飛ばします）" >&2
+            return 1
+        fi
+    fi
+
+    ## 8. かごへ（同じファイルシステムなので原子的）。古い方はここで初めて消す
+    mv -f -- "$work" "${out}/${final}"
+    if [[ -n "$old" && "$old" != "$final" ]]; then
+        rm -f -- "${out:?}/${old}"
+    fi
+    __lfscp_manifest_put "$final" "$fmt" "$src"
+
+    ## 9. 結果
+    if [[ -n "$old" ]]; then
+        printf '  %s  %s（置き換え）\n' "$final" "$(__lfscp_human_size "$(__lfscp_file_bytes "${out}/${final}")")"
+    else
+        printf '  %s  %s\n' "$final" "$(__lfscp_human_size "$(__lfscp_file_bytes "${out}/${final}")")"
+    fi
+}
+
+__lfscp_pack() {
+    local fmt="${1:-}" fmt_file p src s found failed=0 missing="" c errf reason
+    local -a srcs=()
+
+    if [[ -z "$fmt" ]]; then
+        __lfscp_usage >&2
+        return 1
+    fi
+    shift
+
+    if [[ -z "${LFSCP_SESSION:-}" || ! -d "${LFSCP_SESSION}/out" || ! -d "${LFSCP_SESSION}/meta/work" ]]; then
+        echo "LFSCP_SESSION がセッションフォルダ（out/ と meta/work/ がある）を指していない：${LFSCP_SESSION:-（未設定）}" >&2
+        return 1
+    fi
+    ## 形式によっては元の親フォルダへ cd して作るので、絶対パスにしておく
+    LFSCP_SESSION="$(cd -P -- "$LFSCP_SESSION" && pwd -P)"
+
+    ## 1. 形式ハンドラー
+    if [[ ! "$fmt" =~ ^[a-z0-9-]+$ || ! -f "${__lfscp_ctl_dir}/formats/${fmt}.sh" ]]; then
+        echo "知らない形式：${fmt}" >&2
+        return 1
+    fi
+    # shellcheck source=/dev/null
+    source "${__lfscp_ctl_dir}/formats/${fmt}.sh"
+
+    ## 2. 必要なコマンド（欠けていれば out/ には触れない）
+    for c in $(__lfscp_fmt_requires); do
+        if ! command -v "$c" >/dev/null 2>&1; then
+            missing="${missing:+${missing} }${c}"
+        fi
+    done
+    if [[ -n "$missing" ]]; then
+        echo "${fmt}：必要なコマンドがない：${missing}" >&2
+        return 1
+    fi
+
+    if (($# == 0)); then
+        echo "対象がない" >&2
+        return 1
+    fi
+
+    ## 3. 元を決める（理由を出して飛ばす）。同じ呼び出しの中で重複を除く（選んだ順を保つ）
+    errf="${LFSCP_SESSION}/meta/resolve_err"
+    for p in "$@"; do
+        [[ -n "$p" ]] || continue
+        if ! src="$(__lfscp_fmt_resolve "$p" 2>"$errf")"; then
+            reason="$(cat -- "$errf")"
+            echo "飛ばします：${p}（${reason:-対象にできない}）" >&2
+            failed=1
+            continue
+        fi
+        found=0
+        for s in ${srcs[@]+"${srcs[@]}"}; do
+            if [[ "$s" == "$src" ]]; then
+                found=1
+                break
+            fi
+        done
+        if ((found == 0)); then
+            srcs+=("$src")
+        fi
+    done
+    rm -f -- "$errf"
+
+    ## 4〜9. 1 件ずつ
+    for src in ${srcs[@]+"${srcs[@]}"}; do
+        __lfscp_pack_one "$fmt" "$src" || failed=1
+    done
+
+    return "$failed"
+}
+
+######################################################################
+## 起動モード
+######################################################################
+
+## 自分の古いセッションを消す（Windows が取得と後片付けの間で切れたときの保険）
+__lfscp_gc() {
+    find /tmp -maxdepth 1 -name 'lfscp-*' -user "$(id -u)" -mmin +1440 -exec rm -rf -- {} + 2>/dev/null || true
+}
+
+__lfscp_launch() {
+    local session="" start_dir="" opt local_mode=0 lf_bin user n f
+    local -a items=()
+
+    OPTIND=1
+    while getopts ':o:s:h' opt; do
+        case "$opt" in
+            o) session="$OPTARG" ;;
+            s) start_dir="$OPTARG" ;;
+            h)
+                __lfscp_usage
+                return 0
+                ;;
+            :)
+                echo "-${OPTARG} には値が必要です" >&2
+                __lfscp_usage >&2
+                return 1
+                ;;
+            *)
+                echo "不明なオプション：-${OPTARG}" >&2
+                __lfscp_usage >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    if (($# > 0)); then
+        echo "余分な引数：$*" >&2
+        __lfscp_usage >&2
+        return 1
+    fi
+
+    ## セッションのパスは計算し直さず、検査だけする（省略時だけ同じ形の名前をここで作る）
+    if [[ -z "$session" ]]; then
+        user="${USER:-$(id -un)}"
+        user="${user//[!A-Za-z0-9._-]/_}"
+        session="/tmp/lfscp-${user}-$(date +%Y%m%d-%H%M%S)-$(printf '%04d' $((RANDOM % 10000)))"
+        local_mode=1
+    fi
+    if [[ ! "$session" =~ ^/tmp/lfscp-[A-Za-z0-9._-]+$ ]]; then
+        echo "セッションのパスは /tmp/lfscp-<英数字 . _ -> の形にしてください：${session}" >&2
+        return 1
+    fi
+
+    start_dir="${start_dir:-$PWD}"
+    if [[ ! -d "$start_dir" ]]; then
+        echo "開始フォルダがない：${start_dir}" >&2
+        return 1
+    fi
+
+    ## 非対話の ssh では PATH もエイリアス・関数も効かないので直接呼ぶ
+    lf_bin="${LFSCP_LF:-}"
+    if [[ -z "$lf_bin" ]]; then
+        lf_bin="${__lfscp_libs_dir}/bin/lf"
+        if [[ ! -x "$lf_bin" ]]; then
+            lf_bin="$(type -P lf || true)"
+        fi
+    fi
+    if [[ -z "$lf_bin" || ! -x "$lf_bin" ]]; then
+        echo "lf が見つからない" >&2
+        return 1
+    fi
+    if [[ ! -t 0 || ! -t 1 ]]; then
+        echo "端末がないので lf を開けない（ssh には -t を付けてください）" >&2
+        return 1
+    fi
+
+    __lfscp_gc
+
+    ## -p を付けない：他のユーザーが先に同じ名前を作っていたら失敗させる（-p だと黙って成功し、-m も効かない）
+    if ! mkdir -m 700 -- "$session"; then
+        echo "セッションフォルダを作れない（既にある？）：${session}" >&2
+        return 1
+    fi
+    mkdir -m 700 -- "${session}/out" "${session}/meta" "${session}/meta/work"
+
+    export LFSCP_SESSION="$session"
+    export LFSCP_SELF="$__lfscp_self"
+    ## lfrc の lf-previewer など、libs/bin のコマンドを lf の中から呼べるようにする
+    export PATH="${__lfscp_libs_dir}/bin:${PATH}"
+
+    ## 環境変数は lf のモジュールの関数（src/10_viewer/48_lf/main.sh）と同じ値にする
+    ## TCELL_KEYBOARD_PROTOCOL=legacy: q で抜けたときのキー離上報告が ssh の遅延で
+    ## lf 終了後に届き、生のエスケープ列として漏れるのを防ぐ（詳細は 48_lf/main.sh）
+    ## t 系のキーはこの起動のときだけ足す。lfrc は変更しない。
+    ## go だけはパスが要るので -command で渡す（セッションのパスは検査済みの安全な文字だけ）
+    if ! XDG_CONFIG_HOME="${__lfscp_libs_dir}/viewer/lf/config" \
+        XDG_DATA_HOME="${__lfscp_libs_dir}/viewer/lf/data" \
+        TCELL_KEYBOARD_PROTOCOL=legacy \
+        "$lf_bin" \
+        -command "source '${__lfscp_ctl_dir}/session.lfrc'" \
+        -command "map go cd '${session}/out'" \
+        "$start_dir"; then
+        echo "lf が異常終了した" >&2
+        return 1
+    fi
+
+    ## 一覧は out/ の実物から作る（かごで消したものを数えない）
+    for f in "${session}/out/"* "${session}/out/".[!.]* "${session}/out/"..?*; do
+        if [[ -e "$f" || -L "$f" ]]; then
+            items+=("$f")
+        fi
+    done
+    n="${#items[@]}"
+
+    if ((n == 0)); then
+        echo "かごが空なので終了します"
+        if ((local_mode == 1)); then
+            rm -rf -- "$session"
+        fi
+        return 2
+    fi
+
+    if ((local_mode == 1)); then
+        echo "== かご（${n} 件）：${session}/out"
+        for f in "${items[@]}"; do
+            printf '  %s  %s\n' "$(basename -- "$f")" "$(__lfscp_human_size "$(__lfscp_file_bytes "$f")")"
+        done
+        echo "Windows から取るとき（24 時間後に自動で消える）："
+        echo "  scp.exe -r <host>:${session}/out <まだ無いフォルダ>"
+    fi
+}
+
+######################################################################
+
+__lfscp_main() {
+    case "${1:-}" in
+        pack)
+            shift
+            __lfscp_pack "$@"
+            ;;
+        help)
+            __lfscp_help
+            ;;
+        *)
+            __lfscp_launch "$@"
+            ;;
+    esac
+}
+
+__lfscp_main "$@"

@@ -1,0 +1,25 @@
+######################################################################
+## lfscp の起動のときだけ足すキー（lfscp が -command "source ..." で読む）
+##   普段の lfrc（libs/viewer/lf/config/lf/lfrc）はそのまま読まれ、変更しない
+##   go（かごへ移動）はセッションのパスが要るので、lfscp が -command で足す
+######################################################################
+
+# 既定の t（tag-toggle）を外す。完全一致のキーがあると lf は ta を待たずに t を実行する
+map t
+
+# $fx は lfrc の ifs "\n" で改行区切りに割れる。set -f でグロブを止める
+# ! で同期実行する（& だと作成中に q を押したとき、その 1 件が黙って抜け落ちる）
+cmd lfscp-pack !{{
+    set -f
+    "$LFSCP_SELF" pack "$1" $fx
+}}
+
+# 作った後に unselect して二重に作るのを防ぐ
+map ta :lfscp-pack git-archive; unselect
+map tb :lfscp-pack git-bundle; unselect
+map tg :lfscp-pack tar-gz; unselect
+map tj :lfscp-pack tar-bz2; unselect
+map tx :lfscp-pack tar-xz; unselect
+map tz :lfscp-pack zip; unselect
+map tt :lfscp-pack raw; unselect
+map t? !"$LFSCP_SELF" help
