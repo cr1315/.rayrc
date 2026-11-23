@@ -313,7 +313,7 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 |---|---|
 | 今（`main.zsh` で source） | シェルを閉じるまで |
 | zsh の `autoload`（`fpath`） | 最初に呼んでから、シェルを閉じるまで |
-| 独立したスクリプトにする（I7。`10_viewer/20_git/rayrc-git-bundle` と同じ形） | 1 回の実行の間だけ（別のプロセス） |
+| 独立したスクリプトにする（I7。`10_viewer/48_lfscp/lfscp` と同じ形） | 1 回の実行の間だけ（別のプロセス） |
 | Go / Rust のバイナリ（9 章） | 1 回の実行の間だけ |
 
 ### 10.2 Confluence の API

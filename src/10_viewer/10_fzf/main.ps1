@@ -71,4 +71,3 @@ Set-PSReadLineKeyHandler -Chord Ctrl+r -ScriptBlock {
 ## custom functions
 ######################################################################
 . "$PSScriptRoot/ssh.ps1"
-. "$PSScriptRoot/scp-git.ps1"
