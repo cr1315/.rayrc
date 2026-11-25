@@ -32,10 +32,12 @@ function Resolve-CfPage([string]$Ref) {
 
     if ($Ref -cmatch '^(https://[^/]+)/wiki/') {
         $site = $Matches[1].ToLowerInvariant()
-        # /pages/ の後ろで、最初の数字だけのところがページ ID（edit-v2 などは読み飛ばす）
+        # /pages/ か /folder/ の後ろで、最初の数字だけのところがページ ID（edit-v2 などは読み飛ばす）
+        # フォルダも、子の一覧・親の指定（ancestors）は ページ と同じ API で扱える
         $path = ($Ref -creplace '^https://[^/]+/wiki/', '') -creplace '[?#].*$', ''
         $segs = $path.Split('/')
-        $i = [Array]::IndexOf($segs, 'pages')
+        $i = -1
+        for ($j = 0; $j -lt $segs.Count; $j++) { if ($segs[$j] -ceq 'pages' -or $segs[$j] -ceq 'folder') { $i = $j; break } }
         if ($i -ge 0) {
             for ($j = $i + 1; $j -lt $segs.Count; $j++) {
                 if ($segs[$j] -cmatch '^[0-9]+$') { return @{ Site = $site; PageId = $segs[$j] } }
@@ -45,7 +47,7 @@ function Resolve-CfPage([string]$Ref) {
         if ($Ref -cmatch '[?&]pageId=([0-9]+)') { return @{ Site = $site; PageId = $Matches[1] } }
     }
 
-    throw "ページの URL か ID を指定してください（/pages/<数字>/ か pageId=<数字> を含む URL。短縮 URL /wiki/x/... は不可）：$Ref"
+    throw "ページの URL か ID を指定してください（/pages/<数字>/、/folder/<数字>、pageId=<数字> のどれかを含む URL。短縮 URL /wiki/x/... は不可）：$Ref"
 }
 
 # Get-CfMapValue <変数名> <ホスト名> → 値（なければ $null）

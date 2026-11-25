@@ -54,10 +54,12 @@ __rayrc_cf_resolve_page() {
         local site="${(L)match[1]}"
         local seg
         local -a segs
-        ## /pages/ の後ろで、最初の数字だけのところがページ ID（edit-v2 などは読み飛ばす）
+        ## /pages/ か /folder/ の後ろで、最初の数字だけのところがページ ID（edit-v2 などは読み飛ばす）
+        ## フォルダも、子の一覧・親の指定（ancestors）は ページ と同じ API で扱える
         segs=("${(@s:/:)${${ref#https://*/wiki/}%%[?#]*}}")
-        if (( ${segs[(Ie)pages]} )); then
-            for seg in "${(@)segs[${segs[(i)pages]}+1,-1]}"; do
+        local -i k=${segs[(i)(pages|folder)]}
+        if (( k <= ${#segs} )); then
+            for seg in "${(@)segs[k+1,-1]}"; do
                 if [[ "${seg}" == [0-9]## ]]; then
                     reply=("${site}" "${seg}")
                     return 0
@@ -71,7 +73,7 @@ __rayrc_cf_resolve_page() {
         fi
     fi
 
-    __rayrc_cf_err "ページの URL か ID を指定してください（/pages/<数字>/ か pageId=<数字> を含む URL。短縮 URL /wiki/x/... は不可）：${ref}"
+    __rayrc_cf_err "ページの URL か ID を指定してください（/pages/<数字>/、/folder/<数字>、pageId=<数字> のどれかを含む URL。短縮 URL /wiki/x/... は不可）：${ref}"
     return 8
 }
 
