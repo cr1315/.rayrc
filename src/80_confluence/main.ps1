@@ -5,6 +5,7 @@
     Import-ConfluencePage -p 330137615 a.zip b.zip       # 親の子として取り込む（同じタイトルの子があれば更新、なければ作る）
     Export-ConfluencePage 330137615                      # ページを zip に書き出す（URL でもよい）
     Export-ConfluencePage -r 330137615                   # 子孫のページも書き出す
+    Export-ConfluencePage -p 330137615 -r                # 親は書き出さず、子孫だけを書き出す（フォルダの下も）
 
   オプションは zsh 版の 1 文字のもの（-u -p -t -m -e -r -o -f）も、そのまま使える。
 
@@ -132,13 +133,19 @@ New-Module -Name Confluence -ArgumentList $(if ($__rayrc_ctl_dir) { $__rayrc_ctl
         -OutputDir (-o) を省略するとカレントディレクトリに書き出す。すでにあれば -Force (-f) で上書きする
         -Recursive (-r)  子孫のページも書き出す。子は zip と同じ名前のフォルダに入れる（孫以下も同じ）
                          Import-ConfluencePage -Recursive に渡すと、同じ入れ子で取り込める
+        -Parent (-p)     指定したページ（フォルダでもよい）の直下の子を、出力フォルダに書き出す。親そのものは書き出さない
+                         -Recursive も付けると子孫全部。Import-ConfluencePage -p <親> -r <出力フォルダ>\*.zip に渡すと、同じ形で取り込める
+                         親の page.json がないので、子の並び順は残らない（新しく作るときは zip の名前の順になる）
+                         ページの指定とは一緒に使えない
       .EXAMPLE  Export-ConfluencePage 330137615
       .EXAMPLE  Export-ConfluencePage https://xxx.atlassian.net/wiki/spaces/KEY/pages/330137615/promote -OutputDir ~\Downloads
       .EXAMPLE  Export-ConfluencePage -r 330137615
+      .EXAMPLE  Export-ConfluencePage -p https://xxx.atlassian.net/wiki/spaces/KEY/folder/207683588 -r
     #>
         [CmdletBinding()]
         param(
-            [Parameter(Mandatory, Position = 0)][Alias('Url', 'PageId')][string]$Page,
+            [Parameter(Position = 0)][Alias('Url', 'PageId')][string]$Page,
+            [Alias('p')][string]$Parent,   # 親の URL かページ ID
             [Alias('o')][string]$OutputDir = (Get-Location).ProviderPath,
             [Alias('e')][string]$Email,
             [Alias('f')][switch]$Force,
@@ -146,12 +153,16 @@ New-Module -Name Confluence -ArgumentList $(if ($__rayrc_ctl_dir) { $__rayrc_ctl
         )
         $ErrorActionPreference = 'Stop'
 
+        if ($Page -and $Parent) { throw "ページの指定と -Parent は一緒に使えません" }
+        if (-not $Page -and -not $Parent) { throw "ページの URL か ID（子だけを書き出すなら -Parent）を指定してください" }
         if (-not (Test-Path -LiteralPath $OutputDir -PathType Container)) { throw "出力フォルダがありません：$OutputDir" }
         Assert-CfCommand 'curl.exe'
 
-        $p = Resolve-CfPage $Page
+        $p = Resolve-CfPage $(if ($Parent) { $Parent } else { $Page })
         $auth = Get-CfAuth ($p.Site -replace '^https://', '') $Email
-        Export-CfZip $auth $p.Site $p.PageId (Resolve-Path -LiteralPath $OutputDir).ProviderPath $Force.IsPresent $Recursive.IsPresent
+        $out = (Resolve-Path -LiteralPath $OutputDir).ProviderPath
+        if ($Parent) { Export-CfZipChildren $auth $p.Site $p.PageId $out $Force.IsPresent $Recursive.IsPresent }
+        else { Export-CfZip $auth $p.Site $p.PageId $out $Force.IsPresent $Recursive.IsPresent }
     }
 
     Export-ModuleMember -Function Import-ConfluencePage, Export-ConfluencePage

@@ -7,6 +7,7 @@
 ##   confluence-import -p 330137615 a.zip b.zip  # 親の子として取り込む（同じタイトルの子があれば更新、なければ作る）
 ##   confluence-export 330137615                 # ページを zip に書き出す（URL でもよい）
 ##   confluence-export -r 330137615              # 子孫のページも書き出す
+##   confluence-export -p 330137615 -r           # 親は書き出さず、子孫だけを書き出す（フォルダの下も）
 ##
 ## 環境変数（なければ、そのつど入力を求める）
 ##   RAYRC_JIRA_BASE_URL  ページ ID だけを渡したときのサイトの URL（例：https://xxx.atlassian.net）
@@ -163,17 +164,19 @@ confluence-export() {
     local REPLY
     local -a reply
 
-    local -a o_out o_email o_force o_recursive o_help
+    local -a o_out o_parent o_email o_force o_recursive o_help
     zparseopts -D -E -F -- \
         o:=o_out -output-dir:=o_out \
+        p:=o_parent -parent:=o_parent \
         e:=o_email -email:=o_email \
         f=o_force -force=o_force \
         r=o_recursive -recursive=o_recursive \
         h=o_help -help=o_help || return 8
 
-    if (( ${#o_help} || $# != 1 )); then
+    if (( ${#o_help} || $# > 1 || ( $# == 0 && ! ${#o_parent} ) )); then
         cat <<'EOF'
 usage: confluence-export <URL かページ ID> [-o <出力フォルダ>] [-e <メールアドレス>] [-f] [-r]
+       confluence-export -p <親の URL かページ ID> [-o <出力フォルダ>] [-e <メールアドレス>] [-f] [-r]
   Confluence のページを zip に書き出す（page.xhtml・page.json・添付ファイル）
   zip の名前は「<ページ ID>_<タイトル>.zip」。そのまま confluence-import に渡せる
   - page.xhtml：本文（ストレージ形式）。先頭に <title>タイトル</title> の 1 行を足す（取り込むときにタイトルになる）
@@ -182,8 +185,15 @@ usage: confluence-export <URL かページ ID> [-o <出力フォルダ>] [-e <�
   -o を省略するとカレントディレクトリに書き出す。すでにあれば -f で上書きする
   -r  子孫のページも書き出す。子は zip と同じ名前のフォルダに入れる（孫以下も同じ）
       confluence-import -r に渡すと、同じ入れ子で取り込める
+  -p  指定したページ（フォルダでもよい）の直下の子を、出力フォルダに書き出す。親そのものは書き出さない
+      -r も付けると子孫全部。confluence-import -p <親> -r <出力フォルダ>/*.zip に渡すと、同じ形で取り込める
+      親の page.json がないので、子の並び順は残らない（新しく作るときは zip の名前の順になる）
 EOF
         (( ${#o_help} )) && return 0
+        return 8
+    fi
+    if (( $# && ${#o_parent} )); then
+        __rayrc_cf_err "ページの指定と -p は一緒に使えません"
         return 8
     fi
 
@@ -194,7 +204,7 @@ EOF
     fi
     __rayrc_cf_need curl jq zip || return 8
 
-    __rayrc_cf_resolve_page "$1" || return 8
+    __rayrc_cf_resolve_page "${1:-${o_parent[-1]}}" || return 8
     local site="${reply[1]}"
     local id="${reply[2]}"
     __rayrc_cf_auth "${site#https://}" "${o_email[-1]}" || return 8
@@ -204,5 +214,9 @@ EOF
     (( ${#o_force} )) && force=true
     (( ${#o_recursive} )) && recursive=true
 
-    __rayrc_cf_bulk_export "${auth}" "${site}" "${id}" "${outdir:A}" "${force}" "${recursive}"
+    if (( ${#o_parent} )); then
+        __rayrc_cf_bulk_export_children "${auth}" "${site}" "${id}" "${outdir:A}" "${force}" "${recursive}"
+    else
+        __rayrc_cf_bulk_export "${auth}" "${site}" "${id}" "${outdir:A}" "${force}" "${recursive}"
+    fi
 }

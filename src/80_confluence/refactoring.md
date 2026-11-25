@@ -159,6 +159,17 @@ out/
 
 `-r` で取り込むときは、`page.json` の `children` の順に取り込みます。書いていないものは名前の順です。
 
+書き出しの `-p` は、取り込みの `-p`（P の子として入れる）の裏返しで、親 P そのものは書き出しません。
+
+| コマンド | 書き出すもの |
+|---|---|
+| `confluence-export P` | P だけ |
+| `confluence-export -r P` | P と子孫（P の zip と、同じ名前のフォルダ） |
+| `confluence-export -p P` | P の直下の子だけ。出力フォルダに直接並べる |
+| `confluence-export -p P -r` | P の子孫全部。孫から下は、子の zip と同じ名前のフォルダ |
+
+`confluence-import -p P -r <出力フォルダ>/*.zip` で同じ形に戻せます。P はフォルダでもかまいません。ただし、親の `page.json` がないので、子の並び順は残りません（既存のページの更新では並びを動かさないので困らない。新しく作るときは zip の名前の順になる）。
+
 ## 5. 流れ
 
 ### 5.1 `confluence-import -p P -r a.zip`
