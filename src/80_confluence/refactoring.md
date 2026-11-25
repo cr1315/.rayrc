@@ -246,6 +246,8 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 
 ## 9. これから：自作をやめて、ツールを選ぶ
 
+> 2026-11-25 追記：この章の調べの結果を受けて、Go で作り直すことにしました（リポジトリ `atlassian-tools`、Confluence 用のバイナリ `atc`）。要件と設計は [atlassian-tools/requirement.md](atlassian-tools/requirement.md) と [atlassian-tools/design.md](atlassian-tools/design.md) にあります。
+
 ### 9.1 考え直したこと
 
 このリポジトリ（rayrc）の役目は、ツールそのものを作ることではありません。**ツールを集めて管理すること**です。PowerShell と zsh で書き始めたのは、すぐに作れたからでした。しかし、ここまで大きくなると、シェルで書き続けるのは筋がよくありません。
