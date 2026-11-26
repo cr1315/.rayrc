@@ -216,3 +216,29 @@ __rayrc_cf_bulk_export() {
         done
     fi
 }
+
+## __rayrc_cf_bulk_export_children <認証> <サイト> <親 ID> <出力フォルダ> <force> <recursive>
+## 親（ページでもフォルダでもよい）の直下の子を、出力フォルダに 1 ページ 1 zip で書き出す。親そのものは書き出さない。
+## recursive が true なら、孫から下は __rayrc_cf_bulk_export と同じく、zip と同じ名前のフォルダに書き出す。
+## 親の page.json がないので、子の並び順は残らない
+__rayrc_cf_bulk_export_children() {
+    emulate -L zsh
+    local auth="$1"
+    local site="$2"
+    local parent="$3"
+    local outdir="$4"
+    local force="$5"
+    local recursive="$6"
+    local kid
+    local -a kids
+
+    __rayrc_cf_children "${auth}" "${site}" "${parent}" || return 8
+    kids=(${(f)"$(jq -r '.[].id' <<<"${REPLY}")"})
+    if (( ! ${#kids} )); then
+        print -r -- "子のページがありません（親 ID ${parent}）"
+        return 0
+    fi
+    for kid in "${kids[@]}"; do
+        __rayrc_cf_bulk_export "${auth}" "${site}" "${kid}" "${outdir}" "${force}" "${recursive}" || return 8
+    done
+}

@@ -158,3 +158,15 @@ function Export-CfZip([string]$Auth, [string]$Site, [string]$PageId, [string]$Ou
         }
     }
 }
+
+# Export-CfZipChildren <認証> <サイト> <親 ID> <出力フォルダ> <force> <recursive>
+# 親（ページでもフォルダでもよい）の直下の子を、出力フォルダに 1 ページ 1 zip で書き出す。親そのものは書き出さない。
+# recursive なら、孫から下は Export-CfZip と同じく、zip と同じ名前のフォルダに書き出す。
+# 親の page.json がないので、子の並び順は残らない
+function Export-CfZipChildren([string]$Auth, [string]$Site, [string]$ParentId, [string]$OutDir, [bool]$Force, [bool]$Recursive) {
+    $kids = @(Get-CfChildren $Auth $Site $ParentId)
+    if (-not $kids.Count) { Write-Host "子のページがありません（親 ID $ParentId）"; return }
+    foreach ($kid in $kids) {
+        Export-CfZip $Auth $Site ([string]$kid.id) $OutDir $Force $Recursive
+    }
+}

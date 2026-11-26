@@ -159,6 +159,17 @@ out/
 
 `-r` で取り込むときは、`page.json` の `children` の順に取り込みます。書いていないものは名前の順です。
 
+書き出しの `-p` は、取り込みの `-p`（P の子として入れる）の裏返しで、親 P そのものは書き出しません。
+
+| コマンド | 書き出すもの |
+|---|---|
+| `confluence-export P` | P だけ |
+| `confluence-export -r P` | P と子孫（P の zip と、同じ名前のフォルダ） |
+| `confluence-export -p P` | P の直下の子だけ。出力フォルダに直接並べる |
+| `confluence-export -p P -r` | P の子孫全部。孫から下は、子の zip と同じ名前のフォルダ |
+
+`confluence-import -p P -r <出力フォルダ>/*.zip` で同じ形に戻せます。P はフォルダでもかまいません。ただし、親の `page.json` がないので、子の並び順は残りません（既存のページの更新では並びを動かさないので困らない。新しく作るときは zip の名前の順になる）。
+
 ## 5. 流れ
 
 ### 5.1 `confluence-import -p P -r a.zip`
@@ -234,6 +245,8 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 - `curl` を zsh の関数で置き換えてモックにする。**`__rayrc_cf_curl` は `$(curl ...)` の中、つまりサブシェルで curl を呼ぶ**ので、モックの状態（ページ、版、添付）はシェルの変数ではなくファイルに持つ。
 
 ## 9. これから：自作をやめて、ツールを選ぶ
+
+> 2026-11-25 追記：この章の調べの結果を受けて、Go で作り直すことにしました（リポジトリ `atlassian-tools`、Confluence 用のバイナリ `atc`）。要件と設計は [atlassian-tools/requirement.md](atlassian-tools/requirement.md) と [atlassian-tools/design.md](atlassian-tools/design.md) にあります。
 
 ### 9.1 考え直したこと
 
@@ -325,6 +338,7 @@ zip の側を正とします。Confluence の画面で直したときは、一�
 - **同じスペースの中で、ページのタイトルは重複できません**。親の下に作るとき、同じタイトルが別の場所にあると 400 になります。
 - 添付の更新は `PUT /content/<id>/child/attachment` に `X-Atlassian-Token: no-check` を付けます。同じ図かどうかは、添付のコメントに入れた `sha256:<16 進>` で比べています。この関数が上げた図だけを消すのも、この印で見分けています。
 - 短縮 URL（`/wiki/x/...`）からはページ ID が読めないので、受け付けていません。
+- フォルダの URL（`/wiki/spaces/<KEY>/folder/<id>`）は、ページの URL と同じように受け付けます。フォルダの ID は、子の一覧（`/content/<id>/child/page`）でも、作るときの親（`ancestors`）でも、ページの ID と同じように使えます（`-p <数字>` で確かめた）。
 - 認証は Basic（`メールアドレス:API トークン`）です。zsh 版も PowerShell 版も `curl -K -` で標準入力から渡して、プロセスの一覧に出ないようにしています。
 
 ### 10.3 zsh で書いていてはまったこと
