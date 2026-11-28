@@ -14,7 +14,7 @@ Modules are directories under `src/` with a numbered prefix that controls load o
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
 | `00_` | Core binaries/PATH | `00_bin` |
-| `02_` | Network / transfer tools (group) | `02_net` (stu) |
+| `02_` | Network / transfer tools (group) | `02_net` (mise, stu). mise is here only provisionally, to avoid a new top-level group |
 | `04_` | Text tools: view, diff, process, format, edit (group) | `04_text` (bat, delta, jq, shfmt, yq, vim) |
 | `06_` | File search tools: find, list, disk usage (group) | `06_filesearch` (eza, fd, gdu, navi, rg) |
 | `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_shell` (common, sudo) |
@@ -69,9 +69,11 @@ Some `libs/` subdirs contain tracked config files (e.g. `libs/text/bat/config/`,
 
 - `__rayrc_log_info <message>` — depth-aware logger (defined in `src/logger.sh`, sourced by `common.sh`); indents by 2 spaces per `__rayrc_source_facade` nesting level
 - `__rayrc_github_downloader <repo> <target> <filters...>` — (legacy) downloads latest GitHub release via HTML scraping
+- `__rayrc_cqi_downloader <crate> <target> <file>` — downloads cargo-quickinstall's build of a crate, for targets upstream ships no binary for (macOS eza / navi). The version comes from cqi's own tags (`git ls-remote`, no API rate limit), newest first, so a lagging cqi build never 404s
 - `__rayrc_install_binary <file> <pattern>[=<name>]...` — extracts a downloaded asset (or takes a raw binary) and places the binaries into `libs/bin/`; same body in `common.sh` and `common.zsh`
 - `__rayrc_module_common_setup` — sets `__rayrc_ctl_dir` and `__rayrc_data_dir` for the current module
 - `__rayrc_source_facade <phase>` — scans `__rayrc_ctl_dir` subdirs and sources `<phase>.sh` in numeric order
+- `__rayrc_list_modules <dir> <phase>` — the facade's one-level listing rule (has `<phase>.sh`, no `disabled`, ordinal). `install --fzf` builds its candidates with it too, so keep the rule here only. bash prints one name per line; zsh fills `reply` (no fork at shell startup)
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
 
 ## Binary Acquisition Strategy (priority order)
@@ -129,7 +131,7 @@ Current ①② constraints (there is no ① today):
 3. Create `src/<group>/<NN>_<tool>/install.sh` following the define-call-unset pattern. Its data dir is `libs/<group without prefix>/<tool>/`
 4. Check GitHub releases for asset naming (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | grep '"name"'`)
 5. Post-download handling: `__rayrc_install_binary "${__rayrc_data_dir}/<tool>.tar.gz" <tool> || return 8` (`src/common.{sh,zsh}`). It extracts .tar.gz / .tar.xz / .tar.bz2 / .zip into a temp dir, finds the binary by name at any depth (flat or nested archives alike, no GNU `--transform` / BSD `--strip-components` split), places it into `${__rayrc_bin_dir}` atomically, and removes the download. A raw binary asset (jq) is placed as is; rename with `'<pattern>=<name>'` (gdu: `'gdu_*=gdu'`)
-6. Tools without macOS releases: `*)` fallback warns and returns 8
+6. Tools without macOS releases: if cargo-quickinstall has a build, use `__rayrc_cqi_downloader <crate> <aarch64|x86_64>-apple-darwin <file>` (eza / navi). Avoid Homebrew bottles: they may link to brew's own dylibs (eza's links `@@HOMEBREW_PREFIX@@/opt/libgit2`). Otherwise the `*)` fallback warns and returns 8
 
 ## Conventions
 

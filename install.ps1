@@ -4,6 +4,7 @@
 #
 #   cd $env:USERPROFILE\.rayrc; . .\install.ps1
 #   . .\install.ps1 -Filter text,bat      # only some modules (same as bash --filter)
+#   . .\install.ps1 -Fzf                  # pick one module or group with fzf (same as bash --fzf)
 #
 # The work is done by src/install.ps1. It is invoked with & (its own
 # scope) so that its Set-StrictMode / $ErrorActionPreference do not leak
