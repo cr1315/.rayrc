@@ -1,5 +1,5 @@
-﻿# oh-my-posh は Scoop で管理する（既に入っていれば Scoop が警告を出すだけで何もしない）
-scoop install oh-my-posh
+﻿# oh-my-posh は Scoop で管理する
+__rayrc_scoop_install oh-my-posh
 
 # # テーマは shell 非依存なので libs/viewer/ohmyposh/config で管理する
 # # repo にコミット済みのテーマ（手編集）を上書きしないよう、無い時だけコピーする

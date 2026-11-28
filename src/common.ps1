@@ -87,3 +87,79 @@ function __rayrc_module_error {
     Write-Warning "[rayrc] $($ErrorRecord.InvocationInfo.ScriptName): $ErrorRecord"
 }
 
+######################################################################
+#
+# Helpers（main.ps1 / install.ps1 のどちらからでも使える。読み込みの最後に __rayrc_* ごと消える）
+#
+######################################################################
+
+## __rayrc_path_prepend <dir>: PATH の先頭に足す。既にあれば何もしない（冪等）
+function __rayrc_path_prepend {
+    param([Parameter(Mandatory = $true)][string]$Dir)
+    $sep = [IO.Path]::PathSeparator
+    if (@($env:PATH -split [regex]::Escape($sep)) -notcontains $Dir) {
+        $env:PATH = $Dir + $sep + $env:PATH
+    }
+}
+
+## __rayrc_scoop_install <app> [-Bucket <name>]
+##   取得は Scoop に任せる（D2）。Scoop は、既に入っているアプリには警告を出すだけで何もしない
+function __rayrc_scoop_install {
+    param([Parameter(Mandatory = $true)][string]$App, [string]$Bucket)
+    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Write-Warning "[rayrc] scoop not found; skipped $App"
+        return
+    }
+    if ($Bucket -and -not (@(scoop bucket list) | Where-Object { $_.Name -eq $Bucket })) {
+        scoop bucket add $Bucket | Out-Null
+    }
+    scoop install $App
+}
+
+## __rayrc_run_installer <Url> [-Environment @{ NAME = 'value' }]
+##   公式の PowerShell installer（irm <url> | iex で使う前提のもの）を子プロセスで実行し、成否を返す。
+##   installer の exit / Set-StrictMode / 変数がこのセッションに漏れない（claude の installer は失敗時に exit する）。
+##   -Environment はその子プロセスにだけ渡す。出力は bash の `>&/dev/null` と同じく捨てる
+function __rayrc_run_installer {
+    param([Parameter(Mandatory = $true)][string]$Url, [hashtable]$Environment = @{})
+    $saved = @{}
+    foreach ($name in $Environment.Keys) {
+        $saved[$name] = [Environment]::GetEnvironmentVariable($name)
+        [Environment]::SetEnvironmentVariable($name, [string]$Environment[$name])
+    }
+    try {
+        & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass `
+            -Command "Invoke-RestMethod -Uri '$Url' | Invoke-Expression" *> $null
+        $LASTEXITCODE -eq 0
+    }
+    finally {
+        foreach ($name in $saved.Keys) {
+            [Environment]::SetEnvironmentVariable($name, $saved[$name])
+        }
+    }
+}
+
+## __rayrc_link_dir <Link> <Target>
+##   <Link> を <Target> への junction にする（Windows 以外の pwsh では symlink。テスト用）。
+##   既に <Target> を指していれば何もしない。rayrc 以外のものがあれば __rayrc_backup_item で退避する。
+##   bash の 70_claude / 20_vim と同じ ad-hoc な退避。uninstall ストーリーで共通の退避 helper に置き換える
+function __rayrc_link_dir {
+    param([Parameter(Mandatory = $true)][string]$Link, [Parameter(Mandatory = $true)][string]$Target)
+    New-Item -ItemType Directory -Force -Path $Target | Out-Null
+    $item = Get-Item -LiteralPath $Link -Force -ErrorAction SilentlyContinue
+    if ($item) {
+        if ($item.LinkType -and @($item.Target)[0] -eq $Target) { return }
+        __rayrc_backup_item $Link
+    }
+    $type = if ($env:OS -eq 'Windows_NT') { 'Junction' } else { 'SymbolicLink' }
+    New-Item -ItemType $type -Path $Link -Target $Target | Out-Null
+}
+
+## __rayrc_backup_item <Path>: <Path>_rayrc_bkup_<timestamp> へ移す（無ければ何もしない）
+function __rayrc_backup_item {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    if (-not (Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue)) { return }
+    $dest = "${Path}_rayrc_bkup_$(Get-Date -Format yyyyMMdd_HHmmss)"
+    Move-Item -LiteralPath $Path -Destination $dest
+    Write-Host "[rayrc] backed up $Path -> $dest"
+}
