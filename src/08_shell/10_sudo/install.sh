@@ -13,7 +13,7 @@ __rayrc_install() {
     fi
     # sudo sh -c 'echo "'${sudo_username}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
     if sudo -n true 2>/dev/null || [[ $- == *i* ]]; then
-        sudo sh -c 'echo "'${USER}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
+        sudo sh -c 'echo "'${sudo_username}' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/9527-ray'
     fi
 }
 
