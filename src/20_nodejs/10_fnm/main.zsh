@@ -28,8 +28,22 @@ __rayrc_main() {
             ! -path "${FNM_MULTISHELL_PATH}" -delete 2>/dev/null
     fi
 
+    ## Remove this shell's own link when it exits. Not run on `exec zsh` or a
+    ## crash; the sweep above picks those up. (Pointing fnm at a volatile dir
+    ## instead is no option on macOS: there is no per-user tmpfs like /run/user,
+    ## and $TMPDIR is swept by age, which drops the link of a shell still open,
+    ## Schniz/fnm#624.) `fnm use` re-creates the link at the same path, so the
+    ## path in FNM_MULTISHELL_PATH stays valid.
+    autoload -Uz add-zsh-hook
+    add-zsh-hook zshexit __rayrc_fnm_cleanup
+
     ## completion needs compinit, which rayrc does not run itself
     (( ${+functions[compdef]} )) && eval "$(fnm completions --shell zsh)" 2>/dev/null
+}
+
+## zshexit hook (see above); stays defined for the life of the shell
+__rayrc_fnm_cleanup() {
+    [[ -L "${FNM_MULTISHELL_PATH}" ]] && command rm -f -- "${FNM_MULTISHELL_PATH}"
 }
 
 __rayrc_main
