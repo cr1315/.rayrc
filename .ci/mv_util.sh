@@ -8,8 +8,8 @@
 #
 # - libs/ 側のパスは __rayrc_package:3 と同じく、各階層の番号プレフィックス（先頭 3 文字）を外して求める
 # - モジュールのディレクトリごと動かすので、.sh / .zsh / .ps1 の全方言が一緒に移る
-# - 移動先の親グループがなければ作成し、delegate 用の install / main を .sh と .zsh の両方で置く
-#   （.ps1 は暗黙再帰なので delegate は要らない）
+# - 移動先の親グループがなければ作成し、delegate 用の install / main を .sh / .zsh / .ps1 の全方言で置く
+#   （全方言が明示 delegate。I8）
 # - 追跡ファイルを含むディレクトリは git mv（ignore された実行時データもディレクトリごと移る）、
 #   追跡ファイルがなければ mv で移動する
 #
@@ -86,16 +86,18 @@ validate_paths() {
 
 
 ## 既存の親ディレクトリが delegate を持たない（末端のモジュールなど）と、移したモジュールが読み込まれない
-## bash（.sh）と zsh（.zsh）は明示 delegate なので両方を見る。.ps1 は暗黙再帰なので delegate は要らない
+## 全方言が明示 delegate なので（I8）、.sh / .zsh / .ps1 のそれぞれを見る
 validate_parent_groups() {
-    local dir phase ext
+    local dir phase ext marker
     for dir in $(ancestor_dirs "${to}"); do
         [[ -d "${CTL_ROOT}/${dir}" ]] || continue
 
         for phase in install main; do
-            for ext in sh zsh; do
+            for ext in sh zsh ps1; do
+                marker='__rayrc_source_facade'
+                [[ "${ext}" == "ps1" ]] && marker='__rayrc_list_modules'
                 if [[ -f "${FROM_CTL}/${phase}.${ext}" ]] &&
-                   ! grep -q '__rayrc_source_facade' "${CTL_ROOT}/${dir}/${phase}.${ext}" 2>/dev/null; then
+                   ! grep -q "${marker}" "${CTL_ROOT}/${dir}/${phase}.${ext}" 2>/dev/null; then
                     die "${CTL_ROOT}/${dir}/${phase}.${ext} が delegate ではないため、${phase}.${ext} が読み込まれなくなります。"
                 fi
             done
@@ -149,10 +151,11 @@ create_group() {
     for phase in install main; do
         write_delegate "${phase}" >"${dir}/${phase}.sh" || return 1
         write_delegate_zsh "${phase}" >"${dir}/${phase}.zsh" || return 1
+        write_delegate_ps1 "${phase}" >"${dir}/${phase}.ps1" || return 1
     done
-    git add "${dir}/install.sh" "${dir}/main.sh" "${dir}/install.zsh" "${dir}/main.zsh" || return 1
+    git add "${dir}"/{install,main}.{sh,zsh,ps1} || return 1
 
-    log_info "グループを作成しました: ${dir}（delegate: install.sh, main.sh, install.zsh, main.zsh）"
+    log_info "グループを作成しました: ${dir}（delegate: {install,main}.{sh,zsh,ps1}）"
 }
 
 
@@ -296,6 +299,21 @@ __rayrc_${phase}() {
 __rayrc_${phase}
 ## sub modules define & unset the same name; unlike bash, zsh warns if it's already gone
 unset -f __rayrc_${phase} 2>/dev/null
+EOF
+}
+
+
+## PowerShell 版（src/10_viewer/{install,main}.ps1 と同じ内容。.editorconfig に合わせて UTF-8 BOM を付ける）
+write_delegate_ps1() {
+    local phase="$1"
+
+    printf '\xEF\xBB\xBF'
+    cat <<EOF
+## group delegate: 配下のモジュールの ${phase}.ps1 を順に読む（bash / zsh の ${phase}.sh と同じ意味論。src/common.ps1 を参照）
+foreach (\$__rayrc_m in @(__rayrc_list_modules ${phase})) {
+    __rayrc_module_enter \$__rayrc_m
+    try { . \$__rayrc_m.Script } catch { __rayrc_module_error \$_ } finally { __rayrc_module_leave }
+}
 EOF
 }
 
