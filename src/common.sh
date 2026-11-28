@@ -302,8 +302,11 @@ __rayrc_source_facade() {
 # parameters
 #
 ######################################################################
-# Parses --filter a,b,c from __rayrc_prms and populates __rayrc_install_filter.
-# __rayrc_install_filter must be declared (local) in the caller's scope.
+# Parses __rayrc_prms:
+#   --filter a,b,c → __rayrc_install_filter=(a b c)
+#   --fzf          → __rayrc_install_fzf=true (the filter is picked with fzf; see src/install.sh)
+# __rayrc_install_filter / __rayrc_install_fzf must be declared (local) in the caller's scope.
+# Returns 8 when both are given.
 __rayrc_parse_args() {
     local i
     for ((i = 0; i < "${#__rayrc_prms[@]}"; i++)); do
@@ -312,8 +315,16 @@ __rayrc_parse_args() {
             i=$((i + 1))
             __rayrc_install_filter=(${__rayrc_prms[$i]//,/ })
             ;;
+        --fzf)
+            __rayrc_install_fzf=true
+            ;;
         esac
     done
+
+    if [[ "${__rayrc_install_fzf}" == true && "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
+        __rayrc_log_warn "--fzf and --filter cannot be used together"
+        return 8
+    fi
 }
 
 ######################################################################

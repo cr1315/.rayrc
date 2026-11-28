@@ -5,6 +5,8 @@
 #   1. run each module's install.ps1 through the facade (src/common.ps1)
 #        -Filter text,bat : one comma-separated token per hierarchy level,
 #                           substring match, "*" matches any (= bash --filter)
+#        -Fzf             : pick one module or group with fzf; the filter is
+#                           built from it (= bash --fzf; not with -Filter)
 #   2. bootstrap .rayrc into the PowerShell profile (idempotent)
 #        - managed block (between markers) exists -> replaced in place
 #        - legacy unmarked block exists           -> migrated in place
@@ -16,6 +18,7 @@
 [CmdletBinding()]
 param(
     [string[]]$Filter = @(),
+    [switch]$Fzf,
     [string]$ProfilePath = $PROFILE.CurrentUserCurrentHost
 )
 
@@ -39,6 +42,66 @@ $__rayrc_ctl_dir  = $__rayrc_main_dir
 $__rayrc_data_dir = $__rayrc_libs_dir
 $__rayrc_install_filter = @($Filter | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 $__rayrc_stack = [System.Collections.Generic.Stack[object]]::new()
+
+## -Fzf (= bash / zsh --fzf, see src/install.sh)
+## __rayrc_fzf_candidates walks the install tree with the facade's own rule
+## (__rayrc_list_modules, and descends only into a delegate, i.e. an install.ps1
+## that runs the module loop) and yields "<label>`t<-Filter value>" in load order.
+## A group is a candidate too (picking it installs the whole group).
+function __rayrc_fzf_candidates {
+    param([string]$Dir, [string]$Label = '', [string]$Prefix = '')
+    ## __rayrc_list_modules reads these from the caller (dynamic scope): list
+    ## <Dir> without any filter
+    $__rayrc_ctl_dir = $Dir
+    $__rayrc_install_filter = @()
+    foreach ($m in @(__rayrc_list_modules install)) {
+        $short = $m.Name.Substring([Math]::Min(3, $m.Name.Length))
+        "$Label$short`t$Prefix$($m.Name)"
+        if (Select-String -LiteralPath $m.Script -Pattern '__rayrc_list_modules' -SimpleMatch -Quiet) {
+            __rayrc_fzf_candidates -Dir $m.CtlDir -Label "$Label$short/" -Prefix "$Prefix$($m.Name),"
+        }
+    }
+}
+
+## __rayrc_fzf_pick_filter: the picked -Filter value ("04_text,10_bat"), or
+## nothing (no fzf, or left with Esc / Ctrl-C; the reason is printed)
+function __rayrc_fzf_pick_filter {
+    $fzf = Join-Path $__rayrc_bin_dir 'fzf.exe'
+    if (-not (Test-Path -LiteralPath $fzf)) {
+        $fzf = @(Get-Command fzf -CommandType Application -ErrorAction SilentlyContinue)[0].Source
+    }
+    if (-not $fzf) {
+        Write-Warning '[rayrc] -Fzf needs fzf, which is not installed yet. install it first, then retry:'
+        Write-Warning '[rayrc]     . .\install.ps1 -Filter viewer,fzf    (or everything: . .\install.ps1)'
+        return
+    }
+    ## no --height: as in 10_viewer/10_fzf/main.ps1, fzf stays full screen on Windows
+    $picked = __rayrc_fzf_candidates -Dir $__rayrc_main_dir |
+        & $fzf --delimiter "`t" --with-nth 1 --no-multi --layout reverse `
+            --prompt 'rayrc install> ' --header 'pick a module or a group to (re)install'
+    ## fzf: 1 = no match, 130 = Esc / Ctrl-C, 2 = error
+    if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1 -and $LASTEXITCODE -ne 130) {
+        Write-Warning "[rayrc] fzf failed (exit $LASTEXITCODE)"
+        return
+    }
+    if ($LASTEXITCODE -ne 0 -or -not $picked) {
+        Write-Host '[rayrc] nothing picked, nothing installed'
+        return
+    }
+    (@($picked)[0] -split "`t", 2)[1]
+}
+
+if ($Fzf) {
+    if (@($__rayrc_install_filter).Count -gt 0) {
+        Write-Warning '[rayrc] -Fzf and -Filter cannot be used together'
+        return
+    }
+    Write-Host ''
+    $__rayrc_picked = __rayrc_fzf_pick_filter
+    if (-not $__rayrc_picked) { return }
+    Write-Host "[rayrc] -Filter $__rayrc_picked"
+    $__rayrc_install_filter = @($__rayrc_picked -split ',')
+}
 
 $ErrorActionPreference = 'Continue'
 Write-Host ''
