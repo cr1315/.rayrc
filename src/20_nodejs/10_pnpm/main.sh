@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-command -v pnpm >/dev/null 2>&1 || { return; }
-
 __rayrc_main() {
     __rayrc_module_common_setup
 
-    ## pnpm locates its global dir, store and global bin dir via PNPM_HOME;
-    ## $PNPM_HOME/bin is a symlink to libs/bin (see install.sh).
+    ## pnpm and the bins of `pnpm add -g` packages live in $PNPM_HOME/bin (see install.sh)
+    [[ -x "${__rayrc_data_dir}/bin/pnpm" ]] || return 0
+
+    ## pnpm locates its global dir, store and global bin dir via PNPM_HOME
     export PNPM_HOME="${__rayrc_data_dir}"
+    if [[ ":${PATH}:" != *":${PNPM_HOME}/bin:"* ]]; then
+        export PATH="${PNPM_HOME}/bin${PATH:+:${PATH}}"
+    fi
 
     eval "$(pnpm completion bash)" 2>/dev/null
 }
