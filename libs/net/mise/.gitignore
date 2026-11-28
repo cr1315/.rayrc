@@ -1,0 +1,3 @@
+# everything here is written by mise at run time (MISE_*_DIR in src/02_net/00_mise/main.*)
+*
+!.gitignore
