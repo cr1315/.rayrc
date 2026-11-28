@@ -35,14 +35,14 @@ Nov 28, 2026
 | U8 | `~/.tmux.conf` | `10_viewer/60_tmux/install.sh` | `__rayrc_backup/` へ mv する（symlink なら `rm -f`） | ❌ |
 | U9 | `~/.tmux.conf.local` | 同上 | **退避せずに `cp -f` で上書き**する | ❌ |
 | U10 | `~/.tmux`（ディレクトリ） | 同上 | mv する。**rayrc は `~/.tmux` を使わない**ので退避する理由が無い。TPM のプラグインがあれば壊す | ❌ |
-| U11 | `~/.claude` | `70_claude/install.{sh,zsh}` | 公式 installer の**後で**、`~/.claude` が rayrc の symlink でなければ `~/.claude_rayrc_bkup_<timestamp>` へ mv し、`libs/claude/.claude` へ symlink する。installer が `~/.claude/downloads` を作るので、**ユーザーの設定が無いホストでも初回は必ず退避が 1 つできる**（中身は installer が作った空の `downloads/` など。このホストでも 2026-09-11 の 1 つがそれ）。2 回目以降は symlink 越しに書くので増えない。`~/.claude.json` は `$HOME` 直下のままで対象外 | ❌ 戻さない。`libs/claude/.claude`（**認証情報と履歴**）ごと消える |
+| U11 | `~/.claude` | `70_claude/install.{sh,zsh}` | 公式 installer の**前に**、`~/.claude` が rayrc の symlink でなければ（ディレクトリ・ファイル・他人の symlink・壊れた symlink）`~/.claude_rayrc_bkup_<timestamp>` へ mv し、`libs/claude/.claude` へ symlink する（PS の W4 と同じ順）。以前は installer の後に張っていたので、ユーザーの設定が無くても初回は installer が作っただけの `~/.claude` が退避されていた（このホストの `~/.claude_rayrc_bkup_20260911_021012` がそれ。中身は空の `downloads/` / `sessions/` と `backups/` の 1 ファイル）。`~/.claude.json` は `$HOME` 直下のままで対象外 | ❌ 戻さない。`libs/claude/.claude`（**認証情報と履歴**）ごと消える |
 | U12 | `~/.local/bin/claude` ほか | 公式 installer | — | ❌（rayrc の管理外。§4 Q4） |
 | U13 | `~/.gitconfig` のキー 11 個 | `10_viewer/20_git/install.sh` | 値が未設定のときだけ書く（✅ 壊さない） | ❌ 戻さない。`credential.helper store` によって `~/.git-credentials` が平文で残る |
 | U14 | `~/.docker/cli-plugins/docker-compose` | `40_docker/install.sh` | **退避せずに `cp -f`** する | ❌ |
 | U15 | `/etc/sudoers.d/9527-ray`（NOPASSWD:ALL） | `08_shell/10_sudo/install.sh` | 上書きする | ❌ **権限が残り続ける** |
 | U16 | `~/.cache/lf`、`~/.terraform.d/plugin-cache` | lf install / terraform main | mkdir するだけ | 放置してよい |
 | U17 | VS Code 拡張の `extension.js`（+ `.bak`） | `70_claude/main.sh`（シェル起動ごと） | `sed -i.bak` | 放置してよい（拡張を更新すれば元に戻る） |
-| U18 | OS のパッケージ（git / curl / grep、pacman、brew の httpie） | `00_bin`、`70_niri/70_arch`、`02_net/10_httpie` | — | 対象外が妥当（§4 Q2） |
+| U18 | OS のパッケージ（git / curl / grep、pacman） | `00_bin`、`70_niri/70_arch` | — | 対象外が妥当（§4 Q2） |
 
 ### 1.2 Windows
 
@@ -53,7 +53,7 @@ Nov 28, 2026
 PowerShell の W4 / W5 の退避と junction は `src/common.ps1` の `__rayrc_link_dir` / `__rayrc_backup_item` に集めてある。§3 の helper ができたら、ここを差し替える。
 | W2 | Scoop 本体と各パッケージ（dialect_parity §2 の「Scoop」の行すべて。databricks 用に extras bucket も足す） | 各 `install.ps1`（未接続。dialect_parity の G1） | 既に入っていれば何もしない | ❌ |
 | W3 | `ExecutionPolicy RemoteSigned`（CurrentUser） | `00_bin/install.ps1` | 上書きする | ❌（§4 Q2） |
-| W4 | `~/.claude`（junction → `libs/claude/.claude`） | `70_claude/install.ps1` | 公式 installer の**前に** junction を張る。rayrc 以外のものがあれば `~/.claude_rayrc_bkup_<timestamp>` へ退避する（U11 と違い、installer が作っただけの退避はできない） | ❌ |
+| W4 | `~/.claude`（junction → `libs/claude/.claude`） | `70_claude/install.ps1` | U11 と同じ順（退避 → junction → installer） | ❌ |
 | W5 | `~/vimfiles`（junction）、`~/_vimrc`、`~/.vimrc` | `04_text/20_vim/install.ps1` | vimfiles は W4 と同じ。`_vimrc` / `.vimrc` は `<name>_rayrc_bkup_<timestamp>` へ退避する | ❌ |
 | W6 | `~/.gitconfig` のキー 10 個（`credential.helper` を除く） | `10_viewer/20_git/install.ps1` | 未設定のときだけ書く | ❌（U13 と同じ） |
 | W7 | Claude Code の launcher（`~/.local/bin` など）と、それを足すユーザーの PATH | 公式 installer | — | ❌（U12 と同じく管理外） |

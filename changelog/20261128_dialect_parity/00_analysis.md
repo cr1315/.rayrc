@@ -90,13 +90,13 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 | `20_python/21_poetry` | ✅ | ✅ uv tool | |
 | `20_python/22_glances` | ✅（install） | ✅ uv tool | main は Synology 専用なので zsh / PS には持ってこない |
 | `20_python/23_ansible` | ✅ | — | PS: Windows は control node として非対応 |
-| `20_python/24_httpie` | ✅ | ✅ uv tool | `02_net` から移した（D22） |
+| `20_python/24_httpie` | ✅ uv tool | ✅ uv tool | `02_net` から移し、3 方言とも uv tool にした（bash も。D22） |
 | `40_docker` | ✅（alias だけ） | — | zsh: docker が無ければ Apple の `container` に alias（D17） |
 | `60_iac/60_aws` | ✅ | ✅ Scoop | `ecs.exec` も移植 |
 | `60_iac/61_terraform` | ✅ | ✅ Scoop | |
 | `60_iac/62_kubernetes` | ✅ | ✅ Scoop | PS: `k.conf` は移植しない（下の既存の不整合） |
 | `60_iac/63_databricks` | ✅ | ✅（install だけ） | PS: main は sh の構文のファイルを読むだけ |
-| `70_claude` | ✅ | ✅ 公式 installer | PS: `~/.claude` を junction にする（D19） |
+| `70_claude` | ✅ | ✅ 公式 installer | 3 方言とも、`~/.claude` の link を installer より先に張る（PS は junction。D19） |
 | `70_niri` | — | — | D16（別のストーリー） |
 | `80_homeassistant` | ✅ | — | |
 | `80_hulft` | — | — | サーバー側の `utladmin` 専用 |

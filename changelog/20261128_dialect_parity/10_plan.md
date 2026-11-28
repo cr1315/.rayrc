@@ -24,10 +24,10 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 | D16 | 言語・インフラ（§2.3） | 基本は全部そろえる。**70_niri は対象外**（別のストーリーで扱う） |
 | D17 | docker | Docker Desktop は入れない（mac / Windows とも）。**zsh: `container`（Apple）がある場合だけ alias を張る。インストールはしない。** PS: 対象外 |
 | D18 | PS の git 設定 | `credential.helper` 以外を移植する（Windows の Git Credential Manager を平文保存で上書きしないため） |
-| D19 | PS の Claude Code | 公式の installer で入れる。既存の `~/.claude` は退避し、`libs/claude/.claude` へ junction を張る（bash と同じ ad-hoc な退避。uninstall ストーリーで helper に置き換える） |
+| D19 | Claude Code の `~/.claude` | 3 方言とも「rayrc の link でなければ退避 → link → 公式 installer」の順にする（PS は junction）。installer のダウンロード先（`~/.claude/downloads`）は固定で変えられず、`claude install` 自身も `backups/` / `sessions/` を書くので、link を先に張るのが唯一きれいな解。退避は ad-hoc なまま（uninstall ストーリーで helper に置き換える） |
 | D20 | `ll` / `la` / `lt` | 3 方言とも eza モジュールが持つ（bash / zsh は元からそう。PS は `08_shell` の `sal ll ls` を消して移した） |
 | D21 | pnpm の bin | 3 方言とも `$PNPM_HOME/bin` を PATH に足す。`$PNPM_HOME/bin` を `libs/bin` への symlink にするのはやめる（install が古いレイアウトを自動で移行する） |
-| D22 | httpie の置き場所 | `20_python/24_httpie` へ移す（PS では uv tool で入れるので、uv より後に読まれる必要がある。①） |
+| D22 | httpie | `20_python/24_httpie` へ移し、3 方言とも `uv tool install` で入れる（uv より後に読まれる必要がある。①）。設定は `HTTPIE_CONFIG_DIR` だけなので、data plane の移行は扱わない |
 
 ### 既定にしたもの（ユーザーが明示していない点。違えば指摘してほしい）
 
@@ -35,7 +35,6 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 |------|------|------|
 | shfmt（PS） | 入れない | shfmt が整形できるのは sh / bash / mksh / bats / zsh で、PowerShell は整形できない（PowerShell の整形は PSScriptAnalyzer の `Invoke-Formatter` が担う） |
 | stu（PS） | 入れない | Windows 向けの release asset が無く、Scoop にも無い（verified） |
-| httpie の取得方法 | bash / zsh は今のまま（Linux は公式バイナリ、macOS は brew）。PS は `uv tool install httpie` | D22 は移動だけで、bash / zsh の振る舞いは変えていない。3 方言を uv tool にそろえるかは未決 |
 | pipx / poetry / glances（PS） | `uv tool install` | bash と同じ取得方法（契約を合わせる） |
 | ansible（PS） | 入れない | Windows は control node として非対応 |
 | fnm（PS） | Scoop で入れ、`FNM_DIR` は data plane に向ける | bash と同じ契約。fnm には PS 用の公式 installer が無い |
@@ -71,13 +70,20 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 | P5 | 済 | verified（Docker / Linux の zsh）: 全体の install が rc=0。`libs/bin` は bash から atuin / lfscp（対象外）を除いたものと一致。P5 で増えた env は bash と同じ値。compinit がある場合の completion は uv / fnm / pnpm で確認（aws / kubectl はイメージに無く untested）。**macOS は untested** |
 | P6 | 済 | verified（pwsh 7 / Linux コンテナ）: 構文、ツール無しでの main の読み込み（表示される警告・エラーは 0）、helper（退避・link・冪等・子プロセスへの env）、偽の scoop での install facade の呼び出し順。**Windows 実機は untested** |
 | D21 | 済 | verified（Docker / bash・zsh）: 新規 install、古いレイアウトからの移行、2 回目の実行。`pnpm bin -g` は `$PNPM_HOME/bin` で、PATH には 1 回だけ入る |
-| D22 | 済 | verified: 3 方言のロード順で httpie が uv の後に来る。pwsh コンテナの install facade で、警告なしで httpie に到達する |
+| D22 | 済 | verified（Docker / bash・zsh）: 既存の standalone の `http` が uv の httpie 3.2.4 に置き換わり、2 回目は何もしない。3 方言のロード順で httpie が uv の後に来る。pwsh コンテナのテストも通る |
+| D19 | 済 | verified（Docker / bash・zsh）: 新規の install では退避ができず、installer の書いたもの（`downloads/` / `backups/` / `sessions/`）は `libs/claude/.claude` に入る。再実行は何もしない。ユーザーのディレクトリと、壊れた他人の symlink は、それぞれ 1 つの退避になる |
 | P7 | 未着手 | ユーザーの判断待ち（D7） |
 
 ### 既存ホストで次の install 時に自動で起きること
 
 - pnpm: `libs/nodejs/pnpm/bin` が `libs/bin` への symlink なら、それと `libs/bin/{pnpm,pnpx,pn,pnx}` を消して入れ直す（このホストも該当する）
-- httpie: data plane は `mv_util.sh` が `libs/net/httpie` → `libs/python/httpie` へ移した。ほかのホストでは `git pull` の後、`libs/net/httpie`（設定が入っていれば）を手で `libs/python/httpie` へ移す必要がある（`HTTPIE_CONFIG_DIR` が変わるため）
+- httpie: `libs/bin/http`（standalone のバイナリ）を uv の httpie で置き換える。`libs/net/httpie` が残っていても使われない（設定は `HTTPIE_CONFIG_DIR` が指す `libs/python/httpie/config`）
+
+## 4. 長期 TODO
+
+| # | 項目 | メモ |
+|---|------|------|
+| T1 | **data plane の migration の仕組み** | 今は「install の中で古いレイアウトを見つけたら直す」を module ごとに ad-hoc に書いている（旧 control plane の掃除、pnpm、httpie）。モジュールの移動・番号の付け替えが続くと、uninstall → 再 install でも戻せない移行が出てくる。案: migration を `id` 付きの冪等なスクリプトとして repo に残し、適用済みの `id` を data plane（例: `libs/.rayrc_migrations`）に記録して、未適用のものだけを順に流す（DB の migration と同じ）。GitLab の upgrade path のような「飛ばせない stop」が要るのは、migration が特定のバージョンのコードに依存するとき。rayrc の migration は小さなシェルの手順で、古いものも repo に残し続ければ、どのコミットから `git pull` しても順に流せるので、stop は要らない見込み。今回の変更では作らない |
 
 ### P5 / P6 で移植しなかったもの
 
@@ -95,7 +101,8 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 1. `source ./install`（`~/.zshrc` を消した状態でも可）→ 末尾の managed block が 1 つだけであること
 2. `ls ~/.rayrc/libs/bin` に bat / delta / eza / fd / gdu / navi / rg / jq / yq / shfmt / fzf / lf / stu / uv / fnm / pipx / poetry / glances / ansible / claude があり、`ls ~/.rayrc/libs/nodejs/pnpm/bin` に pnpm があること（bsdtar での展開の確認）
 3. 新しい zsh で `echo $FNM_DIR $PNPM_HOME $UV_TOOL_DIR`、`type ha_api`（`HASS_TOKEN` を設定した場合）、Apple の `container` を入れている場合は `type docker`
-4. `http --version`（brew の httpie）
+4. `command -v http` が `~/.rayrc/libs/bin/http`（uv の httpie）であること（以前 brew で入れた httpie があれば、`brew uninstall httpie` してよい）
+5. `ls -la ~/.claude` が `libs/claude/.claude` を指し、新しい `~/.claude_rayrc_bkup_*` が増えていないこと
 
 **Windows（PowerShell 5.1 と 7 の両方）**
 1. プロファイルの読み込みでエラーが出ないこと（ツールが入っていない状態で）
