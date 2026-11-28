@@ -91,6 +91,7 @@ unset -f __rayrc_final_clear
 unset -f __rayrc_delegate_uninstall
 unset -f __rayrc_module_common_setup
 unset -f __rayrc_source_facade
+unset -f __rayrc_parse_args
 unset -f __rayrc_sed_inplace
 unset -f __rayrc_rc_block
 unset -f __rayrc_install_binary __rayrc_place_binary
