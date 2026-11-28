@@ -72,7 +72,7 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 | D21 | 済 | verified（Docker / bash・zsh）: 新規 install、古いレイアウトからの移行、2 回目の実行。`pnpm bin -g` は `$PNPM_HOME/bin` で、PATH には 1 回だけ入る |
 | D22 | 済 | verified（Docker / bash・zsh）: 既存の standalone の `http` が uv の httpie 3.2.4 に置き換わり、2 回目は何もしない。3 方言のロード順で httpie が uv の後に来る。pwsh コンテナのテストも通る |
 | D19 | 済 | verified（Docker / bash・zsh）: 新規の install では退避ができず、installer の書いたもの（`downloads/` / `backups/` / `sessions/`）は `libs/claude/.claude` に入る。再実行は何もしない。ユーザーのディレクトリと、壊れた他人の symlink は、それぞれ 1 つの退避になる |
-| P7 | 未着手 | ユーザーの判断待ち（D7） |
+| P7 | 済 | verified（pwsh 7 / Linux コンテナ、偽の scoop）: 実行されたモジュールが `load_order.sh --ext ps1 --phase install` と一致、`-Filter text,bat` / `viewer`、profile の block は 1 つで 2 回目は書き換えない、呼び出し元に `__rayrc_*` が残らない、scoop が無くても残りのモジュールは最後まで走る。配線の前に、Scoop の installer が `irm \| iex` だと失敗時（「既に入っている」を含む）に `break` し、facade の `foreach` ごと抜けて後続のモジュールがすべて飛ぶことが分かったので、子プロセスで実行するようにした（`__rayrc_run_installer` は break 型の失敗も検出する。ローカルの HTTP サーバーで 5 通りを確認）。**Windows 実機は untested** |
 
 ### 既存ホストで次の install 時に自動で起きること
 
@@ -108,4 +108,8 @@ Nov 28, 2026 · 前提は `00_analysis.md`
 1. プロファイルの読み込みでエラーが出ないこと（ツールが入っていない状態で）
 2. ohmyposh、Ctrl+R の fzf、Ctrl+O の lf が今までどおり動くこと（facade の差し替えの回帰確認）
 3. `ll`（eza があれば eza、無ければ Get-ChildItem）
-4. 各モジュールの `install.ps1` は facade の変数（`$__rayrc_data_dir` など）に依存しているので、単体では実行できない。install の確認は P7 で配線してから行う
+4. `cd $env:USERPROFILE\.rayrc; git pull; . .\install.ps1`（管理者ではない PowerShell で。Scoop は管理者だと入らない）→ `[rayrc] setting up for ..` が全モジュール分出て、`scoop list` に bat / delta / jq / yq / vim / eza / fd / gdu / navi / ripgrep / fzf / oh-my-posh / lf / fnm / aws / terraform / kubectl / databricks-cli があること
+5. `ls $HOME\.rayrc\libs\bin` に uv / uvx / pipx / poetry / glances / http、`$HOME\.rayrc\libs\nodejs\pnpm\bin` に pnpm があること。新しい PowerShell で `uv --version`、`pnpm --version`、`claude --version`
+6. `(Get-Item $HOME\.claude).LinkType` と `(Get-Item $HOME\vimfiles).LinkType` が `Junction` であること。元の `~/.claude` などが `*_rayrc_bkup_*` に退避されていること（Claude Code は再ログインが要る）
+7. もう一度 `. .\install.ps1` → 新しい退避が増えず、Scoop の「already installed」の警告だけで最後まで走ること
+8. 部分的に入れ直す場合: `. .\install.ps1 -Filter text,bat`

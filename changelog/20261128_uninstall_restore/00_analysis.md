@@ -51,7 +51,7 @@ Nov 28, 2026
 | W1 | `$PROFILE` の managed block | `src/install.ps1` | 変更するたびに `$PROFILE.rayrc.bak` へ `-Force` でコピーする | ❌ uninstall が無い |
 
 PowerShell の W4 / W5 の退避と junction は `src/common.ps1` の `__rayrc_link_dir` / `__rayrc_backup_item` に集めてある。§3 の helper ができたら、ここを差し替える。
-| W2 | Scoop 本体と各パッケージ（dialect_parity §2 の「Scoop」の行すべて。databricks 用に extras bucket も足す） | 各 `install.ps1`（未接続。dialect_parity の G1） | 既に入っていれば何もしない | ❌ |
+| W2 | Scoop 本体と各パッケージ（dialect_parity §2 の「Scoop」の行すべて。databricks 用に extras bucket も足す） | 各 `install.ps1`（`src/install.ps1` から走る） | 既に入っていれば何もしない | ❌ |
 | W3 | `ExecutionPolicy RemoteSigned`（CurrentUser） | `00_bin/install.ps1` | 上書きする | ❌（§4 Q2） |
 | W4 | `~/.claude`（junction → `libs/claude/.claude`） | `70_claude/install.ps1` | U11 と同じ順（退避 → junction → installer） | ❌ |
 | W5 | `~/vimfiles`（junction）、`~/_vimrc`、`~/.vimrc` | `04_text/20_vim/install.ps1` | vimfiles は W4 と同じ。`_vimrc` / `.vimrc` は `<name>_rayrc_bkup_<timestamp>` へ退避する | ❌ |

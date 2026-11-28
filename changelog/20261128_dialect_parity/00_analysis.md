@@ -6,7 +6,7 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 
 確度の表記: **verified**（実行して確認） / **inferred**（コードを読んだうえでの推論） / **untested**（未検証）
 
-凡例: ✅ 移植済み / — 対象外（理由はメモ欄） / ⏳ 未着手
+凡例: ✅ 移植済み / — 対象外（理由はメモ欄）
 
 ---
 
@@ -14,7 +14,7 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 
 1. **制御層は 3 方言とも同じ意味論になった**: 1 階層ずつ列挙し、明示 delegate のあるグループにだけ降りる（I8）。PowerShell の暗黙再帰はやめた（verified: pwsh 7 のコンテナ。PS 5.1 は untested）。
 2. **移植は §2 の対象をすべて終えた**: zsh は Linux 上の zsh で、PowerShell は pwsh コンテナと偽の scoop で確認した。**macOS / Windows の実機では untested**。
-3. **残りは G1 だけ**: `src/install.ps1` はまだ profile への登録しかせず、各モジュールの `install.ps1` を呼ばない（P7。ユーザーの判断待ち）。
+3. **G1 も配線した**: `src/install.ps1` が各モジュールの `install.ps1` を facade 経由で走らせてから profile に登録する（`-Filter` 付き）。残りは実機での確認（`10_plan.md` §3）。
 
 ---
 
@@ -29,8 +29,8 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 | 列挙の順序 | `ls -1`（locale 依存） | glob（locale 依存） | ordinal | 対処しない（D8） |
 | 子へ降りる条件 | group の `<phase>.sh` が facade を呼ぶとき | 同左 | group の `<phase>.ps1` が `__rayrc_list_modules` のループを持つとき | ✅ 同じ意味論（D6） |
 | `disabled` | ✅ | ✅ | ✅ | ✅ |
-| `--filter` | ✅ | ✅ | facade には実装済み（`$__rayrc_install_filter`）。`src/install.ps1` からの受け渡しは未配線 | ⏳ G1 |
-| install phase | ✅ | ✅ | facade と各モジュールの `install.ps1` はある。`src/install.ps1` から呼んでいない | ⏳ G1 |
+| `--filter` | ✅ | ✅ | ✅ `-Filter text,bat` | ✅ |
+| install phase | ✅ | ✅ | ✅ `src/install.ps1` が facade を回す | ✅ |
 | data dir の作成 | `__rayrc_module_common_setup` | 同左 | `__rayrc_module_enter` | ✅ |
 | rc への登録 | `~/.bashrc` が無ければ作る | 同左（G4 で修正） | `$PROFILE` が無ければ作る | ✅ |
 
@@ -38,7 +38,7 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 
 | # | 差 | 状態 |
 |---|----|------|
-| G1 | PowerShell の install phase が呼ばれない | ⏳ P7（このストーリーの最後。D7） |
+| G1 | PowerShell の install phase が呼ばれない | ✅ P7 で配線した |
 | G2 | 子へ降りる条件が方言で逆だった | ✅ P2 で解消（PS も明示 delegate）。足りなかった zsh / PS の delegate も追加した |
 | G3 | bash / zsh の列挙順が locale 依存 | 対処しない（D8） |
 | G4 | zsh: `~/.zshrc` が無いと登録されない | ✅ P3 で修正 |
