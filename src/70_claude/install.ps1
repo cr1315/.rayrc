@@ -1,8 +1,8 @@
 ﻿# Claude Code は公式 installer で入れる（D19。bash / zsh と同じ）
-# ~/.claude は libs/claude/.claude への junction にする。bash と違い、installer の前に張る:
-#   installer は ~/.claude\downloads にダウンロードするので、先に張っておけば、
-#   installer が作っただけの ~/.claude を毎回退避してしまうこともない
-# 既存の ~/.claude（rayrc 以外）は ~/.claude_rayrc_bkup_<timestamp> へ退避する（bash と同じ ad-hoc な退避）
+# ~/.claude は libs/claude/.claude への junction にし、installer より前に張る（bash / zsh と同じ順）:
+#   installer のダウンロード先 ~/.claude\downloads は固定で、`claude install` も backups / sessions を書くので、
+#   後から張ると、installer が作っただけの ~/.claude を退避することになる
+# 既存の ~/.claude（rayrc 以外）は ~/.claude_rayrc_bkup_<timestamp> へ退避する（bash / zsh と同じ ad-hoc な退避）
 __rayrc_link_dir -Link (Join-Path $HOME '.claude') -Target (Join-Path $__rayrc_data_dir '.claude')
 
 if (Get-Command claude -CommandType Application -ErrorAction SilentlyContinue) {
