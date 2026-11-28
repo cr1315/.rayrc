@@ -23,6 +23,12 @@ if ($__rayrc_ext) {
   }
 }
 
+## 公式 installer は ~\.local\bin\claude.exe に置くだけで PATH に足さない（install.ps1 を参照）
+$__rayrc_claude_bin = Join-Path $HOME '.local\bin'
+if (Test-Path -LiteralPath (Join-Path $__rayrc_claude_bin 'claude.exe')) {
+  __rayrc_path_prepend $__rayrc_claude_bin
+}
+
 if (Get-Command claude -CommandType Application -ErrorAction SilentlyContinue) {
   ## use_bedrock は install.ps1 が作る。~/.use_bedrock は手で置く上書き用
   if ((Test-Path -LiteralPath (Join-Path $__rayrc_data_dir 'use_bedrock')) -or
