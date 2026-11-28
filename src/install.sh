@@ -198,16 +198,25 @@ __rayrc_delegate_entry() {
     __rayrc_delegate_install
 }
 
-__rayrc_delegate_entry "$@"
+## `source ./install` returns the status of its last command, so the cleanup
+## hands the entry's status through (a variable would stay in the user's shell).
+## __rayrc_github_downloader is left on purpose: it is handy on its own.
+__rayrc_install_finish() {
+    unset -f __rayrc_module_common_setup
+    unset -f __rayrc_source_facade __rayrc_list_modules
+    unset -f __rayrc_parse_args
+    unset -f __rayrc_sed_inplace
+    unset -f __rayrc_rc_block
+    unset -f __rayrc_install_binary __rayrc_place_binary __rayrc_cqi_downloader
+    unset -f __rayrc_log_info __rayrc_log_warn
+    unset -f __rayrc_cleanup_legacy_ctl
+    unset -f __rayrc_fzf_candidates __rayrc_fzf_pick_filter
+    unset -f __rayrc_bootstrap_rc
+    unset -f __rayrc_delegate_install
+    unset -f __rayrc_delegate_entry
+    unset -f __rayrc_install_finish
+    return "$1"
+}
 
-unset -f __rayrc_module_common_setup
-unset -f __rayrc_source_facade __rayrc_list_modules
-unset -f __rayrc_parse_args
-unset -f __rayrc_sed_inplace
-unset -f __rayrc_rc_block
-unset -f __rayrc_install_binary __rayrc_place_binary __rayrc_cqi_downloader
-unset -f __rayrc_cleanup_legacy_ctl
-unset -f __rayrc_fzf_candidates __rayrc_fzf_pick_filter
-unset -f __rayrc_bootstrap_rc
-unset -f __rayrc_delegate_install
-unset -f __rayrc_delegate_entry
+__rayrc_delegate_entry "$@"
+__rayrc_install_finish $?

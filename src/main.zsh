@@ -76,5 +76,6 @@ unset -f __rayrc_parse_args
 unset -f __rayrc_sed_inplace
 unset -f __rayrc_rc_block
 unset -f __rayrc_install_binary __rayrc_place_binary __rayrc_cqi_downloader
+unset -f __rayrc_log_info __rayrc_log_warn
 unset -f __rayrc_delegate_main
 unset -f __rayrc_delegate_entry
