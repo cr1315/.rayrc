@@ -31,12 +31,7 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/eza.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:eza:'
-
-    ## this will cause idempotent upgrade
-    cp -f "${__rayrc_data_dir}/eza/eza" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/eza"*
+    __rayrc_install_binary "${__rayrc_data_dir}/eza.tar.gz" eza || return 8
 }
 
 __rayrc_install

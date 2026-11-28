@@ -54,6 +54,75 @@ __rayrc_github_downloader() {
     return 0
 }
 
+## __rayrc_install_binary <file> <pattern>[=<name>] [<pattern>[=<name>]...]
+##
+## ダウンロードした <file> からバイナリを取り出して ${__rayrc_bin_dir}/<name> に置き、<file> は消す。
+##   - <file> が .tar.gz / .tgz / .tar.xz / .tar.bz2 / .zip のとき: 一時ディレクトリに展開し、
+##     ファイル名が <pattern>（find -name の glob）に一致するものを深さを問わず探す。
+##     アーカイブが平らか、トップにディレクトリを持つかを気にしなくてよい
+##     （GNU tar の --transform / bsdtar の --strip-components の違いもここで消える）
+##   - それ以外のとき: <file> そのものがバイナリ。最初の <pattern>（または <name>）の名前で置く
+##   - <name> を省くと <pattern> をそのまま名前にする（例: 'gdu_*=gdu'、'bat'）
+## 置き換えは bin dir 内の一時ファイルからの mv で行う（実行中のバイナリでも ETXTBSY にならない）。
+## bash / zsh の両方で同じ本文が動く（common.sh にも同じものを置いている）。
+__rayrc_install_binary() {
+    local file="$1"
+    shift
+
+    local spec pattern name found work err
+    local rc=0
+
+    if [[ ! -f "${file}" ]]; then
+        __rayrc_log_warn "downloaded file not found: ${file}"
+        return 8
+    fi
+
+    case "${file}" in
+        *.tar.gz | *.tgz | *.tar.xz | *.txz | *.tar.bz2 | *.tbz2 | *.zip)
+            work="$(mktemp -d "${file}.XXXXXX")" || return 8
+            case "${file}" in
+                *.zip) err="$(unzip -qo "${file}" -d "${work}" 2>&1)" ;;
+                *) err="$(tar xf "${file}" -C "${work}" 2>&1)" ;;
+            esac
+            if [[ $? -ne 0 ]]; then
+                __rayrc_log_warn "failed to extract ${file##*/}: ${err}"
+                rm -rf "${work}" "${file}"
+                return 8
+            fi
+
+            for spec in "$@"; do
+                pattern="${spec%%=*}"
+                name="${spec#*=}"
+                found="$(find "${work}" -type f -name "${pattern}" | head -n 1)"
+                if [[ -z "${found}" ]]; then
+                    __rayrc_log_warn "${pattern} not found in ${file##*/}"
+                    rc=8
+                    continue
+                fi
+                __rayrc_place_binary "${found}" "${name}" || rc=8
+            done
+            rm -rf "${work}"
+            ;;
+        *)
+            spec="$1"
+            __rayrc_place_binary "${file}" "${spec#*=}" || rc=8
+            ;;
+    esac
+
+    rm -f "${file}"
+    return "${rc}"
+}
+
+## __rayrc_place_binary <src> <name> — __rayrc_install_binary の下請け
+__rayrc_place_binary() {
+    local tmp="${__rayrc_bin_dir}/.${2}.rayrc_tmp"
+    cp -f "$1" "${tmp}" && chmod 755 "${tmp}" && mv -f "${tmp}" "${__rayrc_bin_dir}/${2}" || {
+        rm -f "${tmp}"
+        __rayrc_log_warn "failed to place ${2} into ${__rayrc_bin_dir}"
+        return 8
+    }
+}
+
 ## __rayrc_sed_inplace <file> <sed args...>
 ##
 ## `sed -i` that works the same with GNU and BSD (macOS) sed, which disagree on

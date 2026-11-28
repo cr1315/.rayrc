@@ -45,11 +45,8 @@ __rayrc_install() {
         return 8
     fi
 
-    ## this will cause idempotent upgrade
-    chmod +x "${__rayrc_data_dir}/shfmt"
-    cp -f "${__rayrc_data_dir}/shfmt" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/shfmt"*
+    ## the asset is the binary itself
+    __rayrc_install_binary "${__rayrc_data_dir}/shfmt" shfmt || return 8
 }
 
 __rayrc_install

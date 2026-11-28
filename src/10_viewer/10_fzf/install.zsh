@@ -40,16 +40,10 @@ __rayrc_install() {
         return 8
     fi
 
-    ## the tarball holds only the fzf binary at its top level.
-    ## extract into fzf-release/: hosts installed by the old git clone method
-    ## still have a fzf/ directory here, which the cleanup below removes.
-    mkdir -p "${__rayrc_data_dir}/fzf-release"
-    tar xf "${__rayrc_data_dir}/fzf.tar.gz" -C "${__rayrc_data_dir}/fzf-release" fzf
+    __rayrc_install_binary "${__rayrc_data_dir}/fzf.tar.gz" fzf || return 8
 
-    ## this will cause idempotent upgrade
-    cp -f "${__rayrc_data_dir}/fzf-release/fzf" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/fzf"*
+    ## leftovers: fzf/ from the old git clone method, fzf-release/ from the old extraction
+    rm -rf "${__rayrc_data_dir}/fzf" "${__rayrc_data_dir}/fzf-release"
 
     ## key bindings & completion: generate once here instead of running
     ## `source <(fzf --zsh)` on every shell startup; main.zsh sources it.

@@ -31,12 +31,7 @@ __rayrc_install() {
         return 8
     fi
 
-    ## the tarball holds only ./navi at its top level
-    tar xf "${__rayrc_data_dir}/navi.tar.gz" -C "${__rayrc_data_dir}"
-
-    cp -f "${__rayrc_data_dir}/navi" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/navi"*
+    __rayrc_install_binary "${__rayrc_data_dir}/navi.tar.gz" navi || return 8
 }
 
 __rayrc_install

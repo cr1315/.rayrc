@@ -2,7 +2,10 @@
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
 " Make sure you use single quotes
-call plug#begin('~/.vim/plugged')
+" plugged sits next to this file (vimfiles/plugged): Unix reaches it as
+" ~/.vim/plugged (~/.vim -> vimfiles), Windows as ~/vimfiles/plugged
+" (~/.vim is not linked there)
+call plug#begin(expand('<sfile>:p:h') . '/plugged')
 
 "#####################################################################
 " Appearance is important!

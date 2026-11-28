@@ -35,13 +35,7 @@ __rayrc_install() {
         return 8
     fi
 
-    ## tarball is flat (only `stu` at the top level)
-    tar xf "${__rayrc_data_dir}/stu.tar.gz" -C "${__rayrc_data_dir}"
-
-    ## this will cause idempotent upgrade
-    cp -f "${__rayrc_data_dir}/stu" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/stu"*
+    __rayrc_install_binary "${__rayrc_data_dir}/stu.tar.gz" stu || return 8
 }
 
 __rayrc_install

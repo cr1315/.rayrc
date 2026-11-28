@@ -45,11 +45,8 @@ __rayrc_install() {
         return 8
     fi
 
-    if [[ -f "${__rayrc_data_dir}/jq" ]]; then
-        mv -f "${__rayrc_data_dir}/jq" "${__rayrc_bin_dir}"
-        chmod -R 755 "${__rayrc_bin_dir}"
-        rm -rf "${__rayrc_data_dir}/jq"*
-    fi
+    ## the asset is the binary itself
+    __rayrc_install_binary "${__rayrc_data_dir}/jq" jq || return 8
 }
 
 __rayrc_install

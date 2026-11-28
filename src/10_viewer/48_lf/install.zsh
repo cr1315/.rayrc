@@ -45,12 +45,7 @@ __rayrc_install() {
         return 8
     fi
 
-    ## install to my bin dir
-    tar xf "${__rayrc_data_dir}/lf.tar.gz" -C "${__rayrc_data_dir}"
-    cp -f "${__rayrc_data_dir}/lf" "${__rayrc_bin_dir}"
-
-    ## clean
-    rm -rf "${__rayrc_data_dir}/lf"*
+    __rayrc_install_binary "${__rayrc_data_dir}/lf.tar.gz" lf || return 8
 
     ## preapre for lfrc
     if [[ ! -d "${HOME}/.cache/lf" ]]; then

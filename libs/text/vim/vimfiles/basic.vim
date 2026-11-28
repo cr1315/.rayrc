@@ -153,6 +153,13 @@ if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
 
+" Windows console vim draws with few colors unless 'termguicolors' is on
+" (dracula lost its backgrounds and accents). vcon = Win32 VT console only,
+" so Unix terminals / tmux keep their TERM-based colors
+if has('vcon')
+    set termguicolors
+endif
+
 try
     colorscheme desert
 catch
@@ -183,7 +190,9 @@ set ffs=unix,dos,mac
 set nobackup
 set nowb
 set noswapfile
-set viminfo+=n~/.vim/viminfo
+" viminfo sits next to this file (vimfiles/viminfo), like plugged in plugins.vim
+" (:let, not :set: :set would eat the backslashes of a Windows path)
+let &viminfo .= ',n' . expand('<sfile>:p:h') . '/viminfo'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

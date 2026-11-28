@@ -41,13 +41,7 @@ __rayrc_install() {
         return 8
     fi
 
-    ## --transform is GNU tar only; --strip-components works with macOS bsdtar too
-    mkdir -p "${__rayrc_data_dir}/rg"
-    tar xf "${__rayrc_data_dir}/rg.tar.gz" -C "${__rayrc_data_dir}/rg" --strip-components 1
-
-    cp -f "${__rayrc_data_dir}/rg/rg" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/rg"*
+    __rayrc_install_binary "${__rayrc_data_dir}/rg.tar.gz" rg || return 8
 }
 
 __rayrc_install

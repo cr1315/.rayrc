@@ -42,18 +42,19 @@ __rayrc_cleanup_legacy_ctl() {
 ######################################################################
 __rayrc_bootstrap_rc() {
     ### after all installation completed, register main.zsh in the .zshrc (managed block)
-    ## TODO: nothing is registered when ~/.zshrc does not exist yet
-    if [[ -f "$HOME/.zshrc" ]]; then
-        if ! __rayrc_rc_block "$HOME/.zshrc" \
-            "[[ -f \"${__rayrc_main_dir}/main.zsh\" ]] && source \"${__rayrc_main_dir}/main.zsh\""; then
-            __rayrc_log_warn "failed to register .rayrc in $HOME/.zshrc"
-            return 8
-        fi
-
-        echo ""
-        __rayrc_log_info "all done!"
-        __rayrc_log_info "please logout & login to enjoy your new shell environment!"
+    ## same as bash: create ~/.zshrc when missing. zsh reads .zshrc for every interactive shell
+    ## (login or not), so no .zprofile bridge is needed; it also skips zsh-newuser-install
+    [[ -f "$HOME/.zshrc" ]] || : >"$HOME/.zshrc"
+    if ! __rayrc_rc_block "$HOME/.zshrc" \
+        "[[ -f \"${__rayrc_main_dir}/main.zsh\" ]] && source \"${__rayrc_main_dir}/main.zsh\""; then
+        __rayrc_log_warn "failed to register .rayrc in $HOME/.zshrc"
+        return 8
     fi
+
+    echo ""
+    __rayrc_log_info "all done!"
+    __rayrc_log_info "please logout & login again to enjoy your new shell environment!"
+    echo ""
 }
 
 ######################################################################
@@ -125,6 +126,7 @@ unset -f __rayrc_source_facade
 unset -f __rayrc_parse_args
 unset -f __rayrc_sed_inplace
 unset -f __rayrc_rc_block
+unset -f __rayrc_install_binary __rayrc_place_binary
 unset -f __rayrc_cleanup_legacy_ctl
 unset -f __rayrc_bootstrap_rc
 unset -f __rayrc_delegate_install

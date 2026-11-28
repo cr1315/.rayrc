@@ -45,11 +45,7 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/fd.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:fd:'
-
-    cp -f "${__rayrc_data_dir}/fd/fd" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/fd"*
+    __rayrc_install_binary "${__rayrc_data_dir}/fd.tar.gz" fd || return 8
 }
 
 __rayrc_install
