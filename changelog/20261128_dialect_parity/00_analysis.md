@@ -107,4 +107,4 @@ Nov 28, 2026（最終更新: Nov 28, 2026。進捗の詳細は `10_plan.md` §3�
 ### 2.4 既存の不整合（記録のみ。今は直さない）
 
 - `60_iac/60_aws/iac.sh`（`aws.iac` を定義）はどの方言でも読み込まれていないので、`k.conf` から `aws.iac` を呼ぶと失敗する。使うときに直す（ユーザー判断）。
-- git の index に、古いパスの submodule の登録（gitlink）が 2 つ残っている: `libs/fzf/fzf`、`libs/git/gitstatus`。
+- 古いパスの submodule の登録（gitlink）は 2f6c053 で消したので、もう無い。
