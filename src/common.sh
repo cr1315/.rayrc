@@ -53,6 +53,49 @@ __rayrc_github_downloader() {
     return 0
 }
 
+## __rayrc_cqi_downloader <crate> <target> <file>
+##
+## cargo-quickinstall（cargo-bins/cargo-quickinstall）がビルドして置いている <crate> の
+## <target> 向け tarball を <file> に落とす。上流が出していない target（macOS の eza など）向け。
+##   - 版は cqi 自身の tag（<crate>-<x.y.z>）から決める。上流の latest を使うと、cqi のビルドが
+##     追いつくまで（10 日ほど）404 になる。cqi の releases/latest は repo 全体の最新なので使えない
+##   - tag の一覧は git ls-remote で取る（protocol v2 の ref-prefix で server 側が絞る。
+##     GitHub API の rate limit に当たらない。git は 00_bin が入れている）
+##   - tag があっても <target> の asset が無いことがある（eza-0.18.24 など）ので、新しい版から順に最大 5 つ試す
+##   - 並べ替えは sort -V ではなく数値の 3 キーで行う（BSD / GNU の差を避ける）
+## bash / zsh の両方で同じ本文が動く（common.zsh にも同じものを置いている）。
+__rayrc_cqi_downloader() {
+    local crate="$1"
+    local target="$2"
+    local file="$3"
+    local repo="https://github.com/cargo-bins/cargo-quickinstall"
+
+    local versions ver
+    local tries=0
+    versions="$(GIT_TERMINAL_PROMPT=0 git -c protocol.version=2 \
+        ls-remote --tags --refs "${repo}" "refs/tags/${crate}-*" 2>/dev/null |
+        sed -n -E "s#^.*refs/tags/${crate}-([0-9]+\.[0-9]+\.[0-9]+)\$#\1#p" |
+        sort -t. -k1,1nr -k2,2nr -k3,3nr)"
+    if [[ -z "${versions}" ]]; then
+        __rayrc_log_warn "no ${crate} release found in cargo-quickinstall"
+        return 8
+    fi
+
+    while IFS= read -r ver; do
+        tries=$((tries + 1))
+        [[ "${tries}" -le 5 ]] || break
+        rm -f "${file}"
+        if curl -fsL "${repo}/releases/download/${crate}-${ver}/${crate}-${ver}-${target}.tar.gz" \
+            --create-dirs -o "${file}"; then
+            return 0
+        fi
+    done <<<"${versions}"
+
+    rm -f "${file}"
+    __rayrc_log_warn "no ${crate} build for ${target} in cargo-quickinstall"
+    return 8
+}
+
 ## __rayrc_install_binary <file> <pattern>[=<name>] [<pattern>[=<name>]...]
 ##
 ## ダウンロードした <file> からバイナリを取り出して ${__rayrc_bin_dir}/<name> に置き、<file> は消す。

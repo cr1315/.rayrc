@@ -3,7 +3,9 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
-    ## eza ships no macOS / 32-bit x86 binaries (use brew on macOS)
+    ## eza ships no macOS / 32-bit x86 binaries. On macOS, take cargo-quickinstall's
+    ## build (libgit2 linked statically, so no brew needed; Homebrew's bottle links
+    ## against brew's own libgit2 dylib)
     case "${__rayrc_facts_os_type}-$(uname -m)" in
         linux-arm*64* | linux-aarch*64*)
             __rayrc_github_downloader \
@@ -19,6 +21,12 @@ __rayrc_install() {
             __rayrc_github_downloader \
                 "eza-community/eza" "${__rayrc_data_dir}/eza.tar.gz" \
                 "musl" "x86_64" "tar.gz"
+            ;;
+        macos-arm* | macos-aarch*)
+            __rayrc_cqi_downloader eza aarch64-apple-darwin "${__rayrc_data_dir}/eza.tar.gz"
+            ;;
+        macos-x86_64)
+            __rayrc_cqi_downloader eza x86_64-apple-darwin "${__rayrc_data_dir}/eza.tar.gz"
             ;;
         *)
             __rayrc_log_warn "could not retrieve binary for ${__rayrc_package:3}.."
