@@ -3,6 +3,18 @@
 __rayrc_install() {
     __rayrc_module_common_setup
 
+    ## ~/.claude → libs/claude/.claude, laid BEFORE the installer (same as install.sh /
+    ## install.ps1): anything that is not our link is kept as ~/.claude_rayrc_bkup_<timestamp>
+    local link="${HOME}/.claude"
+    local target="${__rayrc_data_dir}/.claude"
+    if [[ ! -L "${link}" || "$(readlink "${link}")" != "${target}" ]]; then
+        if [[ -e "${link}" || -L "${link}" ]]; then
+            mv "${link}" "${link}_rayrc_bkup_$(date +%Y%m%d_%H%M%S)"
+        fi
+        mkdir -p "${target}"
+        ln -snf "${target}" "${link}"
+    fi
+
     if [[ -x "${__rayrc_bin_dir}/claude" ]]; then
         "${__rayrc_bin_dir}/claude" update >&/dev/null || {
             echo "  .rayrc: failed to update claude"
@@ -18,14 +30,6 @@ __rayrc_install() {
     ## claude installs its binary to ~/.local/bin/claude — symlink into __rayrc_bin_dir
     if [[ -x "${HOME}/.local/bin/claude" ]]; then
         ln -snf "${HOME}/.local/bin/claude" "${__rayrc_bin_dir}/claude"
-    fi
-
-    ## ~/.claude → libs/claude (backup existing if not already our symlink)
-    if [[ ! -L "${HOME}/.claude" || "$(readlink "${HOME}/.claude")" != "${__rayrc_data_dir}/.claude" ]]; then
-        if [[ -e "${HOME}/.claude" ]]; then
-            mv "${HOME}/.claude" "${HOME}/.claude_rayrc_bkup_$(date +%Y%m%d_%H%M%S)"
-        fi
-        ln -snf "${__rayrc_data_dir}/.claude" "${HOME}/.claude"
     fi
 
     ## probe Bedrock access only here, once per install; main.zsh just checks the marker
