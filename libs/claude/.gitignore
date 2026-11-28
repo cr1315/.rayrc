@@ -11,7 +11,8 @@
 # !.claude/plugins/blocklist.json
 
 ## user-level skills
-!.claude/skills/
+!.claude/skills/show-me/
+!.claude/skills/remote-inquiry/
 
 
 ## __rayrc personal memories
