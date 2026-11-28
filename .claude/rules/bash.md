@@ -14,7 +14,7 @@ Modules are directories under `src/` with a numbered prefix that controls load o
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
 | `00_` | Core binaries/PATH | `00_bin` |
-| `02_` | Network / transfer tools (group) | `02_net` (httpie, stu) |
+| `02_` | Network / transfer tools (group) | `02_net` (stu) |
 | `04_` | Text tools: view, diff, process, format, edit (group) | `04_text` (bat, delta, jq, shfmt, yq, vim) |
 | `06_` | File search tools: find, list, disk usage (group) | `06_filesearch` (eza, fd, gdu, navi, rg) |
 | `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_shell` (common, sudo) |
