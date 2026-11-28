@@ -1,1 +1,0 @@
-install --fzfでfilterはrayrcがつくる、ユーザは上下で移動してselectするだけ
