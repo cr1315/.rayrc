@@ -153,6 +153,13 @@ if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
 
+" Windows console vim draws with few colors unless 'termguicolors' is on
+" (dracula lost its backgrounds and accents). vcon = Win32 VT console only,
+" so Unix terminals / tmux keep their TERM-based colors
+if has('vcon')
+    set termguicolors
+endif
+
 try
     colorscheme desert
 catch
