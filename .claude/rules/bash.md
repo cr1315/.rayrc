@@ -14,7 +14,7 @@ Modules are directories under `src/` with a numbered prefix that controls load o
 | Prefix | Purpose | Examples |
 |--------|---------|---------|
 | `00_` | Core binaries/PATH | `00_bin` |
-| `02_` | Network / transfer tools (group) | `02_net` (eget, httpie, stu) |
+| `02_` | Network / transfer tools (group) | `02_net` (httpie, stu) |
 | `04_` | Text tools: view, diff, process, format, edit (group) | `04_text` (bat, delta, jq, shfmt, yq, vim) |
 | `06_` | File search tools: find, list, disk usage (group) | `06_filesearch` (eza, fd, gdu, navi, rg) |
 | `08_` | Shell itself: prompt, aliases, env, sudo (group) | `08_shell` (common, sudo) |
@@ -46,6 +46,17 @@ unset -f __rayrc_install
 
 Subdirectory `install.sh`/`main.sh` follow the same define-call-unset pattern. `__rayrc_install` in parent and child can share the name — parent unsets before child runs.
 
+PowerShell groups need their own delegate too (same semantics, I8); without it the children are not loaded. The loop must stay at the script's top level:
+
+```powershell
+foreach ($__rayrc_m in @(__rayrc_list_modules main)) {
+    __rayrc_module_enter $__rayrc_m
+    try { . $__rayrc_m.Script } catch { __rayrc_module_error $_ } finally { __rayrc_module_leave }
+}
+```
+
+When adding a child in a dialect, check that every ancestor group has that dialect's delegate (`.ci/load_order.sh --ext <sh|zsh|ps1>` shows what is reachable).
+
 ## Control Plane vs Data Plane (libs/)
 
 `src/` is the **control plane** (logic, aliases, functions). `libs/` is the **data plane** (binaries, configs). The mapping strips the numeric prefix: `__rayrc_data_dir = libs/<name_without_prefix>`. Binaries go to `libs/bin/` which is added to PATH.
@@ -58,7 +69,7 @@ Some `libs/` subdirs contain tracked config files (e.g. `libs/text/bat/config/`,
 
 - `__rayrc_log_info <message>` — depth-aware logger (defined in `src/logger.sh`, sourced by `common.sh`); indents by 2 spaces per `__rayrc_source_facade` nesting level
 - `__rayrc_github_downloader <repo> <target> <filters...>` — (legacy) downloads latest GitHub release via HTML scraping
-- `__rayrc_eget_install <repo> <binary_name> [--asset filters...]` — downloads GitHub release binary via eget. **Deprecated as an acquisition method and currently unused**; defined in `src/02_net/10_eget/install.sh`, which still installs the eget binary for manual use only
+- `__rayrc_install_binary <file> <pattern>[=<name>]...` — extracts a downloaded asset (or takes a raw binary) and places the binaries into `libs/bin/`; same body in `common.sh` and `common.zsh`
 - `__rayrc_module_common_setup` — sets `__rayrc_ctl_dir` and `__rayrc_data_dir` for the current module
 - `__rayrc_source_facade <phase>` — scans `__rayrc_ctl_dir` subdirs and sources `<phase>.sh` in numeric order
 - `__rayrc_determine_os_type` / `__rayrc_determin_os_distribution` — populates OS facts and package manager variables
@@ -117,12 +128,8 @@ Current ①② constraints (there is no ① today):
    - **Never give the same number to modules with a ② "later wins" relation** — alphabetical order would decide (e.g. `20_atuin` < `20_git` would break C3)
 3. Create `src/<group>/<NN>_<tool>/install.sh` following the define-call-unset pattern. Its data dir is `libs/<group without prefix>/<tool>/`
 4. Check GitHub releases for asset naming (`curl -s https://api.github.com/repos/<owner>/<repo>/releases/latest | grep '"name"'`)
-5. Post-download handling by asset type:
-   - **Single binary** (jq): `mv` to `${__rayrc_bin_dir}`
-   - **tar.gz with subdirectory** (bat, fd): `tar xf --transform 's:^[^/]*:<tool>:'` then `cp`
-   - **tar.gz flat** (navi): `tar xf -C "${__rayrc_data_dir}"` then `cp`
-6. Cleanup: `rm -rf "${__rayrc_data_dir}/<tool>"*`
-7. Tools without macOS releases: `*)` fallback warns and returns 8
+5. Post-download handling: `__rayrc_install_binary "${__rayrc_data_dir}/<tool>.tar.gz" <tool> || return 8` (`src/common.{sh,zsh}`). It extracts .tar.gz / .tar.xz / .tar.bz2 / .zip into a temp dir, finds the binary by name at any depth (flat or nested archives alike, no GNU `--transform` / BSD `--strip-components` split), places it into `${__rayrc_bin_dir}` atomically, and removes the download. A raw binary asset (jq) is placed as is; rename with `'<pattern>=<name>'` (gdu: `'gdu_*=gdu'`)
+6. Tools without macOS releases: `*)` fallback warns and returns 8
 
 ## Conventions
 
@@ -132,3 +139,12 @@ Current ①② constraints (there is no ① today):
 - `main.sh` files should guard with `command -v <tool> >/dev/null 2>&1 || { return; }` if they depend on an optional binary
 - Use exit/return code `8` for failures (project convention)
 - During `install`, `libs/bin/` is not yet in PATH; guard sub-modules that depend on a tool installed earlier in the same session using the exported env var (e.g. `[[ -x "${PIPX_BIN_DIR}/pipx" ]]` instead of `command -v pipx`) and invoke via full path (`"${PIPX_BIN_DIR}/pipx" install ...`)
+- zsh: rayrc does not run `compinit`; load completions only when it has already run (`(( ${+functions[compdef]} )) && ...`). Never use `path` as a local name (it is tied to `$PATH`)
+
+### PowerShell (`*.ps1`)
+
+- UTF-8 with BOM (`.editorconfig`; Windows PowerShell 5.1 reads BOM-less files as ANSI)
+- Module scripts are dot-sourced at the top level by the delegates: no `__rayrc_install` / `__rayrc_main` wrapper; guard with `if (Get-Command <tool> -CommandType Application -ErrorAction SilentlyContinue) { ... }` or `return`
+- `$__rayrc_ctl_dir` / `$__rayrc_data_dir` / `$__rayrc_bin_dir` are valid only while loading; everything named `__rayrc_*` is removed at the end, so name module-local leftovers `$__rayrc_<module>_*` and never reference them from deferred scriptblocks (key handlers)
+- Helpers in `src/common.ps1`: `__rayrc_scoop_install <app> [-Bucket]`, `__rayrc_run_installer <url> [-Environment @{}]` (official `irm | iex` installers in a child process, so their `exit` cannot end the session), `__rayrc_path_prepend`, `__rayrc_link_dir` / `__rayrc_backup_item` (ad-hoc backup + junction; to be replaced by the uninstall story's backup helper)
+- Guard Windows-only code with `$env:OS -eq 'Windows_NT'` (`$IsWindows` is undefined in 5.1)

@@ -50,7 +50,7 @@ Tip: use `/rayrc-docker-test` skill to run the above automatically.
 - **I5** Move commits carry no behavior change, and vice versa (`refactor(move):` / `refactor(ref):` / `fix:` / `feat(...):`).
 - **I6** Sourced helpers carry the dialect's extension (`functions.sh` / `functions.zsh` / `functions.ps1`).
 - **I7** Standalone scripts (shebang, not sourced) may use any extension.
-- **I8** Dialects share the contract (ctl/data dir mapping, load order, `disabled`, `--filter`), not the mechanism: bash/zsh groups use explicit delegates (`__rayrc_source_facade`); PowerShell recurses implicitly (`__rayrc_list_modules` in `src/common.ps1`, dot-sourced at the top level of `src/main.ps1`).
+- **I8** Every dialect follows the same semantics: the facade enumerates one level (ordinal), skips `disabled`, consumes one `--filter` token per level, and descends only through an explicit group delegate `<phase>.<ext>`. bash/zsh delegates call `__rayrc_source_facade`; PowerShell delegates run a top-level `foreach` over `__rayrc_list_modules` with `__rayrc_module_enter` / `__rayrc_module_leave` (`src/common.ps1`), because dot-sourcing inside a function would trap module definitions in that function's scope.
 
 Move or renumber a module with `.ci/mv_util.sh --from <module> --to <module>` (moves every dialect and the data plane together). `.ci/load_order.sh` lists the load order statically.
 
@@ -58,7 +58,7 @@ Move or renumber a module with `.ci/mv_util.sh --from <module> --to <module>` (m
 
 The top-level `install` and `uninstall` scripts detect whether bash or zsh is running, then delegate to `src/install.sh` or `src/install.zsh` (and the `uninstall` counterparts). They register `main.sh` / `main.zsh` in `~/.bashrc` / `~/.zshrc` as a marker-delimited managed block. On Windows, `install.ps1` delegates to `src/install.ps1`, which does the same in `$PROFILE`.
 
-Module system details, key internal functions, and bash conventions are in `.claude/rules/bash.md` (auto-loaded when editing `src/**`). zsh follows the same conventions with `<phase>.zsh` and its own facade (`src/common.zsh`, `src/logger.zsh`); zsh is currently used on macOS, where tools usually also come from brew.
+Module system details, key internal functions, and bash conventions are in `.claude/rules/bash.md` (auto-loaded when editing `src/**`). zsh follows the same conventions with `<phase>.zsh` and its own facade (`src/common.zsh`, `src/logger.zsh`); zsh is currently used on macOS only, and its `install.zsh` acquires tools the same way as bash (GitHub releases / official installers; brew only where a module says so). bash and zsh never share one `libs/bin` in practice (Linux hosts run bash, the Mac runs zsh). PowerShell acquires tools via Scoop (left to Scoop's own management), except uv / pnpm / claude, which use their official installers into the data plane.
 
 ### OS Support
 
