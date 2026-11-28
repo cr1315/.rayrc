@@ -13,7 +13,18 @@ __rayrc_link_dir -Link (Join-Path $HOME 'vimfiles') -Target $vimfiles
 
 $plugVim = Join-Path $vimfiles 'autoload\plug.vim'
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $plugVim) | Out-Null
-Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim' -OutFile $plugVim
-
-vim -u (Join-Path $vimfiles 'plugins.vim') +PlugInstall +qa *> $null
+## ダウンロードの一時的な失敗は __rayrc_retry でやり直す（Scoop と同じ）
+if (__rayrc_retry {
+    try {
+      Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim' -OutFile $plugVim -ErrorAction Stop
+      $true
+    }
+    catch { $false }
+  }) {
+  vim -u (Join-Path $vimfiles 'plugins.vim') +PlugInstall +qa *> $null
+}
+else {
+  Remove-Item -LiteralPath $plugVim -ErrorAction SilentlyContinue
+  Write-Warning "[rayrc] failed to download plug.vim"
+}
 Remove-Variable vimfiles, rc, plugVim -ErrorAction SilentlyContinue

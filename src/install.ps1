@@ -131,7 +131,6 @@ if ($found.Count -eq 0) {
 # write
 ######################################################################
 if ($newContent -ceq $content) {
-    Write-Host "[rayrc] profile already up to date: $ProfilePath"
     return
 }
 

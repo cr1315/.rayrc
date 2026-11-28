@@ -102,8 +102,23 @@ function __rayrc_path_prepend {
     }
 }
 
+## __rayrc_retry { <成否を $true / $false で返す処理> }
+##   失敗したら 1 / 2 / 3 秒あけて、最大 3 回やり直す（計 4 回）。最後の成否を返す。
+##   ダウンロードの SSL / 接続断が、同じコマンドを数回打ち直すと通る環境があるため。
+##   処理は呼び出し元の変数をそのまま読める（scriptblock の動的スコープ）。この関数の変数名と被らせないこと
+function __rayrc_retry {
+    param([Parameter(Mandatory = $true)][scriptblock]$__rayrc_action)
+    foreach ($__rayrc_delay in 0, 1, 2, 3) {
+        if ($__rayrc_delay -gt 0) { Start-Sleep -Seconds $__rayrc_delay }
+        if (@(& $__rayrc_action)[-1] -eq $true) { return $true }
+    }
+    $false
+}
+
 ## __rayrc_scoop_install <app> [-Bucket <name>]
-##   取得は Scoop に任せる（D2）。Scoop は、既に入っているアプリには警告を出すだけで何もしない
+##   取得は Scoop に任せる（D2）。Scoop は、既に入っているアプリには警告を出すだけで何もしない（exit 0）。
+##   Scoop の出力は捨て（表示は facade の "setting up for" の行だけ）、失敗は __rayrc_retry でやり直す。
+##   Scoop は失敗時に exit 1 する（abort）ので、$LASTEXITCODE で成否を見る
 function __rayrc_scoop_install {
     param([Parameter(Mandatory = $true)][string]$App, [string]$Bucket)
     if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
@@ -111,9 +126,14 @@ function __rayrc_scoop_install {
         return
     }
     if ($Bucket -and -not (@(scoop bucket list) | Where-Object { $_.Name -eq $Bucket })) {
-        scoop bucket add $Bucket | Out-Null
+        if (-not (__rayrc_retry { scoop bucket add $Bucket *> $null; $LASTEXITCODE -eq 0 })) {
+            Write-Warning "[rayrc] failed to add scoop bucket $Bucket; skipped $App"
+            return
+        }
     }
-    scoop install $App
+    if (-not (__rayrc_retry { scoop install $App *> $null; $LASTEXITCODE -eq 0 })) {
+        Write-Warning "[rayrc] failed to install $App (scoop install $App)"
+    }
 }
 
 ## __rayrc_run_installer <Url> [-Environment @{ NAME = 'value' }]
@@ -121,7 +141,8 @@ function __rayrc_scoop_install {
 ##   installer の exit / Set-StrictMode / 変数がこのセッションに漏れない（claude の installer は失敗時に exit する）。
 ##   子プロセスの中でも do { } while ($false) で囲む: Scoop の installer は iex から呼ばれると、失敗時に
 ##   $LASTEXITCODE を立ててから break するだけなので、ループで break を受け止めて exit $LASTEXITCODE で返す。
-##   投げられた例外は 1 にする。-Environment はその子プロセスにだけ渡す。出力は bash の `>&/dev/null` と同じく捨てる
+##   投げられた例外は 1 にする。-Environment はその子プロセスにだけ渡す。出力は bash の `>&/dev/null` と同じく捨てる。
+##   失敗は __rayrc_retry でやり直す（Scoop と同じく、ダウンロードの一時的な失敗を吸収する）
 function __rayrc_run_installer {
     param([Parameter(Mandatory = $true)][string]$Url, [hashtable]$Environment = @{})
     $saved = @{}
@@ -131,8 +152,11 @@ function __rayrc_run_installer {
     }
     try {
         $command = "try { do { Invoke-RestMethod -Uri '$Url' | Invoke-Expression } while (`$false) } catch { exit 1 }; exit `$LASTEXITCODE"
-        & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -Command $command *> $null
-        $LASTEXITCODE -eq 0
+        $pwshPath = (Get-Process -Id $PID).Path
+        __rayrc_retry {
+            & $pwshPath -NoProfile -ExecutionPolicy Bypass -Command $command *> $null
+            $LASTEXITCODE -eq 0
+        }
     }
     finally {
         foreach ($name in $saved.Keys) {
