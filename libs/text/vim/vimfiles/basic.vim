@@ -183,7 +183,9 @@ set ffs=unix,dos,mac
 set nobackup
 set nowb
 set noswapfile
-set viminfo+=n~/.vim/viminfo
+" viminfo sits next to this file (vimfiles/viminfo), like plugged in plugins.vim
+" (:let, not :set: :set would eat the backslashes of a Windows path)
+let &viminfo .= ',n' . expand('<sfile>:p:h') . '/viminfo'
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
