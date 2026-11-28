@@ -119,7 +119,9 @@ function __rayrc_scoop_install {
 ## __rayrc_run_installer <Url> [-Environment @{ NAME = 'value' }]
 ##   公式の PowerShell installer（irm <url> | iex で使う前提のもの）を子プロセスで実行し、成否を返す。
 ##   installer の exit / Set-StrictMode / 変数がこのセッションに漏れない（claude の installer は失敗時に exit する）。
-##   -Environment はその子プロセスにだけ渡す。出力は bash の `>&/dev/null` と同じく捨てる
+##   子プロセスの中でも do { } while ($false) で囲む: Scoop の installer は iex から呼ばれると、失敗時に
+##   $LASTEXITCODE を立ててから break するだけなので、ループで break を受け止めて exit $LASTEXITCODE で返す。
+##   投げられた例外は 1 にする。-Environment はその子プロセスにだけ渡す。出力は bash の `>&/dev/null` と同じく捨てる
 function __rayrc_run_installer {
     param([Parameter(Mandatory = $true)][string]$Url, [hashtable]$Environment = @{})
     $saved = @{}
@@ -128,8 +130,8 @@ function __rayrc_run_installer {
         [Environment]::SetEnvironmentVariable($name, [string]$Environment[$name])
     }
     try {
-        & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass `
-            -Command "Invoke-RestMethod -Uri '$Url' | Invoke-Expression" *> $null
+        $command = "try { do { Invoke-RestMethod -Uri '$Url' | Invoke-Expression } while (`$false) } catch { exit 1 }; exit `$LASTEXITCODE"
+        & (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -Command $command *> $null
         $LASTEXITCODE -eq 0
     }
     finally {
