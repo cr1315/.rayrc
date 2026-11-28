@@ -8,6 +8,9 @@ __rayrc_install() {
     export UV_TOOL_DIR="${__rayrc_data_dir}/tools"
     export UV_TOOL_BIN_DIR="${__rayrc_bin_dir}"
     export UV_PYTHON_INSTALL_DIR="${__rayrc_data_dir}/python"
+    ## uv-managed Pythons only: a venv on a system Python breaks when that Python is
+    ## uninstalled or upgraded (the venv only points at it)
+    export UV_MANAGED_PYTHON=1
 
     if [[ -x "${__rayrc_bin_dir}/uv" ]]; then
         return 0
