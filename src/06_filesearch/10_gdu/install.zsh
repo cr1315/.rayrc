@@ -45,22 +45,8 @@ __rayrc_install() {
         return 8
     fi
 
-    ## the tarball holds a single binary named gdu_<os>_<arch>; it is renamed on copy
-    ## (bash uses GNU tar --transform, which macOS bsdtar lacks)
-    mkdir -p "${__rayrc_data_dir}/gdu-release"
-    case "${__rayrc_facts_os_type}" in
-        linux)
-            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}/gdu-release" \
-                --warning=no-unknown-keyword
-            ;;
-        *)
-            tar xf "${__rayrc_data_dir}/gdu.tar.gz" -C "${__rayrc_data_dir}/gdu-release"
-            ;;
-    esac
-
-    cp -f "${__rayrc_data_dir}/gdu-release/"gdu_* "${__rayrc_bin_dir}/gdu"
-
-    rm -rf "${__rayrc_data_dir}/gdu"*
+    ## the tarball holds a single binary named gdu_<os>_<arch>; it is renamed to gdu
+    __rayrc_install_binary "${__rayrc_data_dir}/gdu.tar.gz" 'gdu_*=gdu' || return 8
 }
 
 __rayrc_install

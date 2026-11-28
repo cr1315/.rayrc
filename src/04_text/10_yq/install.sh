@@ -45,9 +45,8 @@ __rayrc_install() {
         return 8
     fi
 
-    mv -f "${__rayrc_data_dir}/yq" "${__rayrc_bin_dir}"
-    chmod -R 755 "${__rayrc_bin_dir}"
-    rm -rf "${__rayrc_data_dir}/yq"*
+    ## the asset is the binary itself
+    __rayrc_install_binary "${__rayrc_data_dir}/yq" yq || return 8
 }
 
 __rayrc_install

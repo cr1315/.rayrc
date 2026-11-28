@@ -46,8 +46,7 @@ __rayrc_install() {
     fi
 
     ## the asset is the binary itself
-    chmod 755 "${__rayrc_data_dir}/jq"
-    mv -f "${__rayrc_data_dir}/jq" "${__rayrc_bin_dir}"
+    __rayrc_install_binary "${__rayrc_data_dir}/jq" jq || return 8
 }
 
 __rayrc_install

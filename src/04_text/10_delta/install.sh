@@ -40,12 +40,7 @@ __rayrc_install() {
         return 8
     fi
 
-    tar xf "${__rayrc_data_dir}/delta.tar.gz" -C "${__rayrc_data_dir}" --transform 's:^[^/]*:delta:'
-
-    ## this will cause idempotent upgrade
-    cp -f "${__rayrc_data_dir}/delta/delta" "${__rayrc_bin_dir}"
-
-    rm -rf "${__rayrc_data_dir}/delta"*
+    __rayrc_install_binary "${__rayrc_data_dir}/delta.tar.gz" delta || return 8
 
     # git aliases
     # if git config --global --list 2>&1 | grep 'pull.rebase=' >/dev/null 2>&1; then
