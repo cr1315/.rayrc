@@ -230,6 +230,25 @@ source "${BASH_SOURCE[0]%/*}/logger.sh"
 # Facade
 #
 ######################################################################
+# __rayrc_list_modules <dir> <phase>
+#
+# <dir> の子のうち、<phase>.sh があり disabled が無いものの名前を、1 行に 1 つずつ並び順に出す。
+# 子の中へは降りない（降りるかどうかは、子の <phase>.sh が facade を呼ぶか＝delegate かで決まる）。
+# facade と install --fzf の候補作りが、この同じ規則を使う。
+__rayrc_list_modules() {
+    local dir="$1"
+    local script_name="$2.sh"
+
+    local _name
+    for _name in $(ls -1 "${dir}" 2>/dev/null); do
+        if [[ -d "${dir}/${_name}" &&
+              -f "${dir}/${_name}/${script_name}" &&
+              ! -f "${dir}/${_name}/disabled" ]]; then
+            printf '%s\n' "${_name}"
+        fi
+    done
+}
+
 # __rayrc_source_facade <mode>
 #
 # mode: install | uninstall | main → sources <mode>.sh in each module
@@ -249,32 +268,27 @@ __rayrc_source_facade() {
     local saved_package="${__rayrc_package}"
 
     local _pkg
-    for _pkg in $(ls -1 "${scan_dir}" 2>/dev/null); do
-        if [[ -d "${scan_dir}/${_pkg}" &&
-              -f "${scan_dir}/${_pkg}/${script_name}" &&
-              ! -f "${scan_dir}/${_pkg}/disabled" ]]; then
+    for _pkg in $(__rayrc_list_modules "${scan_dir}" "${mode}"); do
+        ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
+        __rayrc_ctl_dir="${saved_ctl_dir}"
+        __rayrc_data_dir="${saved_data_dir}"
+        __rayrc_package="${_pkg}"
 
-            ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
-            __rayrc_ctl_dir="${saved_ctl_dir}"
-            __rayrc_data_dir="${saved_data_dir}"
-            __rayrc_package="${_pkg}"
-
-            local _saved_filter=("${__rayrc_install_filter[@]}")
-            if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
-                local _token="${__rayrc_install_filter[0]}"
-                if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
-                    continue
-                fi
-                __rayrc_install_filter=("${__rayrc_install_filter[@]:1}")
+        local _saved_filter=("${__rayrc_install_filter[@]}")
+        if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
+            local _token="${__rayrc_install_filter[0]}"
+            if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
+                continue
             fi
-
-            if [[ "${mode}" == "install" ]]; then
-                __rayrc_log_info "setting up for ${_pkg:3}.."
-            fi
-
-            source "${scan_dir}/${_pkg}/${script_name}"
-            __rayrc_install_filter=("${_saved_filter[@]}")
+            __rayrc_install_filter=("${__rayrc_install_filter[@]:1}")
         fi
+
+        if [[ "${mode}" == "install" ]]; then
+            __rayrc_log_info "setting up for ${_pkg:3}.."
+        fi
+
+        source "${scan_dir}/${_pkg}/${script_name}"
+        __rayrc_install_filter=("${_saved_filter[@]}")
     done
 
     ## restore caller state（呼び出し元モジュールの変数を復元）

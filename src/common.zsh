@@ -228,6 +228,29 @@ source "${__rayrc_main_dir}/logger.zsh"
 # Facade
 #
 ######################################################################
+# __rayrc_list_modules <dir> <phase>
+#
+# <dir> の子のうち、<phase>.zsh があり disabled が無いものの名前を、並び順に配列 reply へ入れる。
+# 子の中へは降りない（降りるかどうかは、子の <phase>.zsh が facade を呼ぶか＝delegate かで決まる）。
+# facade と install --fzf の候補作りが、この同じ規則を使う。
+# bash 版は 1 行 1 つで出力するが、zsh は $(...) の fork を避けて reply で返す
+# （main.zsh はシェルの起動ごとに facade を回すので）。呼び出し側は、すぐに自分の local へ写すこと。
+__rayrc_list_modules() {
+    local dir="$1"
+    local script_name="$2.zsh"
+
+    local _name_dir
+    reply=()
+    ## (N/): ディレクトリのみ・該当なしなら空。並びは名前順（bash 側の `ls -1` と同じ）
+    for _name_dir in "${dir}"/*(N/); do
+        if [[ -f "${_name_dir}/${script_name}" &&
+              ! -f "${_name_dir}/disabled" ]]; then
+            reply+=("${_name_dir:t}")
+        fi
+    done
+}
+
+######################################################################
 # __rayrc_source_facade <mode>
 #
 # mode: install | uninstall | main → sources <mode>.zsh in each module
@@ -247,38 +270,37 @@ __rayrc_source_facade() {
     local saved_package="${__rayrc_package}"
 
     ## ループ内で local を再宣言すると、zsh は既存の値を表示してしまうので先に宣言する
-    local _pkg_dir
     local _pkg
     local _token
+    local -a _pkgs
     local -a _saved_filter
+    local -a reply
 
-    ## (N/): ディレクトリのみ・該当なしなら空。並びは名前順（bash 側の `ls -1` と同じ）
-    for _pkg_dir in "${scan_dir}"/*(N/); do
-        _pkg="${_pkg_dir:t}"
-        if [[ -f "${_pkg_dir}/${script_name}" &&
-              ! -f "${_pkg_dir}/disabled" ]]; then
+    ## reply（この関数の local。dynamic scoping で __rayrc_list_modules が書く）は
+    ## 子の facade も使うので、ループの前に自分の local へ写す
+    __rayrc_list_modules "${scan_dir}" "${mode}"
+    _pkgs=("${reply[@]}")
+    for _pkg in "${_pkgs[@]}"; do
+        ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
+        __rayrc_ctl_dir="${saved_ctl_dir}"
+        __rayrc_data_dir="${saved_data_dir}"
+        __rayrc_package="${_pkg}"
 
-            ## 毎イテレーション親の状態にリセット（兄弟モジュール間の汚染防止）
-            __rayrc_ctl_dir="${saved_ctl_dir}"
-            __rayrc_data_dir="${saved_data_dir}"
-            __rayrc_package="${_pkg}"
-
-            _saved_filter=("${__rayrc_install_filter[@]}")
-            if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
-                _token="${__rayrc_install_filter[1]}"
-                if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
-                    continue
-                fi
-                __rayrc_install_filter=("${(@)__rayrc_install_filter[2,-1]}")
+        _saved_filter=("${__rayrc_install_filter[@]}")
+        if [[ "${#__rayrc_install_filter[@]}" -gt 0 ]]; then
+            _token="${__rayrc_install_filter[1]}"
+            if [[ "${_token}" != "*" && "${_pkg}" != *"${_token}"* ]]; then
+                continue
             fi
-
-            if [[ "${mode}" == "install" ]]; then
-                __rayrc_log_info "setting up for ${_pkg:3}.."
-            fi
-
-            source "${_pkg_dir}/${script_name}"
-            __rayrc_install_filter=("${_saved_filter[@]}")
+            __rayrc_install_filter=("${(@)__rayrc_install_filter[2,-1]}")
         fi
+
+        if [[ "${mode}" == "install" ]]; then
+            __rayrc_log_info "setting up for ${_pkg:3}.."
+        fi
+
+        source "${scan_dir}/${_pkg}/${script_name}"
+        __rayrc_install_filter=("${_saved_filter[@]}")
     done
 
     ## restore caller state（呼び出し元モジュールの変数を復元）
