@@ -1,21 +1,56 @@
 ######################################################################
 #
-# Bootstrap .rayrc into the PowerShell profile (idempotent)
+# Install for PowerShell (same order as src/install.sh)
 #
-#   - managed block (between markers) exists -> replaced in place
-#   - legacy unmarked block exists           -> migrated in place
-#   - neither                                -> appended to the end
-#   - duplicates                             -> collapsed into the first
-#   - nothing changed                        -> profile is not touched
-#
-# TODO: delegate to each module's install.ps1 once they are stable
+#   1. run each module's install.ps1 through the facade (src/common.ps1)
+#        -Filter text,bat : one comma-separated token per hierarchy level,
+#                           substring match, "*" matches any (= bash --filter)
+#   2. bootstrap .rayrc into the PowerShell profile (idempotent)
+#        - managed block (between markers) exists -> replaced in place
+#        - legacy unmarked block exists           -> migrated in place
+#        - neither                                -> appended to the end
+#        - duplicates                             -> collapsed into the first
+#        - nothing changed                        -> profile is not touched
 #
 ######################################################################
 [CmdletBinding()]
 param(
+    [string[]]$Filter = @(),
     [string]$ProfilePath = $PROFILE.CurrentUserCurrentHost
 )
 
+######################################################################
+# 1. modules
+######################################################################
+# Like bash, a failing module is reported and the rest keep going: no StrictMode,
+# non-terminating errors continue. The loop stays at the script top level so that
+# the module scripts are dot-sourced into this script's scope (I8); everything
+# they define ends with this script, as `&` gives it its own scope.
+. "$PSScriptRoot/common.ps1"
+
+$__rayrc_main_dir = $PSScriptRoot
+$__rayrc_libs_dir = Join-Path (Split-Path -Parent $PSScriptRoot) 'libs'
+$__rayrc_bin_dir  = Join-Path $__rayrc_libs_dir 'bin'
+if (-not (Test-Path -LiteralPath $__rayrc_bin_dir)) {
+    New-Item -ItemType Directory -Force -Path $__rayrc_bin_dir | Out-Null
+}
+
+$__rayrc_ctl_dir  = $__rayrc_main_dir
+$__rayrc_data_dir = $__rayrc_libs_dir
+$__rayrc_install_filter = @($Filter | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
+$__rayrc_stack = [System.Collections.Generic.Stack[object]]::new()
+
+$ErrorActionPreference = 'Continue'
+Write-Host ''
+foreach ($__rayrc_m in @(__rayrc_list_modules install)) {
+    __rayrc_module_enter $__rayrc_m
+    try { . $__rayrc_m.Script } catch { __rayrc_module_error $_ } finally { __rayrc_module_leave }
+}
+Write-Host ''
+
+######################################################################
+# 2. profile
+######################################################################
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
