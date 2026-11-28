@@ -19,5 +19,6 @@
   },
   "tui": "fullscreen",
   "autoDreamEnabled": true,
-  "remoteControlAtStartup": false
+  "remoteControlAtStartup": false,
+  "autoUpdatesChannel": "latest"
 }
